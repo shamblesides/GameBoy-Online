@@ -1,3 +1,5 @@
+import { start } from '../GameBoyIO.js';
+
 var inFullscreen = false;
 var mainCanvas = null;
 var fullscreenCanvas = null;
@@ -17,11 +19,7 @@ function startGame (blob) {
   var binaryHandle = new FileReader();
   binaryHandle.onload = function () {
     if (this.readyState === 2) {
-      try {
         start(mainCanvas, this.result);
-      } catch (e) {
-        alert(e.message);
-      }
     }
   };
   binaryHandle.readAsBinaryString(blob);
@@ -35,9 +33,9 @@ function loadViaMozActivity () {
   activity.onsuccess = function () {
     startGame(this.result.blob);
   };
-  activity.onerror = function () {
-    alert(this.error.name);
-  };
+  // activity.onerror = function () {
+  //   alert(this.error.name);
+  // };
 };
 
 function loadViaXHR () {
@@ -104,7 +102,7 @@ function windowingInitialize() {
   pickRandomColor();
 	mainCanvas = document.getElementById("mainCanvas");
   registerTouchEventShim();
-  window.onunload = autoSave;
+  // window.onunload = autoSave;
   ("MozActivity" in window ? loadViaMozActivity : loadViaXHR)();
 }
 var DEBUG_MESSAGES = false;
@@ -377,9 +375,9 @@ function registerGUIEvents() {
 	addEvent("click", document.getElementById("view_instructions"), function () { windowStacks[5].show() });
 	addEvent("mouseup", document.getElementById("gfx"), initNewCanvasSize);
 	addEvent("resize", window, initNewCanvasSize);
-	addEvent("unload", window, function () {
-		autoSave();
-	});
+	// addEvent("unload", window, function () {
+	// 	autoSave();
+	// });
 }
 function keyDown(event) {
 	var keyCode = event.keyCode;
