@@ -1,5 +1,6 @@
 var cout = console.log.bind(console);
 import { settings } from './other/settings.js';
+import { XAudioServer } from './other/XAudioServer.js';
  /*
   JavaScript GameBoy Color Emulator
   Copyright (C) 2010-2016 Grant Galitz
