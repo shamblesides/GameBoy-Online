@@ -1,5 +1,4 @@
 var cout = console.log.bind(console);
-import { settings } from './other/settings.js';
 import { XAudioServer } from './other/XAudioServer.js';
  /*
   JavaScript GameBoy Color Emulator
@@ -11,6 +10,24 @@ import { XAudioServer } from './other/XAudioServer.js';
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+var settings = [						//Some settings.
+	true, 								//Turn on sound.
+	true,								//Boot with boot ROM first?
+	false,								//Give priority to GameBoy mode
+	1,									//Volume level set.
+	true,								//Colorize GB mode?
+	false,								//Disallow typed arrays?
+	8,									//Interval for the emulator loop.
+	10,									//Audio buffer minimum span amount over x interpreter iterations.
+	20,									//Audio buffer maximum span amount over x interpreter iterations.
+	false,								//Override to allow for MBC1 instead of ROM only (compatibility for broken 3rd-party cartridges).
+	false,								//Override MBC RAM disabling and always allow reading and writing to the banks.
+	false,								//Use the GameBoy boot ROM instead of the GameBoy Color boot ROM.
+	false,								//Scale the canvas in JS, or let the browser scale the canvas?
+	true,								//Use image smoothing based scaling?
+    [true, true, true, true]            //User controlled channel enables.
+];
+
 export function GameBoyCore(canvas, ROMImage) {
 	//Params, etc...
 	this.canvas = canvas;						//Canvas DOM object for drawing out the graphics to.
