@@ -1,4 +1,4 @@
-import { start } from '../GameBoyIO.js';
+import { start } from './GameBoyIO.js';
 
 window.addEventListener("DOMContentLoaded", function() {
 	console.log("windowingInitialize() called.", 0);
