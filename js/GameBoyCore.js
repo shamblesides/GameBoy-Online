@@ -5472,32 +5472,32 @@ GameBoyCore.prototype.clocksUntilMode0 = function () {
 			return this.spriteCount + (456 * (154 - this.actualScanLine));
 	}
 }
-GameBoyCore.prototype.updateSpriteCount = function (line) {
-	this.spriteCount = 252;
-	if (this.cGBC && this.gfxSpriteShow) {										//Is the window enabled and are we in CGB mode?
-		var lineAdjusted = line + 0x10;
-		var yoffset = 0;
-		var yCap = (this.gfxSpriteNormalHeight) ? 0x8 : 0x10;
-		for (var OAMAddress = 0xFE00; OAMAddress < 0xFEA0 && this.spriteCount < 312; OAMAddress += 4) {
-			yoffset = lineAdjusted - this.memory[OAMAddress];
-			if (yoffset > -1 && yoffset < yCap) {
-				this.spriteCount += 6;
-			}
-		}
-	}
-}
-GameBoyCore.prototype.matchLYC = function () {	//LYC Register Compare
-	if (this.memory[0xFF44] == this.memory[0xFF45]) {
-		this.memory[0xFF41] |= 0x04;
-		if (this.LYCMatchTriggerSTAT) {
-			this.interruptsRequested |= 0x2;
-			this.checkIRQMatching();
-		}
-	}
-	else {
-		this.memory[0xFF41] &= 0x7B;
-	}
-}
+// GameBoyCore.prototype.updateSpriteCount = function (line) {
+// 	this.spriteCount = 252;
+// 	if (this.cGBC && this.gfxSpriteShow) {										//Is the window enabled and are we in CGB mode?
+// 		var lineAdjusted = line + 0x10;
+// 		var yoffset = 0;
+// 		var yCap = (this.gfxSpriteNormalHeight) ? 0x8 : 0x10;
+// 		for (var OAMAddress = 0xFE00; OAMAddress < 0xFEA0 && this.spriteCount < 312; OAMAddress += 4) {
+// 			yoffset = lineAdjusted - this.memory[OAMAddress];
+// 			if (yoffset > -1 && yoffset < yCap) {
+// 				this.spriteCount += 6;
+// 			}
+// 		}
+// 	}
+// }
+// GameBoyCore.prototype.matchLYC = function () {	//LYC Register Compare
+// 	if (this.memory[0xFF44] == this.memory[0xFF45]) {
+// 		this.memory[0xFF41] |= 0x04;
+// 		if (this.LYCMatchTriggerSTAT) {
+// 			this.interruptsRequested |= 0x2;
+// 			this.checkIRQMatching();
+// 		}
+// 	}
+// 	else {
+// 		this.memory[0xFF41] &= 0x7B;
+// 	}
+// }
 GameBoyCore.prototype.updateCore = function () {
 	//Update the clocking for the LCD emulation:
 	this.LCDTicks += this.CPUTicks >> this.doubleSpeedShifter;	//LCD Timing
@@ -5542,257 +5542,257 @@ GameBoyCore.prototype.updateCoreFull = function () {
 		this.iterationEndRoutine();
 	}
 }
-GameBoyCore.prototype.initializeLCDController = function () {
-	//Display on hanlding:
-	var line = 0;
-	while (line < 154) {
-		if (line < 143) {
-			//We're on a normal scan line:
-			this.LINECONTROL[line] = function (parentObj) {
-				if (parentObj.LCDTicks < 80) {
-					parentObj.scanLineMode2();
-				}
-				else if (parentObj.LCDTicks < 252) {
-					parentObj.scanLineMode3();
-				}
-				else if (parentObj.LCDTicks < 456) {
-					parentObj.scanLineMode0();
-				}
-				else {
-					//We're on a new scan line:
-					parentObj.LCDTicks -= 456;
-					if (parentObj.STATTracker != 3) {
-						//Make sure the mode 0 handler was run at least once per scan line:
-						if (parentObj.STATTracker != 2) {
-							if (parentObj.STATTracker == 0 && parentObj.mode2TriggerSTAT) {
-								parentObj.interruptsRequested |= 0x2;
-							}
-							parentObj.incrementScanLineQueue();
-						}
-						if (parentObj.hdmaRunning) {
-							parentObj.executeHDMA();
-						}
-						if (parentObj.mode0TriggerSTAT) {
-							parentObj.interruptsRequested |= 0x2;
-						}
-					}
-					//Update the scanline registers and assert the LYC counter:
-					parentObj.actualScanLine = ++parentObj.memory[0xFF44];
-					//Perform a LYC counter assert:
-					if (parentObj.actualScanLine == parentObj.memory[0xFF45]) {
-						parentObj.memory[0xFF41] |= 0x04;
-						if (parentObj.LYCMatchTriggerSTAT) {
-							parentObj.interruptsRequested |= 0x2;
-						}
-					}
-					else {
-						parentObj.memory[0xFF41] &= 0x7B;
-					}
-					parentObj.checkIRQMatching();
-					//Reset our mode contingency variables:
-					parentObj.STATTracker = 0;
-					parentObj.modeSTAT = 2;
-					parentObj.LINECONTROL[parentObj.actualScanLine](parentObj);	//Scan Line and STAT Mode Control.
-				}
-			}
-		}
-		else if (line == 143) {
-			//We're on the last visible scan line of the LCD screen:
-			this.LINECONTROL[143] = function (parentObj) {
-				if (parentObj.LCDTicks < 80) {
-					parentObj.scanLineMode2();
-				}
-				else if (parentObj.LCDTicks < 252) {
-					parentObj.scanLineMode3();
-				}
-				else if (parentObj.LCDTicks < 456) {
-					parentObj.scanLineMode0();
-				}
-				else {
-					//Starting V-Blank:
-					//Just finished the last visible scan line:
-					parentObj.LCDTicks -= 456;
-					if (parentObj.STATTracker != 3) {
-						//Make sure the mode 0 handler was run at least once per scan line:
-						if (parentObj.STATTracker != 2) {
-							if (parentObj.STATTracker == 0 && parentObj.mode2TriggerSTAT) {
-								parentObj.interruptsRequested |= 0x2;
-							}
-							parentObj.incrementScanLineQueue();
-						}
-						if (parentObj.hdmaRunning) {
-							parentObj.executeHDMA();
-						}
-						if (parentObj.mode0TriggerSTAT) {
-							parentObj.interruptsRequested |= 0x2;
-						}
-					}
-					//Update the scanline registers and assert the LYC counter:
-					parentObj.actualScanLine = parentObj.memory[0xFF44] = 144;
-					//Perform a LYC counter assert:
-					if (parentObj.memory[0xFF45] == 144) {
-						parentObj.memory[0xFF41] |= 0x04;
-						if (parentObj.LYCMatchTriggerSTAT) {
-							parentObj.interruptsRequested |= 0x2;
-						}
-					}
-					else {
-						parentObj.memory[0xFF41] &= 0x7B;
-					}
-					//Reset our mode contingency variables:
-					parentObj.STATTracker = 0;
-					//Update our state for v-blank:
-					parentObj.modeSTAT = 1;
-					parentObj.interruptsRequested |= (parentObj.mode1TriggerSTAT) ? 0x3 : 0x1;
-					parentObj.checkIRQMatching();
-					//Attempt to blit out to our canvas:
-					if (parentObj.drewBlank == 0) {
-						//Ensure JIT framing alignment:
-						if (parentObj.totalLinesPassed < 144 || (parentObj.totalLinesPassed == 144 && parentObj.midScanlineOffset > -1)) {
-							//Make sure our gfx are up-to-date:
-							parentObj.graphicsJITVBlank();
-							//Draw the frame:
-							parentObj.prepareFrame();
-						}
-					}
-					else {
-						//LCD off takes at least 2 frames:
-						--parentObj.drewBlank;
-					}
-					parentObj.LINECONTROL[144](parentObj);	//Scan Line and STAT Mode Control.
-				}
-			}
-		}
-		else if (line < 153) {
-			//In VBlank
-			this.LINECONTROL[line] = function (parentObj) {
-				if (parentObj.LCDTicks >= 456) {
-					//We're on a new scan line:
-					parentObj.LCDTicks -= 456;
-					parentObj.actualScanLine = ++parentObj.memory[0xFF44];
-					//Perform a LYC counter assert:
-					if (parentObj.actualScanLine == parentObj.memory[0xFF45]) {
-						parentObj.memory[0xFF41] |= 0x04;
-						if (parentObj.LYCMatchTriggerSTAT) {
-							parentObj.interruptsRequested |= 0x2;
-							parentObj.checkIRQMatching();
-						}
-					}
-					else {
-						parentObj.memory[0xFF41] &= 0x7B;
-					}
-					parentObj.LINECONTROL[parentObj.actualScanLine](parentObj);	//Scan Line and STAT Mode Control.
-				}
-			}
-		}
-		else {
-			//VBlank Ending (We're on the last actual scan line)
-			this.LINECONTROL[153] = function (parentObj) {
-				if (parentObj.LCDTicks >= 8) {
-					if (parentObj.STATTracker != 4 && parentObj.memory[0xFF44] == 153) {
-						parentObj.memory[0xFF44] = 0;	//LY register resets to 0 early.
-						//Perform a LYC counter assert:
-						if (parentObj.memory[0xFF45] == 0) {
-							parentObj.memory[0xFF41] |= 0x04;
-							if (parentObj.LYCMatchTriggerSTAT) {
-								parentObj.interruptsRequested |= 0x2;
-								parentObj.checkIRQMatching();
-							}
-						}
-						else {
-							parentObj.memory[0xFF41] &= 0x7B;
-						}
-						parentObj.STATTracker = 4;
-					}
-					if (parentObj.LCDTicks >= 456) {
-						//We reset back to the beginning:
-						parentObj.LCDTicks -= 456;
-						parentObj.STATTracker = parentObj.actualScanLine = 0;
-						parentObj.LINECONTROL[0](parentObj);	//Scan Line and STAT Mode Control.
-					}
-				}
-			}
-		}
-		++line;
-	}
-}
-GameBoyCore.prototype.DisplayShowOff = function () {
-	if (this.drewBlank == 0) {
-		//Output a blank screen to the output framebuffer:
-		this.clearFrameBuffer();
-		this.drewFrame = true;
-	}
-	this.drewBlank = 2;
-}
-GameBoyCore.prototype.executeHDMA = function () {
-	this.DMAWrite(1);
-	if (this.halt) {
-		if ((this.LCDTicks - this.spriteCount) < ((4 >> this.doubleSpeedShifter) | 0x20)) {
-			//HALT clocking correction:
-			this.CPUTicks = 4 + ((0x20 + this.spriteCount) << this.doubleSpeedShifter);
-			this.LCDTicks = this.spriteCount + ((4 >> this.doubleSpeedShifter) | 0x20);
-		}
-	}
-	else {
-		this.LCDTicks += (4 >> this.doubleSpeedShifter) | 0x20;			//LCD Timing Update For HDMA.
-	}
-	if (this.memory[0xFF55] == 0) {
-		this.hdmaRunning = false;
-		this.memory[0xFF55] = 0xFF;	//Transfer completed ("Hidden last step," since some ROMs don't imply this, but most do).
-	}
-	else {
-		--this.memory[0xFF55];
-	}
-}
-GameBoyCore.prototype.clockUpdate = function () {
-	if (this.cTIMER) {
-		var dateObj = new Date();
-		var newTime = dateObj.getTime();
-		var timeElapsed = newTime - this.lastIteration;	//Get the numnber of milliseconds since this last executed.
-		this.lastIteration = newTime;
-		if (this.cTIMER && !this.RTCHALT) {
-			//Update the MBC3 RTC:
-			this.RTCSeconds += timeElapsed / 1000;
-			while (this.RTCSeconds >= 60) {	//System can stutter, so the seconds difference can get large, thus the "while".
-				this.RTCSeconds -= 60;
-				++this.RTCMinutes;
-				if (this.RTCMinutes >= 60) {
-					this.RTCMinutes -= 60;
-					++this.RTCHours;
-					if (this.RTCHours >= 24) {
-						this.RTCHours -= 24
-						++this.RTCDays;
-						if (this.RTCDays >= 512) {
-							this.RTCDays -= 512;
-							this.RTCDayOverFlow = true;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-GameBoyCore.prototype.prepareFrame = function () {
-	//Copy the internal frame buffer to the output buffer:
-	// this.swizzleFrameBuffer();
-	this.drewFrame = true;
-}
-GameBoyCore.prototype.requestDraw = function () {
-	if (this.drewFrame) {
-		this.dispatchDraw();
-	}
-}
-GameBoyCore.prototype.dispatchDraw = function () {
-	if (this.offscreenRGBCount > 0) {
-		//We actually updated the graphics internally, so copy out:
-		if (this.offscreenRGBCount == 92160) {
-			// this.processDraw(this.swizzledFrame);
-		}
-		else {
-			this.resizeFrameBuffer();
-		}
-	}
-}
+// GameBoyCore.prototype.initializeLCDController = function () {
+// 	//Display on hanlding:
+// 	var line = 0;
+// 	while (line < 154) {
+// 		if (line < 143) {
+// 			//We're on a normal scan line:
+// 			this.LINECONTROL[line] = function (parentObj) {
+// 				if (parentObj.LCDTicks < 80) {
+// 					parentObj.scanLineMode2();
+// 				}
+// 				else if (parentObj.LCDTicks < 252) {
+// 					parentObj.scanLineMode3();
+// 				}
+// 				else if (parentObj.LCDTicks < 456) {
+// 					parentObj.scanLineMode0();
+// 				}
+// 				else {
+// 					//We're on a new scan line:
+// 					parentObj.LCDTicks -= 456;
+// 					if (parentObj.STATTracker != 3) {
+// 						//Make sure the mode 0 handler was run at least once per scan line:
+// 						if (parentObj.STATTracker != 2) {
+// 							if (parentObj.STATTracker == 0 && parentObj.mode2TriggerSTAT) {
+// 								parentObj.interruptsRequested |= 0x2;
+// 							}
+// 							parentObj.incrementScanLineQueue();
+// 						}
+// 						if (parentObj.hdmaRunning) {
+// 							parentObj.executeHDMA();
+// 						}
+// 						if (parentObj.mode0TriggerSTAT) {
+// 							parentObj.interruptsRequested |= 0x2;
+// 						}
+// 					}
+// 					//Update the scanline registers and assert the LYC counter:
+// 					parentObj.actualScanLine = ++parentObj.memory[0xFF44];
+// 					//Perform a LYC counter assert:
+// 					if (parentObj.actualScanLine == parentObj.memory[0xFF45]) {
+// 						parentObj.memory[0xFF41] |= 0x04;
+// 						if (parentObj.LYCMatchTriggerSTAT) {
+// 							parentObj.interruptsRequested |= 0x2;
+// 						}
+// 					}
+// 					else {
+// 						parentObj.memory[0xFF41] &= 0x7B;
+// 					}
+// 					parentObj.checkIRQMatching();
+// 					//Reset our mode contingency variables:
+// 					parentObj.STATTracker = 0;
+// 					parentObj.modeSTAT = 2;
+// 					parentObj.LINECONTROL[parentObj.actualScanLine](parentObj);	//Scan Line and STAT Mode Control.
+// 				}
+// 			}
+// 		}
+// 		else if (line == 143) {
+// 			//We're on the last visible scan line of the LCD screen:
+// 			this.LINECONTROL[143] = function (parentObj) {
+// 				if (parentObj.LCDTicks < 80) {
+// 					parentObj.scanLineMode2();
+// 				}
+// 				else if (parentObj.LCDTicks < 252) {
+// 					parentObj.scanLineMode3();
+// 				}
+// 				else if (parentObj.LCDTicks < 456) {
+// 					parentObj.scanLineMode0();
+// 				}
+// 				else {
+// 					//Starting V-Blank:
+// 					//Just finished the last visible scan line:
+// 					parentObj.LCDTicks -= 456;
+// 					if (parentObj.STATTracker != 3) {
+// 						//Make sure the mode 0 handler was run at least once per scan line:
+// 						if (parentObj.STATTracker != 2) {
+// 							if (parentObj.STATTracker == 0 && parentObj.mode2TriggerSTAT) {
+// 								parentObj.interruptsRequested |= 0x2;
+// 							}
+// 							parentObj.incrementScanLineQueue();
+// 						}
+// 						if (parentObj.hdmaRunning) {
+// 							parentObj.executeHDMA();
+// 						}
+// 						if (parentObj.mode0TriggerSTAT) {
+// 							parentObj.interruptsRequested |= 0x2;
+// 						}
+// 					}
+// 					//Update the scanline registers and assert the LYC counter:
+// 					parentObj.actualScanLine = parentObj.memory[0xFF44] = 144;
+// 					//Perform a LYC counter assert:
+// 					if (parentObj.memory[0xFF45] == 144) {
+// 						parentObj.memory[0xFF41] |= 0x04;
+// 						if (parentObj.LYCMatchTriggerSTAT) {
+// 							parentObj.interruptsRequested |= 0x2;
+// 						}
+// 					}
+// 					else {
+// 						parentObj.memory[0xFF41] &= 0x7B;
+// 					}
+// 					//Reset our mode contingency variables:
+// 					parentObj.STATTracker = 0;
+// 					//Update our state for v-blank:
+// 					parentObj.modeSTAT = 1;
+// 					parentObj.interruptsRequested |= (parentObj.mode1TriggerSTAT) ? 0x3 : 0x1;
+// 					parentObj.checkIRQMatching();
+// 					//Attempt to blit out to our canvas:
+// 					if (parentObj.drewBlank == 0) {
+// 						//Ensure JIT framing alignment:
+// 						if (parentObj.totalLinesPassed < 144 || (parentObj.totalLinesPassed == 144 && parentObj.midScanlineOffset > -1)) {
+// 							//Make sure our gfx are up-to-date:
+// 							parentObj.graphicsJITVBlank();
+// 							//Draw the frame:
+// 							parentObj.prepareFrame();
+// 						}
+// 					}
+// 					else {
+// 						//LCD off takes at least 2 frames:
+// 						--parentObj.drewBlank;
+// 					}
+// 					parentObj.LINECONTROL[144](parentObj);	//Scan Line and STAT Mode Control.
+// 				}
+// 			}
+// 		}
+// 		else if (line < 153) {
+// 			//In VBlank
+// 			this.LINECONTROL[line] = function (parentObj) {
+// 				if (parentObj.LCDTicks >= 456) {
+// 					//We're on a new scan line:
+// 					parentObj.LCDTicks -= 456;
+// 					parentObj.actualScanLine = ++parentObj.memory[0xFF44];
+// 					//Perform a LYC counter assert:
+// 					if (parentObj.actualScanLine == parentObj.memory[0xFF45]) {
+// 						parentObj.memory[0xFF41] |= 0x04;
+// 						if (parentObj.LYCMatchTriggerSTAT) {
+// 							parentObj.interruptsRequested |= 0x2;
+// 							parentObj.checkIRQMatching();
+// 						}
+// 					}
+// 					else {
+// 						parentObj.memory[0xFF41] &= 0x7B;
+// 					}
+// 					parentObj.LINECONTROL[parentObj.actualScanLine](parentObj);	//Scan Line and STAT Mode Control.
+// 				}
+// 			}
+// 		}
+// 		else {
+// 			//VBlank Ending (We're on the last actual scan line)
+// 			this.LINECONTROL[153] = function (parentObj) {
+// 				if (parentObj.LCDTicks >= 8) {
+// 					if (parentObj.STATTracker != 4 && parentObj.memory[0xFF44] == 153) {
+// 						parentObj.memory[0xFF44] = 0;	//LY register resets to 0 early.
+// 						//Perform a LYC counter assert:
+// 						if (parentObj.memory[0xFF45] == 0) {
+// 							parentObj.memory[0xFF41] |= 0x04;
+// 							if (parentObj.LYCMatchTriggerSTAT) {
+// 								parentObj.interruptsRequested |= 0x2;
+// 								parentObj.checkIRQMatching();
+// 							}
+// 						}
+// 						else {
+// 							parentObj.memory[0xFF41] &= 0x7B;
+// 						}
+// 						parentObj.STATTracker = 4;
+// 					}
+// 					if (parentObj.LCDTicks >= 456) {
+// 						//We reset back to the beginning:
+// 						parentObj.LCDTicks -= 456;
+// 						parentObj.STATTracker = parentObj.actualScanLine = 0;
+// 						parentObj.LINECONTROL[0](parentObj);	//Scan Line and STAT Mode Control.
+// 					}
+// 				}
+// 			}
+// 		}
+// 		++line;
+// 	}
+// }
+// GameBoyCore.prototype.DisplayShowOff = function () {
+// 	if (this.drewBlank == 0) {
+// 		//Output a blank screen to the output framebuffer:
+// 		this.clearFrameBuffer();
+// 		this.drewFrame = true;
+// 	}
+// 	this.drewBlank = 2;
+// }
+// GameBoyCore.prototype.executeHDMA = function () {
+// 	this.DMAWrite(1);
+// 	if (this.halt) {
+// 		if ((this.LCDTicks - this.spriteCount) < ((4 >> this.doubleSpeedShifter) | 0x20)) {
+// 			//HALT clocking correction:
+// 			this.CPUTicks = 4 + ((0x20 + this.spriteCount) << this.doubleSpeedShifter);
+// 			this.LCDTicks = this.spriteCount + ((4 >> this.doubleSpeedShifter) | 0x20);
+// 		}
+// 	}
+// 	else {
+// 		this.LCDTicks += (4 >> this.doubleSpeedShifter) | 0x20;			//LCD Timing Update For HDMA.
+// 	}
+// 	if (this.memory[0xFF55] == 0) {
+// 		this.hdmaRunning = false;
+// 		this.memory[0xFF55] = 0xFF;	//Transfer completed ("Hidden last step," since some ROMs don't imply this, but most do).
+// 	}
+// 	else {
+// 		--this.memory[0xFF55];
+// 	}
+// }
+// GameBoyCore.prototype.clockUpdate = function () {
+// 	if (this.cTIMER) {
+// 		var dateObj = new Date();
+// 		var newTime = dateObj.getTime();
+// 		var timeElapsed = newTime - this.lastIteration;	//Get the numnber of milliseconds since this last executed.
+// 		this.lastIteration = newTime;
+// 		if (this.cTIMER && !this.RTCHALT) {
+// 			//Update the MBC3 RTC:
+// 			this.RTCSeconds += timeElapsed / 1000;
+// 			while (this.RTCSeconds >= 60) {	//System can stutter, so the seconds difference can get large, thus the "while".
+// 				this.RTCSeconds -= 60;
+// 				++this.RTCMinutes;
+// 				if (this.RTCMinutes >= 60) {
+// 					this.RTCMinutes -= 60;
+// 					++this.RTCHours;
+// 					if (this.RTCHours >= 24) {
+// 						this.RTCHours -= 24
+// 						++this.RTCDays;
+// 						if (this.RTCDays >= 512) {
+// 							this.RTCDays -= 512;
+// 							this.RTCDayOverFlow = true;
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+// GameBoyCore.prototype.prepareFrame = function () {
+// 	//Copy the internal frame buffer to the output buffer:
+// 	// this.swizzleFrameBuffer();
+// 	this.drewFrame = true;
+// }
+// GameBoyCore.prototype.requestDraw = function () {
+// 	if (this.drewFrame) {
+// 		this.dispatchDraw();
+// 	}
+// }
+// GameBoyCore.prototype.dispatchDraw = function () {
+// 	if (this.offscreenRGBCount > 0) {
+// 		//We actually updated the graphics internally, so copy out:
+// 		if (this.offscreenRGBCount == 92160) {
+// 			// this.processDraw(this.swizzledFrame);
+// 		}
+// 		else {
+// 			this.resizeFrameBuffer();
+// 		}
+// 	}
+// }
 // GameBoyCore.prototype.processDraw = function (frameBuffer) {
 // 	var canvasRGBALength = this.offscreenRGBCount;
 // 	var canvasData = this.canvasBuffer.data;
@@ -5816,22 +5816,22 @@ GameBoyCore.prototype.dispatchDraw = function () {
 // 		swizzledFrame[canvasIndex++] = frameBuffer[bufferIndex++] & 0xFF;			//Blue
 // 	}
 // }
-GameBoyCore.prototype.clearFrameBuffer = function () {
-	var bufferIndex = 0;
-	var frameBuffer = this.swizzledFrame;
-	if (this.cGBC || this.colorizedGBPalettes) {
-		while (bufferIndex < 69120) {
-			frameBuffer[bufferIndex++] = 248;
-		}
-	}
-	else {
-		while (bufferIndex < 69120) {
-			frameBuffer[bufferIndex++] = 239;
-			frameBuffer[bufferIndex++] = 255;
-			frameBuffer[bufferIndex++] = 222;
-		}
-	}
-}
+// GameBoyCore.prototype.clearFrameBuffer = function () {
+// 	var bufferIndex = 0;
+// 	var frameBuffer = this.swizzledFrame;
+// 	if (this.cGBC || this.colorizedGBPalettes) {
+// 		while (bufferIndex < 69120) {
+// 			frameBuffer[bufferIndex++] = 248;
+// 		}
+// 	}
+// 	else {
+// 		while (bufferIndex < 69120) {
+// 			frameBuffer[bufferIndex++] = 239;
+// 			frameBuffer[bufferIndex++] = 255;
+// 			frameBuffer[bufferIndex++] = 222;
+// 		}
+// 	}
+// }
 // GameBoyCore.prototype.resizeFrameBuffer = function () {
 // 	//Resize in javascript with resize.js:
 // 	if (this.resizePathClear) {
@@ -6870,69 +6870,69 @@ GameBoyCore.prototype.generateGBOAMTileLine = function (address) {
 // 		this.graphicsJITScanlineGroup();
 // 	}
 // }
-GameBoyCore.prototype.graphicsJITVBlank = function () {
-	//JIT the graphics to v-blank framing:
-	this.totalLinesPassed += this.queuedScanLines;
-	this.graphicsJITScanlineGroup();
-}
-GameBoyCore.prototype.graphicsJITScanlineGroup = function () {
-	//Normal rendering JIT, where we try to do groups of scanlines at once:
-	while (this.queuedScanLines > 0) {
-		this.renderScanLine(this.lastUnrenderedLine);
-		if (this.lastUnrenderedLine < 143) {
-			++this.lastUnrenderedLine;
-		}
-		else {
-			this.lastUnrenderedLine = 0;
-		}
-		--this.queuedScanLines;
-	}
-}
-GameBoyCore.prototype.incrementScanLineQueue = function () {
-	if (this.queuedScanLines < 144) {
-		++this.queuedScanLines;
-	}
-	else {
-		this.currentX = 0;
-		this.midScanlineOffset = -1;
-		if (this.lastUnrenderedLine < 143) {
-			++this.lastUnrenderedLine;
-		}
-		else {
-			this.lastUnrenderedLine = 0;
-		}
-	}
-}
-GameBoyCore.prototype.midScanLineJIT = function () {
-	// this.graphicsJIT();
-	this.renderMidScanLine();
-}
+// GameBoyCore.prototype.graphicsJITVBlank = function () {
+// 	//JIT the graphics to v-blank framing:
+// 	this.totalLinesPassed += this.queuedScanLines;
+// 	this.graphicsJITScanlineGroup();
+// }
+// GameBoyCore.prototype.graphicsJITScanlineGroup = function () {
+// 	//Normal rendering JIT, where we try to do groups of scanlines at once:
+// 	while (this.queuedScanLines > 0) {
+// 		this.renderScanLine(this.lastUnrenderedLine);
+// 		if (this.lastUnrenderedLine < 143) {
+// 			++this.lastUnrenderedLine;
+// 		}
+// 		else {
+// 			this.lastUnrenderedLine = 0;
+// 		}
+// 		--this.queuedScanLines;
+// 	}
+// }
+// GameBoyCore.prototype.incrementScanLineQueue = function () {
+// 	if (this.queuedScanLines < 144) {
+// 		++this.queuedScanLines;
+// 	}
+// 	else {
+// 		this.currentX = 0;
+// 		this.midScanlineOffset = -1;
+// 		if (this.lastUnrenderedLine < 143) {
+// 			++this.lastUnrenderedLine;
+// 		}
+// 		else {
+// 			this.lastUnrenderedLine = 0;
+// 		}
+// 	}
+// }
+// GameBoyCore.prototype.midScanLineJIT = function () {
+// 	// this.graphicsJIT();
+// 	this.renderMidScanLine();
+// }
 //Check for the highest priority IRQ to fire:
-GameBoyCore.prototype.launchIRQ = function () {
-	var bitShift = 0;
-	var testbit = 1;
-	do {
-		//Check to see if an interrupt is enabled AND requested.
-		if ((testbit & this.IRQLineMatched) == testbit) {
-			this.IME = false;						//Reset the interrupt enabling.
-			this.interruptsRequested -= testbit;	//Reset the interrupt request.
-			this.IRQLineMatched = 0;				//Reset the IRQ assertion.
-			//Interrupts have a certain clock cycle length:
-			this.CPUTicks = 20;
-			//Set the stack pointer to the current program counter value:
-			this.stackPointer = (this.stackPointer - 1) & 0xFFFF;
-			this.memoryWriter[this.stackPointer](this, this.stackPointer, this.programCounter >> 8);
-			this.stackPointer = (this.stackPointer - 1) & 0xFFFF;
-			this.memoryWriter[this.stackPointer](this, this.stackPointer, this.programCounter & 0xFF);
-			//Set the program counter to the interrupt's address:
-			this.programCounter = 0x40 | (bitShift << 3);
-			//Clock the core for mid-instruction updates:
-			this.updateCore();
-			return;									//We only want the highest priority interrupt.
-		}
-		testbit = 1 << ++bitShift;
-	} while (bitShift < 5);
-}
+// GameBoyCore.prototype.launchIRQ = function () {
+// 	var bitShift = 0;
+// 	var testbit = 1;
+// 	do {
+// 		//Check to see if an interrupt is enabled AND requested.
+// 		if ((testbit & this.IRQLineMatched) == testbit) {
+// 			this.IME = false;						//Reset the interrupt enabling.
+// 			this.interruptsRequested -= testbit;	//Reset the interrupt request.
+// 			this.IRQLineMatched = 0;				//Reset the IRQ assertion.
+// 			//Interrupts have a certain clock cycle length:
+// 			this.CPUTicks = 20;
+// 			//Set the stack pointer to the current program counter value:
+// 			this.stackPointer = (this.stackPointer - 1) & 0xFFFF;
+// 			this.memoryWriter[this.stackPointer](this, this.stackPointer, this.programCounter >> 8);
+// 			this.stackPointer = (this.stackPointer - 1) & 0xFFFF;
+// 			this.memoryWriter[this.stackPointer](this, this.stackPointer, this.programCounter & 0xFF);
+// 			//Set the program counter to the interrupt's address:
+// 			this.programCounter = 0x40 | (bitShift << 3);
+// 			//Clock the core for mid-instruction updates:
+// 			this.updateCore();
+// 			return;									//We only want the highest priority interrupt.
+// 		}
+// 		testbit = 1 << ++bitShift;
+// 	} while (bitShift < 5);
+// }
 /*
 	Check for IRQs to be fired while not in HALT:
 */
