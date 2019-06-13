@@ -4542,26 +4542,7 @@ GameBoyCore.prototype.setupRAM = function () {
 GameBoyCore.prototype.MBCRAMUtilized = function () {
 	return this.cMBC1 || this.cMBC2 || this.cMBC3 || this.cMBC5 || this.cMBC7 || this.cRUMBLE;
 }
-GameBoyCore.prototype.recomputeDimension = function () {
-	// initNewCanvas();
-	//Cache some dimension info:
-	this.onscreenWidth = this.canvas.width;
-	this.onscreenHeight = this.canvas.height;
-	if (window && window.mozRequestAnimationFrame || (navigator.userAgent.toLowerCase().indexOf("gecko") != -1 && navigator.userAgent.toLowerCase().indexOf("like gecko") == -1)) {
-		//Firefox slowness hack:
-		this.canvas.width = this.onscreenWidth = (!settings[12]) ? 160 : this.canvas.width;
-		this.canvas.height = this.onscreenHeight = (!settings[12]) ? 144 : this.canvas.height;
-	}
-	else {
-		this.onscreenWidth = this.canvas.width;
-		this.onscreenHeight = this.canvas.height;
-	}
-	this.offscreenWidth = (!settings[12]) ? 160 : this.canvas.width;
-	this.offscreenHeight = (!settings[12]) ? 144 : this.canvas.height;
-	this.offscreenRGBCount = this.offscreenWidth * this.offscreenHeight * 4;
-}
 GameBoyCore.prototype.initLCD = function () {
-	this.recomputeDimension();
 	if (this.offscreenRGBCount != 92160) {
 		//Only create the resizer handle if we need it:
 		this.compileResizeFrameBufferFunction();
@@ -5199,6 +5180,7 @@ GameBoyCore.prototype.channel2OutputLevelSecondaryCache = function () {
 	this.channel2OutputLevelTrimaryCache();
 }
 GameBoyCore.prototype.channel2OutputLevelTrimaryCache = function () {
+	// duty
 	if (this.channel2CachedDuty[this.channel2DutyTracker] && settings[14][1]) {
 		this.channel2currentSampleLeftTrimary = this.channel2currentSampleLeftSecondary;
 		this.channel2currentSampleRightTrimary = this.channel2currentSampleRightSecondary;
@@ -5255,6 +5237,7 @@ GameBoyCore.prototype.channel4OutputLevelSecondaryCache = function () {
 	this.mixerOutputLevelCache();
 }
 GameBoyCore.prototype.mixerOutputLevelCache = function () {
+	// hmm
 	this.mixerOutputCache = ((((this.channel1currentSampleLeftTrimary + this.channel2currentSampleLeftTrimary + this.channel3currentSampleLeftSecondary + this.channel4currentSampleLeftSecondary) * this.VinLeftChannelMasterVolume) << 16) |
 	((this.channel1currentSampleRightTrimary + this.channel2currentSampleRightTrimary + this.channel3currentSampleRightSecondary + this.channel4currentSampleRightSecondary) * this.VinRightChannelMasterVolume));
 }
