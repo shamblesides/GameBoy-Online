@@ -7610,10 +7610,10 @@ GameBoyCore.prototype.recalculateIterationClockLimitForAudio = function (audioCl
 // 	this.currentROMBank = ((this.ROMBank1offs % this.ROMBankEdge) - 1) << 14;
 // }
 //Memory Writing:
-GameBoyCore.prototype.memoryWrite = function (address, data) {
-	//Act as a wrapper for writing by compiled jumps to specific memory writing functions.
-	this.memoryWriter[address](this, address, data);
-}
+// GameBoyCore.prototype.memoryWrite = function (address, data) {
+// 	//Act as a wrapper for writing by compiled jumps to specific memory writing functions.
+// 	this.memoryWriter[address](this, address, data);
+// }
 //0xFFXX fast path:
 GameBoyCore.prototype.memoryHighWrite = function (address, data) {
 	//Act as a wrapper for writing by compiled jumps to specific memory writing functions.
@@ -7621,8 +7621,8 @@ GameBoyCore.prototype.memoryHighWrite = function (address, data) {
 }
 GameBoyCore.prototype.memoryWriteJumpCompile = function () {
 	//Faster in some browsers, since we are doing less conditionals overall by implementing them in advance.
-	for (var index = 0x0000; index <= 0xFFFF; index++) {
-		if (index < 0x8000) {
+	for (var index = 0xFF00; index <= 0xFFFF; index++) {
+		// if (index < 0x8000) {
 			// if (this.cMBC1) {
 			// 	if (index < 0x2000) {
 			// 		this.memoryWriter[index] = this.MBCWriteEnable;
@@ -7694,64 +7694,64 @@ GameBoyCore.prototype.memoryWriteJumpCompile = function () {
 			// 	}
 			// }
 			// else {
-				this.memoryWriter[index] = this.cartIgnoreWrite;
+				// this.memoryWriter[index] = this.cartIgnoreWrite;
 			// }
-		}
-		else if (index < 0x9000) {
-			this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCDATAWrite : this.VRAMGBDATAWrite;
-		}
-		else if (index < 0x9800) {
-			this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCDATAWrite : this.VRAMGBDATAUpperWrite;
-		}
-		else if (index < 0xA000) {
-			this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCCHRMAPWrite : this.VRAMGBCHRMAPWrite;
-		}
-		else if (index < 0xC000) {
-			// if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
-			// 	if (!this.cMBC3) {
-			// 		this.memoryWriter[index] = this.memoryWriteMBCRAM;
-			// 	}
-			// 	else {
-			// 		//MBC3 RTC + RAM:
-			// 		this.memoryWriter[index] = this.memoryWriteMBC3RAM;
-			// 	}
-			// }
-			// else {
-				this.memoryWriter[index] = this.cartIgnoreWrite;
-			// }
-		}
-		else if (index < 0xE000) {
-			// if (this.cGBC && index >= 0xD000) {
-			// 	this.memoryWriter[index] = this.memoryWriteGBCRAM;
-			// }
-			// else {
-				this.memoryWriter[index] = this.memoryWriteNormal;
-			// }
-		}
-		else if (index < 0xFE00) {
-			// if (this.cGBC && index >= 0xF000) {
-			// 	this.memoryWriter[index] = this.memoryWriteECHOGBCRAM;
-			// }
-			// else {
-				this.memoryWriter[index] = this.memoryWriteECHONormal;
-			// }
-		}
-		else if (index <= 0xFEA0) {
-			this.memoryWriter[index] = this.memoryWriteOAMRAM;
-		}
-		else if (index < 0xFF00) {
+		// }
+		// else if (index < 0x9000) {
+		// 	this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCDATAWrite : this.VRAMGBDATAWrite;
+		// }
+		// else if (index < 0x9800) {
+		// 	this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCDATAWrite : this.VRAMGBDATAUpperWrite;
+		// }
+		// else if (index < 0xA000) {
+		// 	this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCCHRMAPWrite : this.VRAMGBCHRMAPWrite;
+		// }
+		// else if (index < 0xC000) {
+		// 	// if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
+		// 	// 	if (!this.cMBC3) {
+		// 	// 		this.memoryWriter[index] = this.memoryWriteMBCRAM;
+		// 	// 	}
+		// 	// 	else {
+		// 	// 		//MBC3 RTC + RAM:
+		// 	// 		this.memoryWriter[index] = this.memoryWriteMBC3RAM;
+		// 	// 	}
+		// 	// }
+		// 	// else {
+		// 		this.memoryWriter[index] = this.cartIgnoreWrite;
+		// 	// }
+		// }
+		// else if (index < 0xE000) {
+		// 	// if (this.cGBC && index >= 0xD000) {
+		// 	// 	this.memoryWriter[index] = this.memoryWriteGBCRAM;
+		// 	// }
+		// 	// else {
+		// 		this.memoryWriter[index] = this.memoryWriteNormal;
+		// 	// }
+		// }
+		// else if (index < 0xFE00) {
+		// 	// if (this.cGBC && index >= 0xF000) {
+		// 	// 	this.memoryWriter[index] = this.memoryWriteECHOGBCRAM;
+		// 	// }
+		// 	// else {
+		// 		this.memoryWriter[index] = this.memoryWriteECHONormal;
+		// 	// }
+		// }
+		// else if (index <= 0xFEA0) {
+		// 	this.memoryWriter[index] = this.memoryWriteOAMRAM;
+		// }
+		// else if (index < 0xFF00) {
 			// if (this.cGBC) {											//Only GBC has access to this RAM.
 			// 	this.memoryWriter[index] = this.memoryWriteNormal;
 			// }
 			// else {
-				this.memoryWriter[index] = this.cartIgnoreWrite;
+				// this.memoryWriter[index] = this.cartIgnoreWrite;
 			// }
-		}
-		else {
+		// }
+		// else {
 			//Start the I/O initialization by filling in the slots as normal memory:
-			this.memoryWriter[index] = this.memoryWriteNormal;
+			// this.memoryWriter[index] = this.memoryWriteNormal;
 			this.memoryHighWriter[index & 0xFF] = this.memoryHighWriteNormal;
-		}
+		// }
 	}
 	this.registerWriteJumpCompile();				//Compile the I/O write functions separately...
 }
@@ -7846,15 +7846,15 @@ GameBoyCore.prototype.memoryWriteJumpCompile = function () {
 // 	parentObj.currMBCRAMBank = data & 0x03;
 // 	parentObj.currMBCRAMBankPosition = (parentObj.currMBCRAMBank << 13) - 0xA000;
 // }
-GameBoyCore.prototype.cartIgnoreWrite = function (parentObj, address, data) {
-	//We might have encountered illegal RAM writing or such, so just do nothing...
-}
-GameBoyCore.prototype.memoryWriteNormal = function (parentObj, address, data) {
-	parentObj.memory[address] = data;
-}
-GameBoyCore.prototype.memoryHighWriteNormal = function (parentObj, address, data) {
-	parentObj.memory[0xFF00 | address] = data;
-}
+// GameBoyCore.prototype.cartIgnoreWrite = function (parentObj, address, data) {
+// 	//We might have encountered illegal RAM writing or such, so just do nothing...
+// }
+// GameBoyCore.prototype.memoryWriteNormal = function (parentObj, address, data) {
+// 	parentObj.memory[address] = data;
+// }
+// GameBoyCore.prototype.memoryHighWriteNormal = function (parentObj, address, data) {
+// 	parentObj.memory[0xFF00 | address] = data;
+// }
 // GameBoyCore.prototype.memoryWriteMBCRAM = function (parentObj, address, data) {
 // 	if (parentObj.MBCRAMBanksEnabled || settings[10]) {
 // 		parentObj.MBCRam[address + parentObj.currMBCRAMBankPosition] = data;
@@ -8103,52 +8103,52 @@ GameBoyCore.prototype.memoryHighWriteNormal = function (parentObj, address, data
 GameBoyCore.prototype.registerWriteJumpCompile = function () {
 	//I/O Registers (GB + GBC):
 	//JoyPad
-	this.memoryHighWriter[0] = this.memoryWriter[0xFF00] = function (parentObj, address, data) {
-		parentObj.memory[0xFF00] = (data & 0x30) | ((((data & 0x20) == 0) ? (parentObj.JoyPad >> 4) : 0xF) & (((data & 0x10) == 0) ? (parentObj.JoyPad & 0xF) : 0xF));
-	}
-	//SB (Serial Transfer Data)
-	this.memoryHighWriter[0x1] = this.memoryWriter[0xFF01] = function (parentObj, address, data) {
-		if (parentObj.memory[0xFF02] < 0x80) {	//Cannot write while a serial transfer is active.
-			parentObj.memory[0xFF01] = data;
-		}
-	}
-	//SC (Serial Transfer Control):
-	this.memoryHighWriter[0x2] = this.memoryHighWriteNormal;
-	this.memoryWriter[0xFF02] = this.memoryWriteNormal;
-	//Unmapped I/O:
-	this.memoryHighWriter[0x3] = this.memoryWriter[0xFF03] = this.cartIgnoreWrite;
-	//DIV
-	this.memoryHighWriter[0x4] = this.memoryWriter[0xFF04] = function (parentObj, address, data) {
-		parentObj.DIVTicks &= 0xFF;	//Update DIV for realignment.
-		parentObj.memory[0xFF04] = 0;
-	}
-	//TIMA
-	this.memoryHighWriter[0x5] = this.memoryWriter[0xFF05] = function (parentObj, address, data) {
-		parentObj.memory[0xFF05] = data;
-	}
-	//TMA
-	this.memoryHighWriter[0x6] = this.memoryWriter[0xFF06] = function (parentObj, address, data) {
-		parentObj.memory[0xFF06] = data;
-	}
-	//TAC
-	this.memoryHighWriter[0x7] = this.memoryWriter[0xFF07] = function (parentObj, address, data) {
-		parentObj.memory[0xFF07] = data & 0x07;
-		parentObj.TIMAEnabled = (data & 0x04) == 0x04;
-		parentObj.TACClocker = Math.pow(4, ((data & 0x3) != 0) ? (data & 0x3) : 4) << 2;	//TODO: Find a way to not make a conditional in here...
-	}
-	//Unmapped I/O:
-	this.memoryHighWriter[0x8] = this.memoryWriter[0xFF08] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x9] = this.memoryWriter[0xFF09] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0xA] = this.memoryWriter[0xFF0A] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0xB] = this.memoryWriter[0xFF0B] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0xC] = this.memoryWriter[0xFF0C] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0xD] = this.memoryWriter[0xFF0D] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0xE] = this.memoryWriter[0xFF0E] = this.cartIgnoreWrite;
-	//IF (Interrupt Request)
-	this.memoryHighWriter[0xF] = this.memoryWriter[0xFF0F] = function (parentObj, address, data) {
-		parentObj.interruptsRequested = data;
-		// parentObj.checkIRQMatching();
-	}
+	// this.memoryHighWriter[0] = this.memoryWriter[0xFF00] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF00] = (data & 0x30) | ((((data & 0x20) == 0) ? (parentObj.JoyPad >> 4) : 0xF) & (((data & 0x10) == 0) ? (parentObj.JoyPad & 0xF) : 0xF));
+	// }
+	// //SB (Serial Transfer Data)
+	// this.memoryHighWriter[0x1] = this.memoryWriter[0xFF01] = function (parentObj, address, data) {
+	// 	if (parentObj.memory[0xFF02] < 0x80) {	//Cannot write while a serial transfer is active.
+	// 		parentObj.memory[0xFF01] = data;
+	// 	}
+	// }
+	// //SC (Serial Transfer Control):
+	// this.memoryHighWriter[0x2] = this.memoryHighWriteNormal;
+	// this.memoryWriter[0xFF02] = this.memoryWriteNormal;
+	// //Unmapped I/O:
+	// this.memoryHighWriter[0x3] = this.memoryWriter[0xFF03] = this.cartIgnoreWrite;
+	// //DIV
+	// this.memoryHighWriter[0x4] = this.memoryWriter[0xFF04] = function (parentObj, address, data) {
+	// 	parentObj.DIVTicks &= 0xFF;	//Update DIV for realignment.
+	// 	parentObj.memory[0xFF04] = 0;
+	// }
+	// //TIMA
+	// this.memoryHighWriter[0x5] = this.memoryWriter[0xFF05] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF05] = data;
+	// }
+	// //TMA
+	// this.memoryHighWriter[0x6] = this.memoryWriter[0xFF06] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF06] = data;
+	// }
+	// //TAC
+	// this.memoryHighWriter[0x7] = this.memoryWriter[0xFF07] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF07] = data & 0x07;
+	// 	parentObj.TIMAEnabled = (data & 0x04) == 0x04;
+	// 	parentObj.TACClocker = Math.pow(4, ((data & 0x3) != 0) ? (data & 0x3) : 4) << 2;	//TODO: Find a way to not make a conditional in here...
+	// }
+	// //Unmapped I/O:
+	// this.memoryHighWriter[0x8] = this.memoryWriter[0xFF08] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x9] = this.memoryWriter[0xFF09] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0xA] = this.memoryWriter[0xFF0A] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0xB] = this.memoryWriter[0xFF0B] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0xC] = this.memoryWriter[0xFF0C] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0xD] = this.memoryWriter[0xFF0D] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0xE] = this.memoryWriter[0xFF0E] = this.cartIgnoreWrite;
+	// //IF (Interrupt Request)
+	// this.memoryHighWriter[0xF] = this.memoryWriter[0xFF0F] = function (parentObj, address, data) {
+	// 	parentObj.interruptsRequested = data;
+	// 	// parentObj.checkIRQMatching();
+	// }
 	//NR10:
 	this.memoryHighWriter[0x10] = this.memoryWriter[0xFF10] = function (parentObj, address, data) {
 		if (parentObj.soundMasterEnabled) {
@@ -8254,7 +8254,7 @@ GameBoyCore.prototype.registerWriteJumpCompile = function () {
 		}
 	}
 	//NR20 (Unused I/O):
-	this.memoryHighWriter[0x15] = this.memoryWriter[0xFF15] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x15] = this.memoryWriter[0xFF15] = this.cartIgnoreWrite;
 	//NR21:
 	this.memoryHighWriter[0x16] = this.memoryWriter[0xFF16] = function (parentObj, address, data) {
 		if (parentObj.soundMasterEnabled || !parentObj.cGBC) {
@@ -8393,7 +8393,7 @@ GameBoyCore.prototype.registerWriteJumpCompile = function () {
 		}
 	}
 	//NR40 (Unused I/O):
-	this.memoryHighWriter[0x1F] = this.memoryWriter[0xFF1F] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x1F] = this.memoryWriter[0xFF1F] = this.cartIgnoreWrite;
 	//NR41:
 	this.memoryHighWriter[0x20] = this.memoryWriter[0xFF20] = function (parentObj, address, data) {
 		if (parentObj.soundMasterEnabled || !parentObj.cGBC) {
@@ -8516,16 +8516,16 @@ GameBoyCore.prototype.registerWriteJumpCompile = function () {
 			}
 		}
 	}
-	//0xFF27 to 0xFF2F don't do anything...
-	this.memoryHighWriter[0x27] = this.memoryWriter[0xFF27] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x28] = this.memoryWriter[0xFF28] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x29] = this.memoryWriter[0xFF29] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2A] = this.memoryWriter[0xFF2A] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2B] = this.memoryWriter[0xFF2B] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2C] = this.memoryWriter[0xFF2C] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2D] = this.memoryWriter[0xFF2D] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2E] = this.memoryWriter[0xFF2E] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x2F] = this.memoryWriter[0xFF2F] = this.cartIgnoreWrite;
+	// //0xFF27 to 0xFF2F don't do anything...
+	// this.memoryHighWriter[0x27] = this.memoryWriter[0xFF27] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x28] = this.memoryWriter[0xFF28] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x29] = this.memoryWriter[0xFF29] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2A] = this.memoryWriter[0xFF2A] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2B] = this.memoryWriter[0xFF2B] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2C] = this.memoryWriter[0xFF2C] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2D] = this.memoryWriter[0xFF2D] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2E] = this.memoryWriter[0xFF2E] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x2F] = this.memoryWriter[0xFF2F] = this.cartIgnoreWrite;
 	//WAVE PCM RAM:
 	this.memoryHighWriter[0x30] = this.memoryWriter[0xFF30] = function (parentObj, address, data) {
 		parentObj.channel3WriteRAM(0, data);
@@ -8575,74 +8575,74 @@ GameBoyCore.prototype.registerWriteJumpCompile = function () {
 	this.memoryHighWriter[0x3F] = this.memoryWriter[0xFF3F] = function (parentObj, address, data) {
 		parentObj.channel3WriteRAM(0xF, data);
 	}
-	//SCY
-	this.memoryHighWriter[0x42] = this.memoryWriter[0xFF42] = function (parentObj, address, data) {
-		if (parentObj.backgroundY != data) {
-			parentObj.midScanLineJIT();
-			parentObj.backgroundY = data;
-		}
-	}
-	//SCX
-	this.memoryHighWriter[0x43] = this.memoryWriter[0xFF43] = function (parentObj, address, data) {
-		if (parentObj.backgroundX != data) {
-			parentObj.midScanLineJIT();
-			parentObj.backgroundX = data;
-		}
-	}
-	//LY
-	this.memoryHighWriter[0x44] = this.memoryWriter[0xFF44] = function (parentObj, address, data) {
-		//Read Only:
-		if (parentObj.LCDisOn) {
-			//Gambatte says to do this:
-			parentObj.modeSTAT = 2;
-			parentObj.midScanlineOffset = -1;
-			parentObj.totalLinesPassed = parentObj.currentX = parentObj.queuedScanLines = parentObj.lastUnrenderedLine = parentObj.LCDTicks = parentObj.STATTracker = parentObj.actualScanLine = parentObj.memory[0xFF44] = 0;
-		}
-	}
-	//LYC
-	this.memoryHighWriter[0x45] = this.memoryWriter[0xFF45] = function (parentObj, address, data) {
-		if (parentObj.memory[0xFF45] != data) {
-			parentObj.memory[0xFF45] = data;
-			if (parentObj.LCDisOn) {
-				parentObj.matchLYC();	//Get the compare of the first scan line.
-			}
-		}
-	}
-	//WY
-	this.memoryHighWriter[0x4A] = this.memoryWriter[0xFF4A] = function (parentObj, address, data) {
-		if (parentObj.windowY != data) {
-			parentObj.midScanLineJIT();
-			parentObj.windowY = data;
-		}
-	}
-	//WX
-	this.memoryHighWriter[0x4B] = this.memoryWriter[0xFF4B] = function (parentObj, address, data) {
-		if (parentObj.memory[0xFF4B] != data) {
-			parentObj.midScanLineJIT();
-			parentObj.memory[0xFF4B] = data;
-			parentObj.windowX = data - 7;
-		}
-	}
-	this.memoryHighWriter[0x72] = this.memoryWriter[0xFF72] = function (parentObj, address, data) {
-		parentObj.memory[0xFF72] = data;
-	}
-	this.memoryHighWriter[0x73] = this.memoryWriter[0xFF73] = function (parentObj, address, data) {
-		parentObj.memory[0xFF73] = data;
-	}
-	this.memoryHighWriter[0x75] = this.memoryWriter[0xFF75] = function (parentObj, address, data) {
-		parentObj.memory[0xFF75] = data;
-	}
-	this.memoryHighWriter[0x76] = this.memoryWriter[0xFF76] = this.cartIgnoreWrite;
-	this.memoryHighWriter[0x77] = this.memoryWriter[0xFF77] = this.cartIgnoreWrite;
-	//IE (Interrupt Enable)
-	this.memoryHighWriter[0xFF] = this.memoryWriter[0xFFFF] = function (parentObj, address, data) {
-		parentObj.interruptsEnabled = data;
-		// parentObj.checkIRQMatching();
-	}
-	this.recompileModelSpecificIOWriteHandling();
+	// //SCY
+	// this.memoryHighWriter[0x42] = this.memoryWriter[0xFF42] = function (parentObj, address, data) {
+	// 	if (parentObj.backgroundY != data) {
+	// 		parentObj.midScanLineJIT();
+	// 		parentObj.backgroundY = data;
+	// 	}
+	// }
+	// //SCX
+	// this.memoryHighWriter[0x43] = this.memoryWriter[0xFF43] = function (parentObj, address, data) {
+	// 	if (parentObj.backgroundX != data) {
+	// 		parentObj.midScanLineJIT();
+	// 		parentObj.backgroundX = data;
+	// 	}
+	// }
+	// //LY
+	// this.memoryHighWriter[0x44] = this.memoryWriter[0xFF44] = function (parentObj, address, data) {
+	// 	//Read Only:
+	// 	if (parentObj.LCDisOn) {
+	// 		//Gambatte says to do this:
+	// 		parentObj.modeSTAT = 2;
+	// 		parentObj.midScanlineOffset = -1;
+	// 		parentObj.totalLinesPassed = parentObj.currentX = parentObj.queuedScanLines = parentObj.lastUnrenderedLine = parentObj.LCDTicks = parentObj.STATTracker = parentObj.actualScanLine = parentObj.memory[0xFF44] = 0;
+	// 	}
+	// }
+	// //LYC
+	// this.memoryHighWriter[0x45] = this.memoryWriter[0xFF45] = function (parentObj, address, data) {
+	// 	if (parentObj.memory[0xFF45] != data) {
+	// 		parentObj.memory[0xFF45] = data;
+	// 		if (parentObj.LCDisOn) {
+	// 			parentObj.matchLYC();	//Get the compare of the first scan line.
+	// 		}
+	// 	}
+	// }
+	// //WY
+	// this.memoryHighWriter[0x4A] = this.memoryWriter[0xFF4A] = function (parentObj, address, data) {
+	// 	if (parentObj.windowY != data) {
+	// 		parentObj.midScanLineJIT();
+	// 		parentObj.windowY = data;
+	// 	}
+	// }
+	// //WX
+	// this.memoryHighWriter[0x4B] = this.memoryWriter[0xFF4B] = function (parentObj, address, data) {
+	// 	if (parentObj.memory[0xFF4B] != data) {
+	// 		parentObj.midScanLineJIT();
+	// 		parentObj.memory[0xFF4B] = data;
+	// 		parentObj.windowX = data - 7;
+	// 	}
+	// }
+	// this.memoryHighWriter[0x72] = this.memoryWriter[0xFF72] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF72] = data;
+	// }
+	// this.memoryHighWriter[0x73] = this.memoryWriter[0xFF73] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF73] = data;
+	// }
+	// this.memoryHighWriter[0x75] = this.memoryWriter[0xFF75] = function (parentObj, address, data) {
+	// 	parentObj.memory[0xFF75] = data;
+	// }
+	// this.memoryHighWriter[0x76] = this.memoryWriter[0xFF76] = this.cartIgnoreWrite;
+	// this.memoryHighWriter[0x77] = this.memoryWriter[0xFF77] = this.cartIgnoreWrite;
+	// //IE (Interrupt Enable)
+	// this.memoryHighWriter[0xFF] = this.memoryWriter[0xFFFF] = function (parentObj, address, data) {
+	// 	parentObj.interruptsEnabled = data;
+	// 	// parentObj.checkIRQMatching();
+	// }
+	// this.recompileModelSpecificIOWriteHandling();
 	// this.recompileBootIOWriteHandling();
 }
-GameBoyCore.prototype.recompileModelSpecificIOWriteHandling = function () {
+// GameBoyCore.prototype.recompileModelSpecificIOWriteHandling = function () {
 	// if (this.cGBC) {
 	// 	//GameBoy Color Specific I/O:
 	// 	//SC (Serial Transfer Control Register)
@@ -8830,129 +8830,129 @@ GameBoyCore.prototype.recompileModelSpecificIOWriteHandling = function () {
 	// 	}
 	// }
 	// else {
-		//Fill in the GameBoy Color I/O registers as normal RAM for GameBoy compatibility:
-		//SC (Serial Transfer Control Register)
-		this.memoryHighWriter[0x2] = this.memoryWriter[0xFF02] = function (parentObj, address, data) {
-			if (((data & 0x1) == 0x1)) {
-				//Internal clock:
-				parentObj.memory[0xFF02] = (data & 0x7F);
-				parentObj.serialTimer = 4096;	//Set the Serial IRQ counter.
-				parentObj.serialShiftTimer = parentObj.serialShiftTimerAllocated = 512;	//Set the transfer data shift counter.
-			}
-			else {
-				//External clock:
-				parentObj.memory[0xFF02] = data;
-				parentObj.serialShiftTimer = parentObj.serialShiftTimerAllocated = parentObj.serialTimer = 0;	//Zero the timers, since we're emulating as if nothing is connected.
-			}
-		}
-		this.memoryHighWriter[0x40] = this.memoryWriter[0xFF40] = function (parentObj, address, data) {
-			if (parentObj.memory[0xFF40] != data) {
-				parentObj.midScanLineJIT();
-				var temp_var = (data > 0x7F);
-				if (temp_var != parentObj.LCDisOn) {
-					//When the display mode changes...
-					parentObj.LCDisOn = temp_var;
-					parentObj.memory[0xFF41] &= 0x78;
-					parentObj.midScanlineOffset = -1;
-					parentObj.totalLinesPassed = parentObj.currentX = parentObj.queuedScanLines = parentObj.lastUnrenderedLine = parentObj.STATTracker = parentObj.LCDTicks = parentObj.actualScanLine = parentObj.memory[0xFF44] = 0;
-					if (parentObj.LCDisOn) {
-						parentObj.modeSTAT = 2;
-						parentObj.matchLYC();	//Get the compare of the first scan line.
-						parentObj.LCDCONTROL = parentObj.LINECONTROL;
-					}
-					else {
-						parentObj.modeSTAT = 0;
-						parentObj.LCDCONTROL = parentObj.DISPLAYOFFCONTROL;
-						parentObj.DisplayShowOff();
-					}
-					parentObj.interruptsRequested &= 0xFD;
-				}
-				parentObj.gfxWindowCHRBankPosition = ((data & 0x40) == 0x40) ? 0x400 : 0;
-				parentObj.gfxWindowDisplay = (data & 0x20) == 0x20;
-				parentObj.gfxBackgroundBankOffset = ((data & 0x10) == 0x10) ? 0 : 0x80;
-				parentObj.gfxBackgroundCHRBankPosition = ((data & 0x08) == 0x08) ? 0x400 : 0;
-				parentObj.gfxSpriteNormalHeight = ((data & 0x04) == 0);
-				parentObj.gfxSpriteShow = (data & 0x02) == 0x02;
-				parentObj.bgEnabled = ((data & 0x01) == 0x01);
-				parentObj.memory[0xFF40] = data;
-			}
-		}
-		this.memoryHighWriter[0x41] = this.memoryWriter[0xFF41] = function (parentObj, address, data) {
-			parentObj.LYCMatchTriggerSTAT = ((data & 0x40) == 0x40);
-			parentObj.mode2TriggerSTAT = ((data & 0x20) == 0x20);
-			parentObj.mode1TriggerSTAT = ((data & 0x10) == 0x10);
-			parentObj.mode0TriggerSTAT = ((data & 0x08) == 0x08);
-			parentObj.memory[0xFF41] = data & 0x78;
-			if ((!parentObj.usedBootROM || !parentObj.usedGBCBootROM) && parentObj.LCDisOn && parentObj.modeSTAT < 2) {
-				parentObj.interruptsRequested |= 0x2;
-				// parentObj.checkIRQMatching();
-			}
-		}
-		this.memoryHighWriter[0x46] = this.memoryWriter[0xFF46] = function (parentObj, address, data) {
-			parentObj.memory[0xFF46] = data;
-			if (data > 0x7F && data < 0xE0) {	//DMG cannot DMA from the ROM banks.
-				data <<= 8;
-				address = 0xFE00;
-				var stat = parentObj.modeSTAT;
-				parentObj.modeSTAT = 0;
-				var newData = 0;
-				do {
-					newData = parentObj.memoryReader[data](parentObj, data++);
-					if (newData != parentObj.memory[address]) {
-						//JIT the graphics render queue:
-						parentObj.modeSTAT = stat;
-						parentObj.graphicsJIT();
-						parentObj.modeSTAT = 0;
-						parentObj.memory[address++] = newData;
-						break;
-					}
-				} while (++address < 0xFEA0);
-				if (address < 0xFEA0) {
-					do {
-						parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
-						parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
-						parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
-						parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
-					} while (address < 0xFEA0);
-				}
-				parentObj.modeSTAT = stat;
-			}
-		}
-		this.memoryHighWriter[0x47] = this.memoryWriter[0xFF47] = function (parentObj, address, data) {
-			if (parentObj.memory[0xFF47] != data) {
-				parentObj.midScanLineJIT();
-				parentObj.updateGBBGPalette(data);
-				parentObj.memory[0xFF47] = data;
-			}
-		}
-		this.memoryHighWriter[0x48] = this.memoryWriter[0xFF48] = function (parentObj, address, data) {
-			if (parentObj.memory[0xFF48] != data) {
-				parentObj.midScanLineJIT();
-				parentObj.updateGBOBJPalette(0, data);
-				parentObj.memory[0xFF48] = data;
-			}
-		}
-		this.memoryHighWriter[0x49] = this.memoryWriter[0xFF49] = function (parentObj, address, data) {
-			if (parentObj.memory[0xFF49] != data) {
-				parentObj.midScanLineJIT();
-				parentObj.updateGBOBJPalette(4, data);
-				parentObj.memory[0xFF49] = data;
-			}
-		}
-		this.memoryHighWriter[0x4D] = this.memoryWriter[0xFF4D] = function (parentObj, address, data) {
-			parentObj.memory[0xFF4D] = data;
-		}
-		this.memoryHighWriter[0x4F] = this.memoryWriter[0xFF4F] = this.cartIgnoreWrite;	//Not writable in DMG mode.
-		this.memoryHighWriter[0x55] = this.memoryWriter[0xFF55] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x68] = this.memoryWriter[0xFF68] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x69] = this.memoryWriter[0xFF69] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x6A] = this.memoryWriter[0xFF6A] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x6B] = this.memoryWriter[0xFF6B] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x6C] = this.memoryWriter[0xFF6C] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x70] = this.memoryWriter[0xFF70] = this.cartIgnoreWrite;
-		this.memoryHighWriter[0x74] = this.memoryWriter[0xFF74] = this.cartIgnoreWrite;
+		// //Fill in the GameBoy Color I/O registers as normal RAM for GameBoy compatibility:
+		// //SC (Serial Transfer Control Register)
+		// this.memoryHighWriter[0x2] = this.memoryWriter[0xFF02] = function (parentObj, address, data) {
+		// 	if (((data & 0x1) == 0x1)) {
+		// 		//Internal clock:
+		// 		parentObj.memory[0xFF02] = (data & 0x7F);
+		// 		parentObj.serialTimer = 4096;	//Set the Serial IRQ counter.
+		// 		parentObj.serialShiftTimer = parentObj.serialShiftTimerAllocated = 512;	//Set the transfer data shift counter.
+		// 	}
+		// 	else {
+		// 		//External clock:
+		// 		parentObj.memory[0xFF02] = data;
+		// 		parentObj.serialShiftTimer = parentObj.serialShiftTimerAllocated = parentObj.serialTimer = 0;	//Zero the timers, since we're emulating as if nothing is connected.
+		// 	}
+		// }
+		// this.memoryHighWriter[0x40] = this.memoryWriter[0xFF40] = function (parentObj, address, data) {
+		// 	if (parentObj.memory[0xFF40] != data) {
+		// 		parentObj.midScanLineJIT();
+		// 		var temp_var = (data > 0x7F);
+		// 		if (temp_var != parentObj.LCDisOn) {
+		// 			//When the display mode changes...
+		// 			parentObj.LCDisOn = temp_var;
+		// 			parentObj.memory[0xFF41] &= 0x78;
+		// 			parentObj.midScanlineOffset = -1;
+		// 			parentObj.totalLinesPassed = parentObj.currentX = parentObj.queuedScanLines = parentObj.lastUnrenderedLine = parentObj.STATTracker = parentObj.LCDTicks = parentObj.actualScanLine = parentObj.memory[0xFF44] = 0;
+		// 			if (parentObj.LCDisOn) {
+		// 				parentObj.modeSTAT = 2;
+		// 				parentObj.matchLYC();	//Get the compare of the first scan line.
+		// 				parentObj.LCDCONTROL = parentObj.LINECONTROL;
+		// 			}
+		// 			else {
+		// 				parentObj.modeSTAT = 0;
+		// 				parentObj.LCDCONTROL = parentObj.DISPLAYOFFCONTROL;
+		// 				parentObj.DisplayShowOff();
+		// 			}
+		// 			parentObj.interruptsRequested &= 0xFD;
+		// 		}
+		// 		parentObj.gfxWindowCHRBankPosition = ((data & 0x40) == 0x40) ? 0x400 : 0;
+		// 		parentObj.gfxWindowDisplay = (data & 0x20) == 0x20;
+		// 		parentObj.gfxBackgroundBankOffset = ((data & 0x10) == 0x10) ? 0 : 0x80;
+		// 		parentObj.gfxBackgroundCHRBankPosition = ((data & 0x08) == 0x08) ? 0x400 : 0;
+		// 		parentObj.gfxSpriteNormalHeight = ((data & 0x04) == 0);
+		// 		parentObj.gfxSpriteShow = (data & 0x02) == 0x02;
+		// 		parentObj.bgEnabled = ((data & 0x01) == 0x01);
+		// 		parentObj.memory[0xFF40] = data;
+		// 	}
+		// }
+		// this.memoryHighWriter[0x41] = this.memoryWriter[0xFF41] = function (parentObj, address, data) {
+		// 	parentObj.LYCMatchTriggerSTAT = ((data & 0x40) == 0x40);
+		// 	parentObj.mode2TriggerSTAT = ((data & 0x20) == 0x20);
+		// 	parentObj.mode1TriggerSTAT = ((data & 0x10) == 0x10);
+		// 	parentObj.mode0TriggerSTAT = ((data & 0x08) == 0x08);
+		// 	parentObj.memory[0xFF41] = data & 0x78;
+		// 	if ((!parentObj.usedBootROM || !parentObj.usedGBCBootROM) && parentObj.LCDisOn && parentObj.modeSTAT < 2) {
+		// 		parentObj.interruptsRequested |= 0x2;
+		// 		// parentObj.checkIRQMatching();
+		// 	}
+		// }
+		// this.memoryHighWriter[0x46] = this.memoryWriter[0xFF46] = function (parentObj, address, data) {
+		// 	parentObj.memory[0xFF46] = data;
+		// 	if (data > 0x7F && data < 0xE0) {	//DMG cannot DMA from the ROM banks.
+		// 		data <<= 8;
+		// 		address = 0xFE00;
+		// 		var stat = parentObj.modeSTAT;
+		// 		parentObj.modeSTAT = 0;
+		// 		var newData = 0;
+		// 		do {
+		// 			newData = parentObj.memoryReader[data](parentObj, data++);
+		// 			if (newData != parentObj.memory[address]) {
+		// 				//JIT the graphics render queue:
+		// 				parentObj.modeSTAT = stat;
+		// 				parentObj.graphicsJIT();
+		// 				parentObj.modeSTAT = 0;
+		// 				parentObj.memory[address++] = newData;
+		// 				break;
+		// 			}
+		// 		} while (++address < 0xFEA0);
+		// 		if (address < 0xFEA0) {
+		// 			do {
+		// 				parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
+		// 				parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
+		// 				parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
+		// 				parentObj.memory[address++] = parentObj.memoryReader[data](parentObj, data++);
+		// 			} while (address < 0xFEA0);
+		// 		}
+		// 		parentObj.modeSTAT = stat;
+		// 	}
+		// }
+		// this.memoryHighWriter[0x47] = this.memoryWriter[0xFF47] = function (parentObj, address, data) {
+		// 	if (parentObj.memory[0xFF47] != data) {
+		// 		parentObj.midScanLineJIT();
+		// 		parentObj.updateGBBGPalette(data);
+		// 		parentObj.memory[0xFF47] = data;
+		// 	}
+		// }
+		// this.memoryHighWriter[0x48] = this.memoryWriter[0xFF48] = function (parentObj, address, data) {
+		// 	if (parentObj.memory[0xFF48] != data) {
+		// 		parentObj.midScanLineJIT();
+		// 		parentObj.updateGBOBJPalette(0, data);
+		// 		parentObj.memory[0xFF48] = data;
+		// 	}
+		// }
+		// this.memoryHighWriter[0x49] = this.memoryWriter[0xFF49] = function (parentObj, address, data) {
+		// 	if (parentObj.memory[0xFF49] != data) {
+		// 		parentObj.midScanLineJIT();
+		// 		parentObj.updateGBOBJPalette(4, data);
+		// 		parentObj.memory[0xFF49] = data;
+		// 	}
+		// }
+		// this.memoryHighWriter[0x4D] = this.memoryWriter[0xFF4D] = function (parentObj, address, data) {
+		// 	parentObj.memory[0xFF4D] = data;
+		// }
+		// this.memoryHighWriter[0x4F] = this.memoryWriter[0xFF4F] = this.cartIgnoreWrite;	//Not writable in DMG mode.
+		// this.memoryHighWriter[0x55] = this.memoryWriter[0xFF55] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x68] = this.memoryWriter[0xFF68] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x69] = this.memoryWriter[0xFF69] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x6A] = this.memoryWriter[0xFF6A] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x6B] = this.memoryWriter[0xFF6B] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x6C] = this.memoryWriter[0xFF6C] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x70] = this.memoryWriter[0xFF70] = this.cartIgnoreWrite;
+		// this.memoryHighWriter[0x74] = this.memoryWriter[0xFF74] = this.cartIgnoreWrite;
 	// }
-}
+// }
 // GameBoyCore.prototype.recompileBootIOWriteHandling = function () {
 // 	//Boot I/O Registers:
 // 	if (this.inBootstrap) {
