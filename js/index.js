@@ -78,7 +78,7 @@ gameboy.start();
 
 gameboy.stopEmulator &= 1;
 console.log("Starting the iterator.", 0);
-const notes = Array(10).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
+const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
 window.requestAnimationFrame(function loop() {
 	gameboy.run();
@@ -86,14 +86,15 @@ window.requestAnimationFrame(function loop() {
 	if ((++x)%20===0 || x%20===6) tone(notes.shift())
 });
 
+// sound on
+gameboy.memoryHighWrite(0x26, 0b10000000)
+// l vol (-LLL) / r vol (-RRR)
+gameboy.memoryHighWrite(0x24, 0b00010001)
+// mixer (LLLL RRRR) for (1234)
+gameboy.memoryHighWrite(0x25, 0b11111111)
+
 const tone = (note) => {
 	if (note == null) return;
-	// sound on
-	gameboy.memoryHighWrite(0x26, 0b10000000)
-	// l vol (-LLL) / r vol (-RRR)
-	gameboy.memoryHighWrite(0x24, 0b00010001)
-	// mixer (LLLL RRRR) for (1234)
-	gameboy.memoryHighWrite(0x25, 0b11111111)
 	// duty DD, lenght? LLLLLL
 	gameboy.memoryHighWrite(0x16, 0b10111111)
 	// start volume VVVV, direction A (+/- =1/0), period PPP

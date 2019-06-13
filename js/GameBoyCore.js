@@ -277,30 +277,30 @@ export function GameBoyCore() {
 	//Initialize the white noise cache tables ahead of time:
 	this.intializeWhiteNoise();
 }
-GameBoyCore.prototype.GBBOOTROM = [		//GB BOOT ROM
-	//Add 256 byte boot rom here if you are going to use it.
-];
-GameBoyCore.prototype.GBCBOOTROM = [	//GBC BOOT ROM
-	//Add 2048 byte boot rom here if you are going to use it.
-];
-GameBoyCore.prototype.ffxxDump = [	//Dump of the post-BOOT I/O register state (From gambatte):
-	0x0F, 0x00, 0x7C, 0xFF, 0x00, 0x00, 0x00, 0xF8, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01,
-	0x80, 0xBF, 0xF3, 0xFF, 0xBF, 0xFF, 0x3F, 0x00, 	0xFF, 0xBF, 0x7F, 0xFF, 0x9F, 0xFF, 0xBF, 0xFF,
-	0xFF, 0x00, 0x00, 0xBF, 0x77, 0xF3, 0xF1, 0xFF, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 	0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
-	0x91, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFC, 	0x00, 0x00, 0x00, 0x00, 0xFF, 0x7E, 0xFF, 0xFE,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3E, 0xFF, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 	0xC0, 0xFF, 0xC1, 0x00, 0xFE, 0xFF, 0xFF, 0xFF,
-	0xF8, 0xFF, 0x00, 0x00, 0x00, 0x8F, 0x00, 0x00, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 	0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
-	0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 	0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
-	0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 	0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-	0x45, 0xEC, 0x52, 0xFA, 0x08, 0xB7, 0x07, 0x5D, 	0x01, 0xFD, 0xC0, 0xFF, 0x08, 0xFC, 0x00, 0xE5,
-	0x0B, 0xF8, 0xC2, 0xCE, 0xF4, 0xF9, 0x0F, 0x7F, 	0x45, 0x6D, 0x3D, 0xFE, 0x46, 0x97, 0x33, 0x5E,
-	0x08, 0xEF, 0xF1, 0xFF, 0x86, 0x83, 0x24, 0x74, 	0x12, 0xFC, 0x00, 0x9F, 0xB4, 0xB7, 0x06, 0xD5,
-	0xD0, 0x7A, 0x00, 0x9E, 0x04, 0x5F, 0x41, 0x2F, 	0x1D, 0x77, 0x36, 0x75, 0x81, 0xAA, 0x70, 0x3A,
-	0x98, 0xD1, 0x71, 0x02, 0x4D, 0x01, 0xC1, 0xFF, 	0x0D, 0x00, 0xD3, 0x05, 0xF9, 0x00, 0x0B, 0x00
-];
+// GameBoyCore.prototype.GBBOOTROM = [		//GB BOOT ROM
+// 	//Add 256 byte boot rom here if you are going to use it.
+// ];
+// GameBoyCore.prototype.GBCBOOTROM = [	//GBC BOOT ROM
+// 	//Add 2048 byte boot rom here if you are going to use it.
+// ];
+// GameBoyCore.prototype.ffxxDump = [	//Dump of the post-BOOT I/O register state (From gambatte):
+// 	0x0F, 0x00, 0x7C, 0xFF, 0x00, 0x00, 0x00, 0xF8, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01,
+// 	0x80, 0xBF, 0xF3, 0xFF, 0xBF, 0xFF, 0x3F, 0x00, 	0xFF, 0xBF, 0x7F, 0xFF, 0x9F, 0xFF, 0xBF, 0xFF,
+// 	0xFF, 0x00, 0x00, 0xBF, 0x77, 0xF3, 0xF1, 0xFF, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+// 	0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 	0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
+// 	0x91, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFC, 	0x00, 0x00, 0x00, 0x00, 0xFF, 0x7E, 0xFF, 0xFE,
+// 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3E, 0xFF, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+// 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 	0xC0, 0xFF, 0xC1, 0x00, 0xFE, 0xFF, 0xFF, 0xFF,
+// 	0xF8, 0xFF, 0x00, 0x00, 0x00, 0x8F, 0x00, 0x00, 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+// 	0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 	0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
+// 	0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 	0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
+// 	0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 	0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
+// 	0x45, 0xEC, 0x52, 0xFA, 0x08, 0xB7, 0x07, 0x5D, 	0x01, 0xFD, 0xC0, 0xFF, 0x08, 0xFC, 0x00, 0xE5,
+// 	0x0B, 0xF8, 0xC2, 0xCE, 0xF4, 0xF9, 0x0F, 0x7F, 	0x45, 0x6D, 0x3D, 0xFE, 0x46, 0x97, 0x33, 0x5E,
+// 	0x08, 0xEF, 0xF1, 0xFF, 0x86, 0x83, 0x24, 0x74, 	0x12, 0xFC, 0x00, 0x9F, 0xB4, 0xB7, 0x06, 0xD5,
+// 	0xD0, 0x7A, 0x00, 0x9E, 0x04, 0x5F, 0x41, 0x2F, 	0x1D, 0x77, 0x36, 0x75, 0x81, 0xAA, 0x70, 0x3A,
+// 	0x98, 0xD1, 0x71, 0x02, 0x4D, 0x01, 0xC1, 0xFF, 	0x0D, 0x00, 0xD3, 0x05, 0xF9, 0x00, 0x0B, 0x00
+// ];
 // GameBoyCore.prototype.OPCODE = [
 // 	//NOP
 // 	//#0x00:
@@ -3965,7 +3965,7 @@ GameBoyCore.prototype.start = function () {
 	this.ROMLoad();		//Load the ROM into memory and get cartridge information from it.
 	// this.initLCD();		//Initialize the graphics.
 	this.initSound();	//Sound object initialization.
-	this.run();			//Start the emulation.
+	// this.run();			//Start the emulation.
 }
 GameBoyCore.prototype.initMemory = function () {
 	//Initialize the RAM:
@@ -3974,16 +3974,16 @@ GameBoyCore.prototype.initMemory = function () {
 	// this.BGCHRBank1 = this.getTypedArray(0x800, 0, "uint8");
 	// this.TICKTable = this.toTypedArray(this.TICKTable, "uint8");
 	// this.SecondaryTICKTable = this.toTypedArray(this.SecondaryTICKTable, "uint8");
-	this.channel3PCM = this.getTypedArray(0x20, 0, "int8");
+	this.channel3PCM = getTypedArray(0x20, 0, "int8");
 }
-GameBoyCore.prototype.generateCacheArray = function (tileAmount) {
-	var tileArray = [];
-	var tileNumber = 0;
-	while (tileNumber < tileAmount) {
-		tileArray[tileNumber++] = this.getTypedArray(64, 0, "uint8");
-	}
-	return tileArray;
-}
+// GameBoyCore.prototype.generateCacheArray = function (tileAmount) {
+// 	var tileArray = [];
+// 	var tileNumber = 0;
+// 	while (tileNumber < tileAmount) {
+// 		tileArray[tileNumber++] = this.getTypedArray(64, 0, "uint8");
+// 	}
+// 	return tileArray;
+// }
 GameBoyCore.prototype.initSkipBootstrap = function () {
 	//Fill in the boot ROM set register values
 	//Default values to the GB boot ROM values, then fill in the GBC boot ROM values after ROM loading
@@ -4643,13 +4643,13 @@ GameBoyCore.prototype.initAudioBuffer = function () {
 	this.downsampleInput = 0;
 	this.bufferContainAmount = Math.max(this.baseCPUCyclesPerIteration * settings.audioBufferMinSpanAmount / this.audioResamplerFirstPassFactor, 4096) << 1;
 	this.numSamplesTotal = (this.baseCPUCyclesPerIteration / this.audioResamplerFirstPassFactor) << 1;
-	this.audioBuffer = this.getTypedArray(this.numSamplesTotal, 0, "float32");
+	this.audioBuffer = getTypedArray(this.numSamplesTotal, 0, "float32");
 }
 GameBoyCore.prototype.intializeWhiteNoise = function () {
 	//Noise Sample Tables:
 	var randomFactor = 1;
 	//15-bit LSFR Cache Generation:
-	this.LSFR15Table = this.getTypedArray(0x80000, 0, "int8");
+	this.LSFR15Table = getTypedArray(0x80000, 0, "int8");
 	var LSFR = 0x7FFF;	//Seed value has all its bits set.
 	var LSFRShifted = 0x3FFF;
 	for (var index = 0; index < 0x8000; ++index) {
@@ -4676,7 +4676,7 @@ GameBoyCore.prototype.intializeWhiteNoise = function () {
 		LSFR = LSFRShifted | (((LSFRShifted ^ LSFR) & 0x1) << 14);
 	}
 	//7-bit LSFR Cache Generation:
-	this.LSFR7Table = this.getTypedArray(0x800, 0, "int8");
+	this.LSFR7Table = getTypedArray(0x800, 0, "int8");
 	LSFR = 0x7F;	//Seed value has all its bits set.
 	for (index = 0; index < 0x80; ++index) {
 		//Normalize the last LSFR value for usage:
@@ -7623,79 +7623,79 @@ GameBoyCore.prototype.memoryWriteJumpCompile = function () {
 	//Faster in some browsers, since we are doing less conditionals overall by implementing them in advance.
 	for (var index = 0x0000; index <= 0xFFFF; index++) {
 		if (index < 0x8000) {
-			if (this.cMBC1) {
-				if (index < 0x2000) {
-					this.memoryWriter[index] = this.MBCWriteEnable;
-				}
-				else if (index < 0x4000) {
-					this.memoryWriter[index] = this.MBC1WriteROMBank;
-				}
-				else if (index < 0x6000) {
-					this.memoryWriter[index] = this.MBC1WriteRAMBank;
-				}
-				else {
-					this.memoryWriter[index] = this.MBC1WriteType;
-				}
-			}
-			else if (this.cMBC2) {
-				if (index < 0x1000) {
-					this.memoryWriter[index] = this.MBCWriteEnable;
-				}
-				else if (index >= 0x2100 && index < 0x2200) {
-					this.memoryWriter[index] = this.MBC2WriteROMBank;
-				}
-				else {
-					this.memoryWriter[index] = this.cartIgnoreWrite;
-				}
-			}
-			else if (this.cMBC3) {
-				if (index < 0x2000) {
-					this.memoryWriter[index] = this.MBCWriteEnable;
-				}
-				else if (index < 0x4000) {
-					this.memoryWriter[index] = this.MBC3WriteROMBank;
-				}
-				else if (index < 0x6000) {
-					this.memoryWriter[index] = this.MBC3WriteRAMBank;
-				}
-				else {
-					this.memoryWriter[index] = this.MBC3WriteRTCLatch;
-				}
-			}
-			else if (this.cMBC5 || this.cRUMBLE || this.cMBC7) {
-				if (index < 0x2000) {
-					this.memoryWriter[index] = this.MBCWriteEnable;
-				}
-				else if (index < 0x3000) {
-					this.memoryWriter[index] = this.MBC5WriteROMBankLow;
-				}
-				else if (index < 0x4000) {
-					this.memoryWriter[index] = this.MBC5WriteROMBankHigh;
-				}
-				else if (index < 0x6000) {
-					this.memoryWriter[index] = (this.cRUMBLE) ? this.RUMBLEWriteRAMBank : this.MBC5WriteRAMBank;
-				}
-				else {
-					this.memoryWriter[index] = this.cartIgnoreWrite;
-				}
-			}
-			else if (this.cHuC3) {
-				if (index < 0x2000) {
-					this.memoryWriter[index] = this.MBCWriteEnable;
-				}
-				else if (index < 0x4000) {
-					this.memoryWriter[index] = this.MBC3WriteROMBank;
-				}
-				else if (index < 0x6000) {
-					this.memoryWriter[index] = this.HuC3WriteRAMBank;
-				}
-				else {
-					this.memoryWriter[index] = this.cartIgnoreWrite;
-				}
-			}
-			else {
+			// if (this.cMBC1) {
+			// 	if (index < 0x2000) {
+			// 		this.memoryWriter[index] = this.MBCWriteEnable;
+			// 	}
+			// 	else if (index < 0x4000) {
+			// 		this.memoryWriter[index] = this.MBC1WriteROMBank;
+			// 	}
+			// 	else if (index < 0x6000) {
+			// 		this.memoryWriter[index] = this.MBC1WriteRAMBank;
+			// 	}
+			// 	else {
+			// 		this.memoryWriter[index] = this.MBC1WriteType;
+			// 	}
+			// }
+			// else if (this.cMBC2) {
+			// 	if (index < 0x1000) {
+			// 		this.memoryWriter[index] = this.MBCWriteEnable;
+			// 	}
+			// 	else if (index >= 0x2100 && index < 0x2200) {
+			// 		this.memoryWriter[index] = this.MBC2WriteROMBank;
+			// 	}
+			// 	else {
+			// 		this.memoryWriter[index] = this.cartIgnoreWrite;
+			// 	}
+			// }
+			// else if (this.cMBC3) {
+			// 	if (index < 0x2000) {
+			// 		this.memoryWriter[index] = this.MBCWriteEnable;
+			// 	}
+			// 	else if (index < 0x4000) {
+			// 		this.memoryWriter[index] = this.MBC3WriteROMBank;
+			// 	}
+			// 	else if (index < 0x6000) {
+			// 		this.memoryWriter[index] = this.MBC3WriteRAMBank;
+			// 	}
+			// 	else {
+			// 		this.memoryWriter[index] = this.MBC3WriteRTCLatch;
+			// 	}
+			// }
+			// else if (this.cMBC5 || this.cRUMBLE || this.cMBC7) {
+			// 	if (index < 0x2000) {
+			// 		this.memoryWriter[index] = this.MBCWriteEnable;
+			// 	}
+			// 	else if (index < 0x3000) {
+			// 		this.memoryWriter[index] = this.MBC5WriteROMBankLow;
+			// 	}
+			// 	else if (index < 0x4000) {
+			// 		this.memoryWriter[index] = this.MBC5WriteROMBankHigh;
+			// 	}
+			// 	else if (index < 0x6000) {
+			// 		this.memoryWriter[index] = (this.cRUMBLE) ? this.RUMBLEWriteRAMBank : this.MBC5WriteRAMBank;
+			// 	}
+			// 	else {
+			// 		this.memoryWriter[index] = this.cartIgnoreWrite;
+			// 	}
+			// }
+			// else if (this.cHuC3) {
+			// 	if (index < 0x2000) {
+			// 		this.memoryWriter[index] = this.MBCWriteEnable;
+			// 	}
+			// 	else if (index < 0x4000) {
+			// 		this.memoryWriter[index] = this.MBC3WriteROMBank;
+			// 	}
+			// 	else if (index < 0x6000) {
+			// 		this.memoryWriter[index] = this.HuC3WriteRAMBank;
+			// 	}
+			// 	else {
+			// 		this.memoryWriter[index] = this.cartIgnoreWrite;
+			// 	}
+			// }
+			// else {
 				this.memoryWriter[index] = this.cartIgnoreWrite;
-			}
+			// }
 		}
 		else if (index < 0x9000) {
 			this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCDATAWrite : this.VRAMGBDATAWrite;
@@ -7707,45 +7707,45 @@ GameBoyCore.prototype.memoryWriteJumpCompile = function () {
 			this.memoryWriter[index] = (this.cGBC) ? this.VRAMGBCCHRMAPWrite : this.VRAMGBCHRMAPWrite;
 		}
 		else if (index < 0xC000) {
-			if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
-				if (!this.cMBC3) {
-					this.memoryWriter[index] = this.memoryWriteMBCRAM;
-				}
-				else {
-					//MBC3 RTC + RAM:
-					this.memoryWriter[index] = this.memoryWriteMBC3RAM;
-				}
-			}
-			else {
+			// if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
+			// 	if (!this.cMBC3) {
+			// 		this.memoryWriter[index] = this.memoryWriteMBCRAM;
+			// 	}
+			// 	else {
+			// 		//MBC3 RTC + RAM:
+			// 		this.memoryWriter[index] = this.memoryWriteMBC3RAM;
+			// 	}
+			// }
+			// else {
 				this.memoryWriter[index] = this.cartIgnoreWrite;
-			}
+			// }
 		}
 		else if (index < 0xE000) {
-			if (this.cGBC && index >= 0xD000) {
-				this.memoryWriter[index] = this.memoryWriteGBCRAM;
-			}
-			else {
+			// if (this.cGBC && index >= 0xD000) {
+			// 	this.memoryWriter[index] = this.memoryWriteGBCRAM;
+			// }
+			// else {
 				this.memoryWriter[index] = this.memoryWriteNormal;
-			}
+			// }
 		}
 		else if (index < 0xFE00) {
-			if (this.cGBC && index >= 0xF000) {
-				this.memoryWriter[index] = this.memoryWriteECHOGBCRAM;
-			}
-			else {
+			// if (this.cGBC && index >= 0xF000) {
+			// 	this.memoryWriter[index] = this.memoryWriteECHOGBCRAM;
+			// }
+			// else {
 				this.memoryWriter[index] = this.memoryWriteECHONormal;
-			}
+			// }
 		}
 		else if (index <= 0xFEA0) {
 			this.memoryWriter[index] = this.memoryWriteOAMRAM;
 		}
 		else if (index < 0xFF00) {
-			if (this.cGBC) {											//Only GBC has access to this RAM.
-				this.memoryWriter[index] = this.memoryWriteNormal;
-			}
-			else {
+			// if (this.cGBC) {											//Only GBC has access to this RAM.
+			// 	this.memoryWriter[index] = this.memoryWriteNormal;
+			// }
+			// else {
 				this.memoryWriter[index] = this.cartIgnoreWrite;
-			}
+			// }
 		}
 		else {
 			//Start the I/O initialization by filling in the slots as normal memory:
@@ -9031,7 +9031,7 @@ GameBoyCore.prototype.recompileModelSpecificIOWriteHandling = function () {
 // 		return baseArray;
 // 	}
 // }
-GameBoyCore.prototype.getTypedArray = function (length, defaultValue, numberType) {
+function getTypedArray(length, defaultValue, numberType) {
 	try {
 		switch (numberType) {
 			case "int8":
