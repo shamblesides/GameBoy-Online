@@ -1,14 +1,14 @@
 var cout = console.log.bind(console);
 import { XAudioServer } from './other/XAudioServer.js';
- /*
-  JavaScript GameBoy Color Emulator
-  Copyright (C) 2010-2016 Grant Galitz
+/*
+ JavaScript GameBoy Color Emulator
+ Copyright (C) 2010-2016 Grant Galitz
 
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 const settings = {
 	soundOn: true,
@@ -23,150 +23,150 @@ let audioResamplerFirstPassFactor;
 let downSampleInputDivider;
 let audioBuffer;
 
-	//Some CPU Emulation State Variables:
-	let CPUCyclesTotal = 0;					//Relative CPU clocking to speed set, rounded appropriately.
-	let CPUCyclesTotalBase = 0;				//Relative CPU clocking to speed set base.
-	let CPUCyclesTotalCurrent = 0;				//Relative CPU clocking to speed set, the directly used value.
-	let CPUCyclesTotalRoundoff = 0;			//Clocking per iteration rounding catch.
-	let baseCPUCyclesPerIteration	= 0;		//CPU clocks per iteration at 1x speed.
-	let doubleSpeedShifter = 0;				//GBC double speed clocking shifter.
-	let CPUStopped = false;					//CPU STOP status.
-	let memoryWriter = [];						//Array of functions mapped to write to memory
-	let memoryHighWriter = [];					//Array of functions mapped to write to 0xFFXX memory
-	let memory = [];							//Main Core Memory
-	let cGBC = false;							//GameBoy Color detection.
-	//Sound variables:
-	let audioHandle = null;						//XAudioJS handle
-	let numSamplesTotal = 0;						//Length of the sound buffers.
-	let dutyLookup = [								//Map the duty values given to ones we can work with.
-		[false, false, false, false, false, false, false, true],
-		[true, false, false, false, false, false, false, true],
-		[true, false, false, false, false, true, true, true],
-		[false, true, true, true, true, true, true, false]
-	];
-	let bufferContainAmount = 0;					//Buffer maintenance metric.
-	let LSFR15Table = null;
-	let LSFR7Table = null;
-	let channel1FrequencyTracker = 0x2000;
-	let channel1DutyTracker = 0;
-	let channel1CachedDuty = dutyLookup[2];
-	let channel1totalLength = 0;
-	let channel1envelopeVolume = 0;
-	let channel1envelopeType = false;
-	let channel1envelopeSweeps = 0;
-	let channel1envelopeSweepsLast = 0;
-	let channel1consecutive = true;
-	let channel1frequency = 0;
-	let channel1SweepFault = false;
-	let channel1ShadowFrequency = 0;
-	let channel1timeSweep = 1;
-	let channel1lastTimeSweep = 0;
-	let channel1Swept = false;
-	let channel1frequencySweepDivider = 0;
-	let channel1decreaseSweep = false;
-	let channel2FrequencyTracker = 0x2000;
-	let channel2DutyTracker = 0;
-	let channel2CachedDuty = dutyLookup[2];
-	let channel2totalLength = 0;
-	let channel2envelopeVolume = 0;
-	let channel2envelopeType = false;
-	let channel2envelopeSweeps = 0;
-	let channel2envelopeSweepsLast = 0;
-	let channel2consecutive = true;
-	let channel2frequency = 0;
-	let channel3canPlay = false;
-	let channel3totalLength = 0;
-	let channel3patternType = 4;
-	let channel3frequency = 0;
-	let channel3consecutive = true;
-	let channel4totalLength = 0;
-	let channel4envelopeVolume = 0;
-	let channel4currentVolume = 0;
-	let channel4envelopeType = false;
-	let channel4envelopeSweeps = 0;
-	let channel4envelopeSweepsLast = 0;
-	let channel4consecutive = true;
-	let channel4BitRange = 0x7FFF;
-	let channel4VolumeShifter = 15;
-	let channel1FrequencyCounter = 0x2000;
-	let channel2FrequencyCounter = 0x2000;
-	let channel3Counter = 0x800;
-	let channel3FrequencyPeriod = 0x800;
-	let channel3lastSampleLookup = 0;
-	let channel4lastSampleLookup = 0;
-	let VinLeftChannelMasterVolume = 8;
-	let VinRightChannelMasterVolume = 8;
-	let mixerOutputCache = 0;
-	let sequencerClocks = 0x2000;
-	let sequencePosition = 0;
-	let channel4FrequencyPeriod = 8;
-	let channel4Counter = 8;
-	let cachedChannel3Sample = 0;
-	let cachedChannel4Sample = 0;
-	let channel1Enabled = false;
-	let channel2Enabled = false;
-	let channel3Enabled = false;
-	let channel4Enabled = false;
-	let channel1canPlay = false;
-	let channel2canPlay = false;
-	let channel4canPlay = false;
-	let audioClocksUntilNextEvent = 1;
-	let audioClocksUntilNextEventCounter = 1;
-	channel1OutputLevelCache();
-	channel2OutputLevelCache();
-	channel3OutputLevelCache();
-	channel4OutputLevelCache();
-	let noiseSampleTable = LSFR15Table;
-	let soundMasterEnabled = true;			//As its name implies
-	let channel3PCM = getTypedArray(0x20, 0, "int8");
-	//Channel paths enabled:
-	let leftChannel1 = false;
-	let leftChannel2 = false;
-	let leftChannel3 = false;
-	let leftChannel4 = false;
-	let rightChannel1 = false;
-	let rightChannel2 = false;
-	let rightChannel3 = false;
-	let rightChannel4 = false;
-	//Channel output level caches:
-	let channel1currentSampleLeft = 0;
-	let channel1currentSampleRight = 0;
-	let channel2currentSampleLeft = 0;
-	let channel2currentSampleRight = 0;
-	let channel3currentSampleLeft = 0;
-	let channel3currentSampleRight = 0;
-	let channel4currentSampleLeft = 0;
-	let channel4currentSampleRight = 0;
-	let channel1currentSampleLeftSecondary = 0;
-	let channel1currentSampleRightSecondary = 0;
-	let channel2currentSampleLeftSecondary = 0;
-	let channel2currentSampleRightSecondary = 0;
-	let channel3currentSampleLeftSecondary = 0;
-	let channel3currentSampleRightSecondary = 0;
-	let channel4currentSampleLeftSecondary = 0;
-	let channel4currentSampleRightSecondary = 0;
-	let channel1currentSampleLeftTrimary = 0;
-	let channel1currentSampleRightTrimary = 0;
-	let channel2currentSampleLeftTrimary = 0;
-	let channel2currentSampleRightTrimary = 0;
-	//Pre-multipliers to cache some calculations:
-	let emulatorSpeed = 1;
-	let clocksPerSecond = emulatorSpeed * 0x400000;
-	baseCPUCyclesPerIteration = clocksPerSecond / 1000 * settings.emulatorLoopInterval;
-	CPUCyclesTotalRoundoff = baseCPUCyclesPerIteration % 4;
-	CPUCyclesTotalBase = CPUCyclesTotal = (baseCPUCyclesPerIteration - CPUCyclesTotalRoundoff) | 0;
-	CPUCyclesTotalCurrent = 0;
-	//Audio generation counters:
-	let audioTicks = 0;				//Used to sample the audio system every x CPU instructions.
-	let audioIndex = 0;				//Used to keep alignment on audio generation.
-	let downsampleInput = 0;
-	let audioDestinationPosition = 0;	//Used to keep alignment on audio generation.
-	//Initialize the white noise cache tables ahead of time:
-	intializeWhiteNoise();
-	initSound();	//Sound object initialization.
-	registerWriteJumpCompile();
+//Some CPU Emulation State Variables:
+let CPUCyclesTotal = 0;					//Relative CPU clocking to speed set, rounded appropriately.
+let CPUCyclesTotalBase = 0;				//Relative CPU clocking to speed set base.
+let CPUCyclesTotalCurrent = 0;				//Relative CPU clocking to speed set, the directly used value.
+let CPUCyclesTotalRoundoff = 0;			//Clocking per iteration rounding catch.
+let baseCPUCyclesPerIteration = 0;		//CPU clocks per iteration at 1x speed.
+let doubleSpeedShifter = 0;				//GBC double speed clocking shifter.
+let CPUStopped = false;					//CPU STOP status.
+let memoryWriter = [];						//Array of functions mapped to write to memory
+let memoryHighWriter = [];					//Array of functions mapped to write to 0xFFXX memory
+let memory = [];							//Main Core Memory
+let cGBC = false;							//GameBoy Color detection.
+//Sound variables:
+let audioHandle = null;						//XAudioJS handle
+let numSamplesTotal = 0;						//Length of the sound buffers.
+let dutyLookup = [								//Map the duty values given to ones we can work with.
+	[false, false, false, false, false, false, false, true],
+	[true, false, false, false, false, false, false, true],
+	[true, false, false, false, false, true, true, true],
+	[false, true, true, true, true, true, true, false]
+];
+let bufferContainAmount = 0;					//Buffer maintenance metric.
+let LSFR15Table = null;
+let LSFR7Table = null;
+let channel1FrequencyTracker = 0x2000;
+let channel1DutyTracker = 0;
+let channel1CachedDuty = dutyLookup[2];
+let channel1totalLength = 0;
+let channel1envelopeVolume = 0;
+let channel1envelopeType = false;
+let channel1envelopeSweeps = 0;
+let channel1envelopeSweepsLast = 0;
+let channel1consecutive = true;
+let channel1frequency = 0;
+let channel1SweepFault = false;
+let channel1ShadowFrequency = 0;
+let channel1timeSweep = 1;
+let channel1lastTimeSweep = 0;
+let channel1Swept = false;
+let channel1frequencySweepDivider = 0;
+let channel1decreaseSweep = false;
+let channel2FrequencyTracker = 0x2000;
+let channel2DutyTracker = 0;
+let channel2CachedDuty = dutyLookup[2];
+let channel2totalLength = 0;
+let channel2envelopeVolume = 0;
+let channel2envelopeType = false;
+let channel2envelopeSweeps = 0;
+let channel2envelopeSweepsLast = 0;
+let channel2consecutive = true;
+let channel2frequency = 0;
+let channel3canPlay = false;
+let channel3totalLength = 0;
+let channel3patternType = 4;
+let channel3frequency = 0;
+let channel3consecutive = true;
+let channel4totalLength = 0;
+let channel4envelopeVolume = 0;
+let channel4currentVolume = 0;
+let channel4envelopeType = false;
+let channel4envelopeSweeps = 0;
+let channel4envelopeSweepsLast = 0;
+let channel4consecutive = true;
+let channel4BitRange = 0x7FFF;
+let channel4VolumeShifter = 15;
+let channel1FrequencyCounter = 0x2000;
+let channel2FrequencyCounter = 0x2000;
+let channel3Counter = 0x800;
+let channel3FrequencyPeriod = 0x800;
+let channel3lastSampleLookup = 0;
+let channel4lastSampleLookup = 0;
+let VinLeftChannelMasterVolume = 8;
+let VinRightChannelMasterVolume = 8;
+let mixerOutputCache = 0;
+let sequencerClocks = 0x2000;
+let sequencePosition = 0;
+let channel4FrequencyPeriod = 8;
+let channel4Counter = 8;
+let cachedChannel3Sample = 0;
+let cachedChannel4Sample = 0;
+let channel1Enabled = false;
+let channel2Enabled = false;
+let channel3Enabled = false;
+let channel4Enabled = false;
+let channel1canPlay = false;
+let channel2canPlay = false;
+let channel4canPlay = false;
+let audioClocksUntilNextEvent = 1;
+let audioClocksUntilNextEventCounter = 1;
+channel1OutputLevelCache();
+channel2OutputLevelCache();
+channel3OutputLevelCache();
+channel4OutputLevelCache();
+let noiseSampleTable = LSFR15Table;
+let soundMasterEnabled = true;			//As its name implies
+let channel3PCM = getTypedArray(0x20, 0, "int8");
+//Channel paths enabled:
+let leftChannel1 = false;
+let leftChannel2 = false;
+let leftChannel3 = false;
+let leftChannel4 = false;
+let rightChannel1 = false;
+let rightChannel2 = false;
+let rightChannel3 = false;
+let rightChannel4 = false;
+//Channel output level caches:
+let channel1currentSampleLeft = 0;
+let channel1currentSampleRight = 0;
+let channel2currentSampleLeft = 0;
+let channel2currentSampleRight = 0;
+let channel3currentSampleLeft = 0;
+let channel3currentSampleRight = 0;
+let channel4currentSampleLeft = 0;
+let channel4currentSampleRight = 0;
+let channel1currentSampleLeftSecondary = 0;
+let channel1currentSampleRightSecondary = 0;
+let channel2currentSampleLeftSecondary = 0;
+let channel2currentSampleRightSecondary = 0;
+let channel3currentSampleLeftSecondary = 0;
+let channel3currentSampleRightSecondary = 0;
+let channel4currentSampleLeftSecondary = 0;
+let channel4currentSampleRightSecondary = 0;
+let channel1currentSampleLeftTrimary = 0;
+let channel1currentSampleRightTrimary = 0;
+let channel2currentSampleLeftTrimary = 0;
+let channel2currentSampleRightTrimary = 0;
+//Pre-multipliers to cache some calculations:
+let emulatorSpeed = 1;
+let clocksPerSecond = emulatorSpeed * 0x400000;
+baseCPUCyclesPerIteration = clocksPerSecond / 1000 * settings.emulatorLoopInterval;
+CPUCyclesTotalRoundoff = baseCPUCyclesPerIteration % 4;
+CPUCyclesTotalBase = CPUCyclesTotal = (baseCPUCyclesPerIteration - CPUCyclesTotalRoundoff) | 0;
+CPUCyclesTotalCurrent = 0;
+//Audio generation counters:
+let audioTicks = 0;				//Used to sample the audio system every x CPU instructions.
+let audioIndex = 0;				//Used to keep alignment on audio generation.
+let downsampleInput = 0;
+let audioDestinationPosition = 0;	//Used to keep alignment on audio generation.
+//Initialize the white noise cache tables ahead of time:
+intializeWhiteNoise();
+initSound();	//Sound object initialization.
+registerWriteJumpCompile();
 
-function initSound () {
+function initSound() {
 	audioResamplerFirstPassFactor = Math.max(Math.min(Math.floor(clocksPerSecond / 44100), Math.floor(0xFFFF / 0x1E0)), 1);
 	downSampleInputDivider = 1 / (audioResamplerFirstPassFactor * 0xF0);
 	if (settings.soundOn) {
@@ -185,7 +185,7 @@ function initSound () {
 // 		audioHandle.changeVolume(settings.volumeLevel);
 // 	}
 // }
-function initAudioBuffer () {
+function initAudioBuffer() {
 	audioIndex = 0;
 	audioDestinationPosition = 0;
 	downsampleInput = 0;
@@ -193,7 +193,7 @@ function initAudioBuffer () {
 	numSamplesTotal = (baseCPUCyclesPerIteration / audioResamplerFirstPassFactor) << 1;
 	audioBuffer = getTypedArray(numSamplesTotal, 0, "float32");
 }
-function intializeWhiteNoise () {
+function intializeWhiteNoise() {
 	//Noise Sample Tables:
 	var randomFactor = 1;
 	//15-bit LSFR Cache Generation:
@@ -252,7 +252,7 @@ function intializeWhiteNoise () {
 	//Set the default noise table:
 	noiseSampleTable = LSFR15Table;
 }
-function audioUnderrunAdjustment () {
+function audioUnderrunAdjustment() {
 	if (settings.soundOn) {
 		var underrunAmount = audioHandle.remainingBuffer();
 		if (typeof underrunAmount == "number") {
@@ -263,7 +263,7 @@ function audioUnderrunAdjustment () {
 		}
 	}
 }
-function outputAudio () {
+function outputAudio() {
 	audioBuffer[audioDestinationPosition++] = (downsampleInput >>> 16) * downSampleInputDivider - 1;
 	audioBuffer[audioDestinationPosition++] = (downsampleInput & 0xFFFF) * downSampleInputDivider - 1;
 	if (audioDestinationPosition == numSamplesTotal) {
@@ -273,7 +273,7 @@ function outputAudio () {
 	downsampleInput = 0;
 }
 //Below are the audio generation functions timed against the CPU:
-function generateAudio (numSamples) {
+function generateAudio(numSamples) {
 	var multiplier = 0;
 	if (soundMasterEnabled && !CPUStopped) {
 		for (var clockUpTo = 0; numSamples > 0;) {
@@ -314,7 +314,7 @@ function generateAudio (numSamples) {
 	}
 }
 //Generate audio, but don't actually output it (Used for when sound is disabled by user/browser):
-function generateAudioFake (numSamples) {
+function generateAudioFake(numSamples) {
 	if (soundMasterEnabled && !CPUStopped) {
 		for (var clockUpTo = 0; numSamples > 0;) {
 			clockUpTo = Math.min(audioClocksUntilNextEventCounter, sequencerClocks, numSamples);
@@ -331,7 +331,7 @@ function generateAudioFake (numSamples) {
 		}
 	}
 }
-function audioJIT () {
+function audioJIT() {
 	//Audio Sample Generation Timing:
 	if (settings.soundOn) {
 		generateAudio(audioTicks);
@@ -341,7 +341,7 @@ function audioJIT () {
 	}
 	audioTicks = 0;
 }
-function audioComputeSequencer () {
+function audioComputeSequencer() {
 	switch (sequencePosition++) {
 		case 0:
 			clockAudioLength();
@@ -362,7 +362,7 @@ function audioComputeSequencer () {
 			sequencePosition = 0;
 	}
 }
-function clockAudioLength () {
+function clockAudioLength() {
 	//Channel 1:
 	if (channel1totalLength > 1) {
 		--channel1totalLength;
@@ -400,7 +400,7 @@ function clockAudioLength () {
 		memory[0xFF26] &= 0xF7;	//Channel #4 On Flag Off
 	}
 }
-function clockAudioSweep () {
+function clockAudioSweep() {
 	//Channel 1:
 	if (!channel1SweepFault && channel1timeSweep > 0) {
 		if (--channel1timeSweep == 0) {
@@ -408,7 +408,7 @@ function clockAudioSweep () {
 		}
 	}
 }
-function runAudioSweep () {
+function runAudioSweep() {
 	//Channel 1:
 	if (channel1lastTimeSweep > 0) {
 		if (channel1frequencySweepDivider > 0) {
@@ -446,7 +446,7 @@ function runAudioSweep () {
 		}
 	}
 }
-function channel1AudioSweepPerformDummy () {
+function channel1AudioSweepPerformDummy() {
 	//Channel 1:
 	if (channel1frequencySweepDivider > 0) {
 		if (!channel1decreaseSweep) {
@@ -467,7 +467,7 @@ function channel1AudioSweepPerformDummy () {
 		}
 	}
 }
-function clockAudioEnvelope () {
+function clockAudioEnvelope() {
 	//Channel 1:
 	if (channel1envelopeSweepsLast > -1) {
 		if (channel1envelopeSweeps > 0) {
@@ -547,7 +547,7 @@ function clockAudioEnvelope () {
 		}
 	}
 }
-function computeAudioChannels () {
+function computeAudioChannels() {
 	//Clock down the four audio channels to the next closest audio event:
 	channel1FrequencyCounter -= audioClocksUntilNextEvent;
 	channel2FrequencyCounter -= audioClocksUntilNextEvent;
@@ -582,21 +582,21 @@ function computeAudioChannels () {
 	//Find the number of clocks to next closest counter event:
 	audioClocksUntilNextEventCounter = audioClocksUntilNextEvent = Math.min(channel1FrequencyCounter, channel2FrequencyCounter, channel3Counter, channel4Counter);
 }
-function channel1EnableCheck () {
+function channel1EnableCheck() {
 	channel1Enabled = ((channel1consecutive || channel1totalLength > 0) && !channel1SweepFault && channel1canPlay);
 	channel1OutputLevelSecondaryCache();
 }
-function channel1VolumeEnableCheck () {
+function channel1VolumeEnableCheck() {
 	channel1canPlay = (memory[0xFF12] > 7);
 	channel1EnableCheck();
 	channel1OutputLevelSecondaryCache();
 }
-function channel1OutputLevelCache () {
+function channel1OutputLevelCache() {
 	channel1currentSampleLeft = (leftChannel1) ? channel1envelopeVolume : 0;
 	channel1currentSampleRight = (rightChannel1) ? channel1envelopeVolume : 0;
 	channel1OutputLevelSecondaryCache();
 }
-function channel1OutputLevelSecondaryCache () {
+function channel1OutputLevelSecondaryCache() {
 	if (channel1Enabled) {
 		channel1currentSampleLeftSecondary = channel1currentSampleLeft;
 		channel1currentSampleRightSecondary = channel1currentSampleRight;
@@ -607,7 +607,7 @@ function channel1OutputLevelSecondaryCache () {
 	}
 	channel1OutputLevelTrimaryCache();
 }
-function channel1OutputLevelTrimaryCache () {
+function channel1OutputLevelTrimaryCache() {
 	if (channel1CachedDuty[channel1DutyTracker] && settings.channelOn[0]) {
 		channel1currentSampleLeftTrimary = channel1currentSampleLeftSecondary;
 		channel1currentSampleRightTrimary = channel1currentSampleRightSecondary;
@@ -618,21 +618,21 @@ function channel1OutputLevelTrimaryCache () {
 	}
 	mixerOutputLevelCache();
 }
-function channel2EnableCheck () {
+function channel2EnableCheck() {
 	channel2Enabled = ((channel2consecutive || channel2totalLength > 0) && channel2canPlay);
 	channel2OutputLevelSecondaryCache();
 }
-function channel2VolumeEnableCheck () {
+function channel2VolumeEnableCheck() {
 	channel2canPlay = (memory[0xFF17] > 7);
 	channel2EnableCheck();
 	channel2OutputLevelSecondaryCache();
 }
-function channel2OutputLevelCache () {
+function channel2OutputLevelCache() {
 	channel2currentSampleLeft = (leftChannel2) ? channel2envelopeVolume : 0;
 	channel2currentSampleRight = (rightChannel2) ? channel2envelopeVolume : 0;
 	channel2OutputLevelSecondaryCache();
 }
-function channel2OutputLevelSecondaryCache () {
+function channel2OutputLevelSecondaryCache() {
 	if (channel2Enabled) {
 		channel2currentSampleLeftSecondary = channel2currentSampleLeft;
 		channel2currentSampleRightSecondary = channel2currentSampleRight;
@@ -643,7 +643,7 @@ function channel2OutputLevelSecondaryCache () {
 	}
 	channel2OutputLevelTrimaryCache();
 }
-function channel2OutputLevelTrimaryCache () {
+function channel2OutputLevelTrimaryCache() {
 	// duty
 	if (channel2CachedDuty[channel2DutyTracker] && settings.channelOn[1]) {
 		channel2currentSampleLeftTrimary = channel2currentSampleLeftSecondary;
@@ -655,16 +655,16 @@ function channel2OutputLevelTrimaryCache () {
 	}
 	mixerOutputLevelCache();
 }
-function channel3EnableCheck () {
+function channel3EnableCheck() {
 	channel3Enabled = (/*channel3canPlay && */(channel3consecutive || channel3totalLength > 0));
 	channel3OutputLevelSecondaryCache();
 }
-function channel3OutputLevelCache () {
+function channel3OutputLevelCache() {
 	channel3currentSampleLeft = (leftChannel3) ? cachedChannel3Sample : 0;
 	channel3currentSampleRight = (rightChannel3) ? cachedChannel3Sample : 0;
 	channel3OutputLevelSecondaryCache();
 }
-function channel3OutputLevelSecondaryCache () {
+function channel3OutputLevelSecondaryCache() {
 	if (channel3Enabled && settings.channelOn[2]) {
 		channel3currentSampleLeftSecondary = channel3currentSampleLeft;
 		channel3currentSampleRightSecondary = channel3currentSampleRight;
@@ -675,21 +675,21 @@ function channel3OutputLevelSecondaryCache () {
 	}
 	mixerOutputLevelCache();
 }
-function channel4EnableCheck () {
+function channel4EnableCheck() {
 	channel4Enabled = ((channel4consecutive || channel4totalLength > 0) && channel4canPlay);
 	channel4OutputLevelSecondaryCache();
 }
-function channel4VolumeEnableCheck () {
+function channel4VolumeEnableCheck() {
 	channel4canPlay = (memory[0xFF21] > 7);
 	channel4EnableCheck();
 	channel4OutputLevelSecondaryCache();
 }
-function channel4OutputLevelCache () {
+function channel4OutputLevelCache() {
 	channel4currentSampleLeft = (leftChannel4) ? cachedChannel4Sample : 0;
 	channel4currentSampleRight = (rightChannel4) ? cachedChannel4Sample : 0;
 	channel4OutputLevelSecondaryCache();
 }
-function channel4OutputLevelSecondaryCache () {
+function channel4OutputLevelSecondaryCache() {
 	if (channel4Enabled && settings.channelOn[3]) {
 		channel4currentSampleLeftSecondary = channel4currentSampleLeft;
 		channel4currentSampleRightSecondary = channel4currentSampleRight;
@@ -700,16 +700,16 @@ function channel4OutputLevelSecondaryCache () {
 	}
 	mixerOutputLevelCache();
 }
-function mixerOutputLevelCache () {
+function mixerOutputLevelCache() {
 	// hmm
 	mixerOutputCache = ((((channel1currentSampleLeftTrimary + channel2currentSampleLeftTrimary + channel3currentSampleLeftSecondary + channel4currentSampleLeftSecondary) * VinLeftChannelMasterVolume) << 16) |
-	((channel1currentSampleRightTrimary + channel2currentSampleRightTrimary + channel3currentSampleRightSecondary + channel4currentSampleRightSecondary) * VinRightChannelMasterVolume));
+		((channel1currentSampleRightTrimary + channel2currentSampleRightTrimary + channel3currentSampleRightSecondary + channel4currentSampleRightSecondary) * VinRightChannelMasterVolume));
 }
-function channel3UpdateCache () {
+function channel3UpdateCache() {
 	cachedChannel3Sample = channel3PCM[channel3lastSampleLookup] >> channel3patternType;
 	channel3OutputLevelCache();
 }
-function channel3WriteRAM (address, data) {
+function channel3WriteRAM(address, data) {
 	if (channel3canPlay) {
 		audioJIT();
 		//address = channel3lastSampleLookup >> 1;
@@ -719,32 +719,32 @@ function channel3WriteRAM (address, data) {
 	channel3PCM[address] = data >> 4;
 	channel3PCM[address | 1] = data & 0xF;
 }
-function channel4UpdateCache () {
+function channel4UpdateCache() {
 	cachedChannel4Sample = noiseSampleTable[channel4currentVolume | channel4lastSampleLookup];
 	channel4OutputLevelCache();
 }
-export function run () {
+export function run() {
 	audioUnderrunAdjustment();
 	executeIteration();
 }
-function executeIteration () {
+function executeIteration() {
 	audioTicks += CPUCyclesTotal >> doubleSpeedShifter;
 	audioJIT();	//Make sure we at least output once per iteration.
 	recalculateIterationClockLimit();
 }
-function recalculateIterationClockLimit () {
+function recalculateIterationClockLimit() {
 	var endModulus = CPUCyclesTotalCurrent % 4;
 	CPUCyclesTotal = CPUCyclesTotalBase + CPUCyclesTotalCurrent - endModulus;
 	CPUCyclesTotalCurrent = endModulus;
 }
-function recalculateIterationClockLimitForAudio (audioClocking) {
+function recalculateIterationClockLimitForAudio(audioClocking) {
 	CPUCyclesTotal += Math.min((audioClocking >> 2) << 2, CPUCyclesTotalBase << 1);
 }
-export function memoryHighWrite (address, data) {
+export function memoryHighWrite(address, data) {
 	//Act as a wrapper for writing by compiled jumps to specific memory writing functions.
 	memoryHighWriter[address](this, address, data);
 }
-function registerWriteJumpCompile () {
+function registerWriteJumpCompile() {
 	//NR10:
 	memoryHighWriter[0x10] = memoryWriter[0xFF10] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
