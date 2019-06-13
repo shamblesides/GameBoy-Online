@@ -73,9 +73,6 @@ const A8 = 2011
 const As8 = 2013
 const B8 = 2015
 
-gameboy.start();
-
-console.log("Starting the iterator.", 0);
 const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
 window.requestAnimationFrame(function loop() {
@@ -84,8 +81,6 @@ window.requestAnimationFrame(function loop() {
 	if ((++x)%20===0 || x%20===6) tone(notes.shift())
 });
 
-// sound on
-gameboy.memoryHighWrite(0x26, 0b10000000)
 // l vol (-LLL) / r vol (-RRR)
 gameboy.memoryHighWrite(0x24, 0b00010001)
 // mixer (LLLL RRRR) for (1234)
