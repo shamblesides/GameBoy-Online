@@ -76,7 +76,6 @@ const B8 = 2015
 const gameboy = new GameBoyCore();
 gameboy.start();
 
-gameboy.stopEmulator &= 1;
 console.log("Starting the iterator.", 0);
 const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;

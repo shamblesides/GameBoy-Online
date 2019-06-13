@@ -49,7 +49,7 @@ export function GameBoyCore() {
 	this.usedGBCBootROM = false;				//Did we boot to the GBC boot ROM?
 	this.halt = false;							//Has the CPU been suspended until the next interrupt?
 	this.skipPCIncrement = false;				//Did we trip the DMG Halt bug?
-	this.stopEmulator = 3;						//Has the emulation been paused or a frame has ended?
+	// this.stopEmulator = 3;						//Has the emulation been paused or a frame has ended?
 	this.IME = true;							//Are interrupts enabled?
 	this.IRQLineMatched = 0;					//CPU IRQ assertion.
 	this.interruptsRequested = 0;				//IF Register
@@ -173,7 +173,7 @@ export function GameBoyCore() {
 	this.emulatorSpeed = 1;
 	this.initializeTiming();
 	//Audio generation counters:
-	this.audioTicks = 0;				//Used to sample the audio system every x CPU instructions.
+	// this.audioTicks = 0;				//Used to sample the audio system every x CPU instructions.
 	this.audioIndex = 0;				//Used to keep alignment on audio generation.
 	this.downsampleInput = 0;
 	this.audioDestinationPosition = 0;	//Used to keep alignment on audio generation.
@@ -3984,182 +3984,182 @@ GameBoyCore.prototype.initMemory = function () {
 // 	}
 // 	return tileArray;
 // }
-GameBoyCore.prototype.initSkipBootstrap = function () {
-	//Fill in the boot ROM set register values
-	//Default values to the GB boot ROM values, then fill in the GBC boot ROM values after ROM loading
-	var index = 0xFF;
-	while (index >= 0) {
-		if (index >= 0x30 && index < 0x40) {
-			this.memoryWrite(0xFF00 | index, this.ffxxDump[index]);
-		}
-		else {
-			switch (index) {
-				case 0x00:
-				case 0x01:
-				case 0x02:
-				case 0x05:
-				case 0x07:
-				case 0x0F:
-				case 0xFF:
-					this.memoryWrite(0xFF00 | index, this.ffxxDump[index]);
-					break;
-				default:
-					this.memory[0xFF00 | index] = this.ffxxDump[index];
-			}
-		}
-		--index;
-	}
-	if (this.cGBC) {
-		this.memory[0xFF6C] = 0xFE;
-		this.memory[0xFF74] = 0xFE;
-	}
-	else {
-		this.memory[0xFF48] = 0xFF;
-		this.memory[0xFF49] = 0xFF;
-		this.memory[0xFF6C] = 0xFF;
-		this.memory[0xFF74] = 0xFF;
-	}
-	//Start as an unset device:
-	cout("Starting without the GBC boot ROM.", 0);
-	this.registerA = (this.cGBC) ? 0x11 : 0x1;
-	this.registerB = 0;
-	this.registerC = 0x13;
-	this.registerD = 0;
-	this.registerE = 0xD8;
-	this.FZero = true;
-	this.FSubtract = false;
-	this.FHalfCarry = true;
-	this.FCarry = true;
-	this.registersHL = 0x014D;
-	this.LCDCONTROL = this.LINECONTROL;
-	this.IME = false;
-	this.IRQLineMatched = 0;
-	this.interruptsRequested = 225;
-	this.interruptsEnabled = 0;
-	this.hdmaRunning = false;
-	this.CPUTicks = 12;
-	this.STATTracker = 0;
-	this.modeSTAT = 1;
-	this.spriteCount = 252;
-	this.LYCMatchTriggerSTAT = false;
-	this.mode2TriggerSTAT = false;
-	this.mode1TriggerSTAT = false;
-	this.mode0TriggerSTAT = false;
-	this.LCDisOn = true;
-	this.channel1FrequencyTracker = 0x2000;
-	this.channel1DutyTracker = 0;
-	this.channel1CachedDuty = this.dutyLookup[2];
-	this.channel1totalLength = 0;
-	this.channel1envelopeVolume = 0;
-	this.channel1envelopeType = false;
-	this.channel1envelopeSweeps = 0;
-	this.channel1envelopeSweepsLast = 0;
-	this.channel1consecutive = true;
-	this.channel1frequency = 1985;
-	this.channel1SweepFault = true;
-	this.channel1ShadowFrequency = 1985;
-	this.channel1timeSweep = 1;
-	this.channel1lastTimeSweep = 0;
-	this.channel1Swept = false;
-	this.channel1frequencySweepDivider = 0;
-	this.channel1decreaseSweep = false;
-	this.channel2FrequencyTracker = 0x2000;
-	this.channel2DutyTracker = 0;
-	this.channel2CachedDuty = this.dutyLookup[2];
-	this.channel2totalLength = 0;
-	this.channel2envelopeVolume = 0;
-	this.channel2envelopeType = false;
-	this.channel2envelopeSweeps = 0;
-	this.channel2envelopeSweepsLast = 0;
-	this.channel2consecutive = true;
-	this.channel2frequency = 0;
-	this.channel3canPlay = false;
-	this.channel3totalLength = 0;
-	this.channel3patternType = 4;
-	this.channel3frequency = 0;
-	this.channel3consecutive = true;
-	this.channel3Counter = 0x418;
-	this.channel4FrequencyPeriod = 8;
-	this.channel4totalLength = 0;
-	this.channel4envelopeVolume = 0;
-	this.channel4currentVolume = 0;
-	this.channel4envelopeType = false;
-	this.channel4envelopeSweeps = 0;
-	this.channel4envelopeSweepsLast = 0;
-	this.channel4consecutive = true;
-	this.channel4BitRange = 0x7FFF;
-	this.channel4VolumeShifter = 15;
-	this.channel1FrequencyCounter = 0x200;
-	this.channel2FrequencyCounter = 0x200;
-	this.channel3Counter = 0x800;
-	this.channel3FrequencyPeriod = 0x800;
-	this.channel3lastSampleLookup = 0;
-	this.channel4lastSampleLookup = 0;
-	this.VinLeftChannelMasterVolume = 8;
-	this.VinRightChannelMasterVolume = 8;
-	this.soundMasterEnabled = true;
-	this.leftChannel1 = true;
-	this.leftChannel2 = true;
-	this.leftChannel3 = true;
-	this.leftChannel4 = true;
-	this.rightChannel1 = true;
-	this.rightChannel2 = true;
-	this.rightChannel3 = false;
-	this.rightChannel4 = false;
-	this.DIVTicks = 27044;
-	// this.LCDTicks = 160;
-	this.timerTicks = 0;
-	this.TIMAEnabled = false;
-	this.TACClocker = 1024;
-	this.serialTimer = 0;
-	this.serialShiftTimer = 0;
-	this.serialShiftTimerAllocated = 0;
-	this.IRQEnableDelay = 0;
-	this.actualScanLine = 144;
-	this.lastUnrenderedLine = 0;
-	this.gfxWindowDisplay = false;
-	this.gfxSpriteShow = false;
-	this.gfxSpriteNormalHeight = true;
-	this.bgEnabled = true;
-	this.BGPriorityEnabled = true;
-	this.gfxWindowCHRBankPosition = 0;
-	this.gfxBackgroundCHRBankPosition = 0;
-	this.gfxBackgroundBankOffset = 0;
-	this.windowY = 0;
-	this.windowX = 0;
-	this.drewBlank = 0;
-	this.midScanlineOffset = -1;
-	this.currentX = 0;
-}
-GameBoyCore.prototype.initBootstrap = function () {
-	//Start as an unset device:
-	cout("Starting the selected boot ROM.", 0);
-	this.programCounter = 0;
-	this.stackPointer = 0;
-	this.IME = false;
-	// this.LCDTicks = 0;
-	this.DIVTicks = 0;
-	this.registerA = 0;
-	this.registerB = 0;
-	this.registerC = 0;
-	this.registerD = 0;
-	this.registerE = 0;
-	this.FZero = this.FSubtract = this.FHalfCarry = this.FCarry = false;
-	this.registersHL = 0;
-	this.leftChannel1 = false;
-	this.leftChannel2 = false;
-	this.leftChannel3 = false;
-	this.leftChannel4 = false;
-	this.rightChannel1 = false;
-	this.rightChannel2 = false;
-	this.rightChannel3 = false;
-	this.rightChannel4 = false;
-	this.channel2frequency = this.channel1frequency = 0;
-	this.channel4consecutive = this.channel2consecutive = this.channel1consecutive = false;
-	this.VinLeftChannelMasterVolume = 8;
-	this.VinRightChannelMasterVolume = 8;
-	this.memory[0xFF00] = 0xF;	//Set the joypad state.
-}
+// GameBoyCore.prototype.initSkipBootstrap = function () {
+// 	//Fill in the boot ROM set register values
+// 	//Default values to the GB boot ROM values, then fill in the GBC boot ROM values after ROM loading
+// 	var index = 0xFF;
+// 	while (index >= 0) {
+// 		if (index >= 0x30 && index < 0x40) {
+// 			this.memoryWrite(0xFF00 | index, this.ffxxDump[index]);
+// 		}
+// 		else {
+// 			switch (index) {
+// 				case 0x00:
+// 				case 0x01:
+// 				case 0x02:
+// 				case 0x05:
+// 				case 0x07:
+// 				case 0x0F:
+// 				case 0xFF:
+// 					this.memoryWrite(0xFF00 | index, this.ffxxDump[index]);
+// 					break;
+// 				default:
+// 					this.memory[0xFF00 | index] = this.ffxxDump[index];
+// 			}
+// 		}
+// 		--index;
+// 	}
+// 	if (this.cGBC) {
+// 		this.memory[0xFF6C] = 0xFE;
+// 		this.memory[0xFF74] = 0xFE;
+// 	}
+// 	else {
+// 		this.memory[0xFF48] = 0xFF;
+// 		this.memory[0xFF49] = 0xFF;
+// 		this.memory[0xFF6C] = 0xFF;
+// 		this.memory[0xFF74] = 0xFF;
+// 	}
+// 	//Start as an unset device:
+// 	cout("Starting without the GBC boot ROM.", 0);
+// 	this.registerA = (this.cGBC) ? 0x11 : 0x1;
+// 	this.registerB = 0;
+// 	this.registerC = 0x13;
+// 	this.registerD = 0;
+// 	this.registerE = 0xD8;
+// 	this.FZero = true;
+// 	this.FSubtract = false;
+// 	this.FHalfCarry = true;
+// 	this.FCarry = true;
+// 	this.registersHL = 0x014D;
+// 	this.LCDCONTROL = this.LINECONTROL;
+// 	this.IME = false;
+// 	this.IRQLineMatched = 0;
+// 	this.interruptsRequested = 225;
+// 	this.interruptsEnabled = 0;
+// 	this.hdmaRunning = false;
+// 	this.CPUTicks = 12;
+// 	this.STATTracker = 0;
+// 	this.modeSTAT = 1;
+// 	this.spriteCount = 252;
+// 	this.LYCMatchTriggerSTAT = false;
+// 	this.mode2TriggerSTAT = false;
+// 	this.mode1TriggerSTAT = false;
+// 	this.mode0TriggerSTAT = false;
+// 	this.LCDisOn = true;
+// 	this.channel1FrequencyTracker = 0x2000;
+// 	this.channel1DutyTracker = 0;
+// 	this.channel1CachedDuty = this.dutyLookup[2];
+// 	this.channel1totalLength = 0;
+// 	this.channel1envelopeVolume = 0;
+// 	this.channel1envelopeType = false;
+// 	this.channel1envelopeSweeps = 0;
+// 	this.channel1envelopeSweepsLast = 0;
+// 	this.channel1consecutive = true;
+// 	this.channel1frequency = 1985;
+// 	this.channel1SweepFault = true;
+// 	this.channel1ShadowFrequency = 1985;
+// 	this.channel1timeSweep = 1;
+// 	this.channel1lastTimeSweep = 0;
+// 	this.channel1Swept = false;
+// 	this.channel1frequencySweepDivider = 0;
+// 	this.channel1decreaseSweep = false;
+// 	this.channel2FrequencyTracker = 0x2000;
+// 	this.channel2DutyTracker = 0;
+// 	this.channel2CachedDuty = this.dutyLookup[2];
+// 	this.channel2totalLength = 0;
+// 	this.channel2envelopeVolume = 0;
+// 	this.channel2envelopeType = false;
+// 	this.channel2envelopeSweeps = 0;
+// 	this.channel2envelopeSweepsLast = 0;
+// 	this.channel2consecutive = true;
+// 	this.channel2frequency = 0;
+// 	this.channel3canPlay = false;
+// 	this.channel3totalLength = 0;
+// 	this.channel3patternType = 4;
+// 	this.channel3frequency = 0;
+// 	this.channel3consecutive = true;
+// 	this.channel3Counter = 0x418;
+// 	this.channel4FrequencyPeriod = 8;
+// 	this.channel4totalLength = 0;
+// 	this.channel4envelopeVolume = 0;
+// 	this.channel4currentVolume = 0;
+// 	this.channel4envelopeType = false;
+// 	this.channel4envelopeSweeps = 0;
+// 	this.channel4envelopeSweepsLast = 0;
+// 	this.channel4consecutive = true;
+// 	this.channel4BitRange = 0x7FFF;
+// 	this.channel4VolumeShifter = 15;
+// 	this.channel1FrequencyCounter = 0x200;
+// 	this.channel2FrequencyCounter = 0x200;
+// 	this.channel3Counter = 0x800;
+// 	this.channel3FrequencyPeriod = 0x800;
+// 	this.channel3lastSampleLookup = 0;
+// 	this.channel4lastSampleLookup = 0;
+// 	this.VinLeftChannelMasterVolume = 8;
+// 	this.VinRightChannelMasterVolume = 8;
+// 	this.soundMasterEnabled = true;
+// 	this.leftChannel1 = true;
+// 	this.leftChannel2 = true;
+// 	this.leftChannel3 = true;
+// 	this.leftChannel4 = true;
+// 	this.rightChannel1 = true;
+// 	this.rightChannel2 = true;
+// 	this.rightChannel3 = false;
+// 	this.rightChannel4 = false;
+// 	this.DIVTicks = 27044;
+// 	// this.LCDTicks = 160;
+// 	this.timerTicks = 0;
+// 	this.TIMAEnabled = false;
+// 	this.TACClocker = 1024;
+// 	this.serialTimer = 0;
+// 	this.serialShiftTimer = 0;
+// 	this.serialShiftTimerAllocated = 0;
+// 	this.IRQEnableDelay = 0;
+// 	this.actualScanLine = 144;
+// 	this.lastUnrenderedLine = 0;
+// 	this.gfxWindowDisplay = false;
+// 	this.gfxSpriteShow = false;
+// 	this.gfxSpriteNormalHeight = true;
+// 	this.bgEnabled = true;
+// 	this.BGPriorityEnabled = true;
+// 	this.gfxWindowCHRBankPosition = 0;
+// 	this.gfxBackgroundCHRBankPosition = 0;
+// 	this.gfxBackgroundBankOffset = 0;
+// 	this.windowY = 0;
+// 	this.windowX = 0;
+// 	this.drewBlank = 0;
+// 	this.midScanlineOffset = -1;
+// 	this.currentX = 0;
+// }
+// GameBoyCore.prototype.initBootstrap = function () {
+// 	//Start as an unset device:
+// 	cout("Starting the selected boot ROM.", 0);
+// 	this.programCounter = 0;
+// 	this.stackPointer = 0;
+// 	this.IME = false;
+// 	// this.LCDTicks = 0;
+// 	this.DIVTicks = 0;
+// 	this.registerA = 0;
+// 	this.registerB = 0;
+// 	this.registerC = 0;
+// 	this.registerD = 0;
+// 	this.registerE = 0;
+// 	this.FZero = this.FSubtract = this.FHalfCarry = this.FCarry = false;
+// 	this.registersHL = 0;
+// 	this.leftChannel1 = false;
+// 	this.leftChannel2 = false;
+// 	this.leftChannel3 = false;
+// 	this.leftChannel4 = false;
+// 	this.rightChannel1 = false;
+// 	this.rightChannel2 = false;
+// 	this.rightChannel3 = false;
+// 	this.rightChannel4 = false;
+// 	this.channel2frequency = this.channel1frequency = 0;
+// 	this.channel4consecutive = this.channel2consecutive = this.channel1consecutive = false;
+// 	this.VinLeftChannelMasterVolume = 8;
+// 	this.VinRightChannelMasterVolume = 8;
+// 	this.memory[0xFF00] = 0xF;	//Set the joypad state.
+// }
 GameBoyCore.prototype.ROMLoad = function () {
 	// //Load the first two ROM banks (0x0000 - 0x7FFF) into regular gameboy memory:
 	// this.ROM = [];
@@ -4453,7 +4453,7 @@ GameBoyCore.prototype.interpretCartridge = function () {
 	// 	//New Style License Header
 	// 	cout("New style license code: " + cNewLicense, 0);
 	// }
-	this.ROMImage = "";	//Memory consumption reduction.
+	// this.ROMImage = "";	//Memory consumption reduction.
 }
 // GameBoyCore.prototype.disableBootROM = function () {
 // 	//Remove any traces of the boot ROM from ROM memory.
@@ -4527,7 +4527,7 @@ GameBoyCore.prototype.setupRAM = function () {
 	// 	this.VRAM = this.getTypedArray(0x2000, 0, "uint8");
 	// 	this.GBCMemory = this.getTypedArray(0x7000, 0, "uint8");
 	// }
-	this.memoryReadJumpCompile();
+	// this.memoryReadJumpCompile();
 	this.memoryWriteJumpCompile();
 }
 // GameBoyCore.prototype.MBCRAMUtilized = function () {
@@ -4632,11 +4632,11 @@ GameBoyCore.prototype.initSound = function () {
 		this.audioHandle.changeVolume(0);
 	}
 }
-GameBoyCore.prototype.changeVolume = function () {
-	if (settings.soundOn && this.audioHandle) {
-		this.audioHandle.changeVolume(settings.volumeLevel);
-	}
-}
+// GameBoyCore.prototype.changeVolume = function () {
+// 	if (settings.soundOn && this.audioHandle) {
+// 		this.audioHandle.changeVolume(settings.volumeLevel);
+// 	}
+// }
 GameBoyCore.prototype.initAudioBuffer = function () {
 	this.audioIndex = 0;
 	this.audioDestinationPosition = 0;
@@ -5255,14 +5255,14 @@ GameBoyCore.prototype.run = function () {
 	// if ((this.stopEmulator & 2) == 0) {
 		// if ((this.stopEmulator & 1) == 1) {
 			// if (!this.CPUStopped) {
-				this.stopEmulator = 0;
+				// this.stopEmulator = 0;
 				this.audioUnderrunAdjustment();
 				// this.clockUpdate();			//RTC clocking.
 				// if (!this.halt) {
 				// 	this.executeIteration();
 				// }
 				// else {						//Finish the HALT rundown execution.
-					this.CPUTicks = 0;
+					// this.CPUTicks = 0;
 					// this.calculateHALTPeriod();
 					// console.log(this.halt);
 					// if (this.halt) {
@@ -5452,24 +5452,24 @@ GameBoyCore.prototype.recalculateIterationClockLimitForAudio = function (audioCl
 // 	}
 // 	return (456 * ((this.actualScanLine == 153 && this.memory[0xFF44] == 0) ? 154 : (153 - this.actualScanLine))) + 8;
 // }
-GameBoyCore.prototype.clocksUntilMode0 = function () {
-	switch (this.modeSTAT) {
-		case 0:
-			if (this.actualScanLine == 143) {
-				this.updateSpriteCount(0);
-				return this.spriteCount + 5016;
-			}
-			this.updateSpriteCount(this.actualScanLine + 1);
-			return this.spriteCount + 456;
-		case 2:
-		case 3:
-			this.updateSpriteCount(this.actualScanLine);
-			return this.spriteCount;
-		case 1:
-			this.updateSpriteCount(0);
-			return this.spriteCount + (456 * (154 - this.actualScanLine));
-	}
-}
+// GameBoyCore.prototype.clocksUntilMode0 = function () {
+// 	switch (this.modeSTAT) {
+// 		case 0:
+// 			if (this.actualScanLine == 143) {
+// 				this.updateSpriteCount(0);
+// 				return this.spriteCount + 5016;
+// 			}
+// 			this.updateSpriteCount(this.actualScanLine + 1);
+// 			return this.spriteCount + 456;
+// 		case 2:
+// 		case 3:
+// 			this.updateSpriteCount(this.actualScanLine);
+// 			return this.spriteCount;
+// 		case 1:
+// 			this.updateSpriteCount(0);
+// 			return this.spriteCount + (456 * (154 - this.actualScanLine));
+// 	}
+// }
 // GameBoyCore.prototype.updateSpriteCount = function (line) {
 // 	this.spriteCount = 252;
 // 	if (this.cGBC && this.gfxSpriteShow) {										//Is the window enabled and are we in CGB mode?
@@ -5496,27 +5496,27 @@ GameBoyCore.prototype.clocksUntilMode0 = function () {
 // 		this.memory[0xFF41] &= 0x7B;
 // 	}
 // }
-GameBoyCore.prototype.updateCore = function () {
+// GameBoyCore.prototype.updateCore = function () {
 	//Update the clocking for the LCD emulation:
 	// this.LCDTicks += this.CPUTicks >> this.doubleSpeedShifter;	//LCD Timing
 	// this.LCDCONTROL[this.actualScanLine](this);					//Scan Line and STAT Mode Control
 	//Single-speed relative timing for A/V emulation:
-	var timedTicks = this.CPUTicks >> this.doubleSpeedShifter;	//CPU clocking can be updated from the LCD handling.
-	this.audioTicks += timedTicks;								//Audio Timing
+	// var timedTicks = this.CPUTicks >> this.doubleSpeedShifter;	//CPU clocking can be updated from the LCD handling.
+	// this.audioTicks += timedTicks;								//Audio Timing
 	// this.emulatorTicks += timedTicks;							//Emulator Timing
 	//CPU Timers:
-	this.DIVTicks += this.CPUTicks;								//DIV Timing
-	if (this.TIMAEnabled) {										//TIMA Timing
-		this.timerTicks += this.CPUTicks;
-		while (this.timerTicks >= this.TACClocker) {
-			this.timerTicks -= this.TACClocker;
-			if (++this.memory[0xFF05] == 0x100) {
-				this.memory[0xFF05] = this.memory[0xFF06];
-				this.interruptsRequested |= 0x4;
-				// this.checkIRQMatching();
-			}
-		}
-	}
+	// this.DIVTicks += this.CPUTicks;								//DIV Timing
+	// if (this.TIMAEnabled) {										//TIMA Timing
+	// 	this.timerTicks += this.CPUTicks;
+	// 	while (this.timerTicks >= this.TACClocker) {
+	// 		this.timerTicks -= this.TACClocker;
+	// 		if (++this.memory[0xFF05] == 0x100) {
+	// 			this.memory[0xFF05] = this.memory[0xFF06];
+	// 			this.interruptsRequested |= 0x4;
+	// 			// this.checkIRQMatching();
+	// 		}
+	// 	}
+	// }
 	// if (this.serialTimer > 0) {										//Serial Timing
 	// 	//IRQ Counter:
 	// 	this.serialTimer -= this.CPUTicks;
@@ -5531,15 +5531,15 @@ GameBoyCore.prototype.updateCore = function () {
 	// 		this.memory[0xFF01] = ((this.memory[0xFF01] << 1) & 0xFE) | 0x01;	//We could shift in actual link data here if we were to implement such!!!
 	// 	}
 	// }
-}
-GameBoyCore.prototype.updateCoreFull = function () {
-	//Update the state machine:
-	this.updateCore();
-	//End of iteration routine:
-	// if (this.emulatorTicks >= this.CPUCyclesTotal) {
-	// 	this.iterationEndRoutine();
-	// }
-}
+// }
+// GameBoyCore.prototype.updateCoreFull = function () {
+// 	//Update the state machine:
+// 	// this.updateCore();
+// 	//End of iteration routine:
+// 	// if (this.emulatorTicks >= this.CPUCyclesTotal) {
+// 	// 	this.iterationEndRoutine();
+// 	// }
+// }
 // GameBoyCore.prototype.initializeLCDController = function () {
 // 	//Display on hanlding:
 // 	var line = 0;
@@ -7024,470 +7024,470 @@ GameBoyCore.prototype.updateCoreFull = function () {
 // 	}
 // }
 //Memory Reading:
-GameBoyCore.prototype.memoryRead = function (address) {
-	//Act as a wrapper for reading the returns from the compiled jumps to memory.
-	return this.memoryReader[address](this, address);	//This seems to be faster than the usual if/else.
-}
-GameBoyCore.prototype.memoryHighRead = function (address) {
-	//Act as a wrapper for reading the returns from the compiled jumps to memory.
-	return this.memoryHighReader[address](this, address);	//This seems to be faster than the usual if/else.
-}
-GameBoyCore.prototype.memoryReadJumpCompile = function () {
-	//Faster in some browsers, since we are doing less conditionals overall by implementing them in advance.
-	for (var index = 0x0000; index <= 0xFFFF; index++) {
-		if (index < 0x4000) {
-			this.memoryReader[index] = this.memoryReadNormal;
-		}
-		else if (index < 0x8000) {
-			this.memoryReader[index] = this.memoryReadROM;
-		}
-		else if (index < 0x9800) {
-			this.memoryReader[index] = (this.cGBC) ? this.VRAMDATAReadCGBCPU : this.VRAMDATAReadDMGCPU;
-		}
-		else if (index < 0xA000) {
-			this.memoryReader[index] = (this.cGBC) ? this.VRAMCHRReadCGBCPU : this.VRAMCHRReadDMGCPU;
-		}
-		else if (index >= 0xA000 && index < 0xC000) {
-			if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
-				if (this.cMBC7) {
-					this.memoryReader[index] = this.memoryReadMBC7;
-				}
-				else if (!this.cMBC3) {
-					this.memoryReader[index] = this.memoryReadMBC;
-				}
-				else {
-					//MBC3 RTC + RAM:
-					this.memoryReader[index] = this.memoryReadMBC3;
-				}
-			}
-			else {
-				this.memoryReader[index] = this.memoryReadBAD;
-			}
-		}
-		else if (index >= 0xC000 && index < 0xE000) {
-			if (!this.cGBC || index < 0xD000) {
-				this.memoryReader[index] = this.memoryReadNormal;
-			}
-			else {
-				this.memoryReader[index] = this.memoryReadGBCMemory;
-			}
-		}
-		else if (index >= 0xE000 && index < 0xFE00) {
-			if (!this.cGBC || index < 0xF000) {
-				this.memoryReader[index] = this.memoryReadECHONormal;
-			}
-			else {
-				this.memoryReader[index] = this.memoryReadECHOGBCMemory;
-			}
-		}
-		else if (index < 0xFEA0) {
-			this.memoryReader[index] = this.memoryReadOAM;
-		}
-		else if (this.cGBC && index >= 0xFEA0 && index < 0xFF00) {
-			this.memoryReader[index] = this.memoryReadNormal;
-		}
-		else if (index >= 0xFF00) {
-			switch (index) {
-				case 0xFF00:
-					//JOYPAD:
-					this.memoryHighReader[0] = this.memoryReader[0xFF00] = function (parentObj, address) {
-						return 0xC0 | parentObj.memory[0xFF00];	//Top nibble returns as set.
-					}
-					break;
-				case 0xFF01:
-					//SB
-					this.memoryHighReader[0x01] = this.memoryReader[0xFF01] = function (parentObj, address) {
-						return (parentObj.memory[0xFF02] < 0x80) ? parentObj.memory[0xFF01] : 0xFF;
-					}
-					break;
-				case 0xFF02:
-					//SC
-					if (this.cGBC) {
-						this.memoryHighReader[0x02] = this.memoryReader[0xFF02] = function (parentObj, address) {
-							return ((parentObj.serialTimer <= 0) ? 0x7C : 0xFC) | parentObj.memory[0xFF02];
-						}
-					}
-					else {
-						this.memoryHighReader[0x02] = this.memoryReader[0xFF02] = function (parentObj, address) {
-							return ((parentObj.serialTimer <= 0) ? 0x7E : 0xFE) | parentObj.memory[0xFF02];
-						}
-					}
-					break;
-				case 0xFF03:
-					this.memoryHighReader[0x03] = this.memoryReader[0xFF03] = this.memoryReadBAD;
-					break;
-				case 0xFF04:
-					//DIV
-					this.memoryHighReader[0x04] = this.memoryReader[0xFF04] = function (parentObj, address) {
-						parentObj.memory[0xFF04] = (parentObj.memory[0xFF04] + (parentObj.DIVTicks >> 8)) & 0xFF;
-						parentObj.DIVTicks &= 0xFF;
-						return parentObj.memory[0xFF04];
+// GameBoyCore.prototype.memoryRead = function (address) {
+// 	//Act as a wrapper for reading the returns from the compiled jumps to memory.
+// 	return this.memoryReader[address](this, address);	//This seems to be faster than the usual if/else.
+// }
+// GameBoyCore.prototype.memoryHighRead = function (address) {
+// 	//Act as a wrapper for reading the returns from the compiled jumps to memory.
+// 	return this.memoryHighReader[address](this, address);	//This seems to be faster than the usual if/else.
+// }
+// GameBoyCore.prototype.memoryReadJumpCompile = function () {
+// 	//Faster in some browsers, since we are doing less conditionals overall by implementing them in advance.
+// 	for (var index = 0x0000; index <= 0xFFFF; index++) {
+// 		if (index < 0x4000) {
+// 			this.memoryReader[index] = this.memoryReadNormal;
+// 		}
+// 		else if (index < 0x8000) {
+// 			this.memoryReader[index] = this.memoryReadROM;
+// 		}
+// 		else if (index < 0x9800) {
+// 			this.memoryReader[index] = (this.cGBC) ? this.VRAMDATAReadCGBCPU : this.VRAMDATAReadDMGCPU;
+// 		}
+// 		else if (index < 0xA000) {
+// 			this.memoryReader[index] = (this.cGBC) ? this.VRAMCHRReadCGBCPU : this.VRAMCHRReadDMGCPU;
+// 		}
+// 		else if (index >= 0xA000 && index < 0xC000) {
+// 			if ((this.numRAMBanks == 1 / 16 && index < 0xA200) || this.numRAMBanks >= 1) {
+// 				if (this.cMBC7) {
+// 					this.memoryReader[index] = this.memoryReadMBC7;
+// 				}
+// 				else if (!this.cMBC3) {
+// 					this.memoryReader[index] = this.memoryReadMBC;
+// 				}
+// 				else {
+// 					//MBC3 RTC + RAM:
+// 					this.memoryReader[index] = this.memoryReadMBC3;
+// 				}
+// 			}
+// 			else {
+// 				this.memoryReader[index] = this.memoryReadBAD;
+// 			}
+// 		}
+// 		else if (index >= 0xC000 && index < 0xE000) {
+// 			if (!this.cGBC || index < 0xD000) {
+// 				this.memoryReader[index] = this.memoryReadNormal;
+// 			}
+// 			else {
+// 				this.memoryReader[index] = this.memoryReadGBCMemory;
+// 			}
+// 		}
+// 		else if (index >= 0xE000 && index < 0xFE00) {
+// 			if (!this.cGBC || index < 0xF000) {
+// 				this.memoryReader[index] = this.memoryReadECHONormal;
+// 			}
+// 			else {
+// 				this.memoryReader[index] = this.memoryReadECHOGBCMemory;
+// 			}
+// 		}
+// 		else if (index < 0xFEA0) {
+// 			this.memoryReader[index] = this.memoryReadOAM;
+// 		}
+// 		else if (this.cGBC && index >= 0xFEA0 && index < 0xFF00) {
+// 			this.memoryReader[index] = this.memoryReadNormal;
+// 		}
+// 		else if (index >= 0xFF00) {
+// 			switch (index) {
+// 				case 0xFF00:
+// 					//JOYPAD:
+// 					this.memoryHighReader[0] = this.memoryReader[0xFF00] = function (parentObj, address) {
+// 						return 0xC0 | parentObj.memory[0xFF00];	//Top nibble returns as set.
+// 					}
+// 					break;
+// 				case 0xFF01:
+// 					//SB
+// 					this.memoryHighReader[0x01] = this.memoryReader[0xFF01] = function (parentObj, address) {
+// 						return (parentObj.memory[0xFF02] < 0x80) ? parentObj.memory[0xFF01] : 0xFF;
+// 					}
+// 					break;
+// 				case 0xFF02:
+// 					//SC
+// 					if (this.cGBC) {
+// 						this.memoryHighReader[0x02] = this.memoryReader[0xFF02] = function (parentObj, address) {
+// 							return ((parentObj.serialTimer <= 0) ? 0x7C : 0xFC) | parentObj.memory[0xFF02];
+// 						}
+// 					}
+// 					else {
+// 						this.memoryHighReader[0x02] = this.memoryReader[0xFF02] = function (parentObj, address) {
+// 							return ((parentObj.serialTimer <= 0) ? 0x7E : 0xFE) | parentObj.memory[0xFF02];
+// 						}
+// 					}
+// 					break;
+// 				case 0xFF03:
+// 					this.memoryHighReader[0x03] = this.memoryReader[0xFF03] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF04:
+// 					//DIV
+// 					this.memoryHighReader[0x04] = this.memoryReader[0xFF04] = function (parentObj, address) {
+// 						parentObj.memory[0xFF04] = (parentObj.memory[0xFF04] + (parentObj.DIVTicks >> 8)) & 0xFF;
+// 						parentObj.DIVTicks &= 0xFF;
+// 						return parentObj.memory[0xFF04];
 
-					}
-					break;
-				case 0xFF05:
-				case 0xFF06:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF07:
-					this.memoryHighReader[0x07] = this.memoryReader[0xFF07] = function (parentObj, address) {
-						return 0xF8 | parentObj.memory[0xFF07];
-					}
-					break;
-				case 0xFF08:
-				case 0xFF09:
-				case 0xFF0A:
-				case 0xFF0B:
-				case 0xFF0C:
-				case 0xFF0D:
-				case 0xFF0E:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFF0F:
-					//IF
-					this.memoryHighReader[0x0F] = this.memoryReader[0xFF0F] = function (parentObj, address) {
-						return 0xE0 | parentObj.interruptsRequested;
-					}
-					break;
-				case 0xFF10:
-					this.memoryHighReader[0x10] = this.memoryReader[0xFF10] = function (parentObj, address) {
-						return 0x80 | parentObj.memory[0xFF10];
-					}
-					break;
-				case 0xFF11:
-					this.memoryHighReader[0x11] = this.memoryReader[0xFF11] = function (parentObj, address) {
-						return 0x3F | parentObj.memory[0xFF11];
-					}
-					break;
-				case 0xFF12:
-					this.memoryHighReader[0x12] = this.memoryHighReadNormal;
-					this.memoryReader[0xFF12] = this.memoryReadNormal;
-					break;
-				case 0xFF13:
-					this.memoryHighReader[0x13] = this.memoryReader[0xFF13] = this.memoryReadBAD;
-					break;
-				case 0xFF14:
-					this.memoryHighReader[0x14] = this.memoryReader[0xFF14] = function (parentObj, address) {
-						return 0xBF | parentObj.memory[0xFF14];
-					}
-					break;
-				case 0xFF15:
-					this.memoryHighReader[0x15] = this.memoryReadBAD;
-					this.memoryReader[0xFF15] = this.memoryReadBAD;
-					break;
-				case 0xFF16:
-					this.memoryHighReader[0x16] = this.memoryReader[0xFF16] = function (parentObj, address) {
-						return 0x3F | parentObj.memory[0xFF16];
-					}
-					break;
-				case 0xFF17:
-					this.memoryHighReader[0x17] = this.memoryHighReadNormal;
-					this.memoryReader[0xFF17] = this.memoryReadNormal;
-					break;
-				case 0xFF18:
-					this.memoryHighReader[0x18] = this.memoryReader[0xFF18] = this.memoryReadBAD;
-					break;
-				case 0xFF19:
-					this.memoryHighReader[0x19] = this.memoryReader[0xFF19] = function (parentObj, address) {
-						return 0xBF | parentObj.memory[0xFF19];
-					}
-					break;
-				case 0xFF1A:
-					this.memoryHighReader[0x1A] = this.memoryReader[0xFF1A] = function (parentObj, address) {
-						return 0x7F | parentObj.memory[0xFF1A];
-					}
-					break;
-				case 0xFF1B:
-					this.memoryHighReader[0x1B] = this.memoryReader[0xFF1B] = this.memoryReadBAD;
-					break;
-				case 0xFF1C:
-					this.memoryHighReader[0x1C] = this.memoryReader[0xFF1C] = function (parentObj, address) {
-						return 0x9F | parentObj.memory[0xFF1C];
-					}
-					break;
-				case 0xFF1D:
-					this.memoryHighReader[0x1D] = this.memoryReader[0xFF1D] = this.memoryReadBAD;
-					break;
-				case 0xFF1E:
-					this.memoryHighReader[0x1E] = this.memoryReader[0xFF1E] = function (parentObj, address) {
-						return 0xBF | parentObj.memory[0xFF1E];
-					}
-					break;
-				case 0xFF1F:
-				case 0xFF20:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFF21:
-				case 0xFF22:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF23:
-					this.memoryHighReader[0x23] = this.memoryReader[0xFF23] = function (parentObj, address) {
-						return 0xBF | parentObj.memory[0xFF23];
-					}
-					break;
-				case 0xFF24:
-				case 0xFF25:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF26:
-					this.memoryHighReader[0x26] = this.memoryReader[0xFF26] = function (parentObj, address) {
-						parentObj.audioJIT();
-						return 0x70 | parentObj.memory[0xFF26];
-					}
-					break;
-				case 0xFF27:
-				case 0xFF28:
-				case 0xFF29:
-				case 0xFF2A:
-				case 0xFF2B:
-				case 0xFF2C:
-				case 0xFF2D:
-				case 0xFF2E:
-				case 0xFF2F:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFF30:
-				case 0xFF31:
-				case 0xFF32:
-				case 0xFF33:
-				case 0xFF34:
-				case 0xFF35:
-				case 0xFF36:
-				case 0xFF37:
-				case 0xFF38:
-				case 0xFF39:
-				case 0xFF3A:
-				case 0xFF3B:
-				case 0xFF3C:
-				case 0xFF3D:
-				case 0xFF3E:
-				case 0xFF3F:
-					this.memoryReader[index] = function (parentObj, address) {
-						return (parentObj.channel3canPlay) ? parentObj.memory[0xFF00 | (parentObj.channel3lastSampleLookup >> 1)] : parentObj.memory[address];
-					}
-					this.memoryHighReader[index & 0xFF] = function (parentObj, address) {
-						return (parentObj.channel3canPlay) ? parentObj.memory[0xFF00 | (parentObj.channel3lastSampleLookup >> 1)] : parentObj.memory[0xFF00 | address];
-					}
-					break;
-				case 0xFF40:
-					this.memoryHighReader[0x40] = this.memoryHighReadNormal;
-					this.memoryReader[0xFF40] = this.memoryReadNormal;
-					break;
-				case 0xFF41:
-					this.memoryHighReader[0x41] = this.memoryReader[0xFF41] = function (parentObj, address) {
-						return 0x80 | parentObj.memory[0xFF41] | parentObj.modeSTAT;
-					}
-					break;
-				case 0xFF42:
-					this.memoryHighReader[0x42] = this.memoryReader[0xFF42] = function (parentObj, address) {
-						return parentObj.backgroundY;
-					}
-					break;
-				case 0xFF43:
-					this.memoryHighReader[0x43] = this.memoryReader[0xFF43] = function (parentObj, address) {
-						return parentObj.backgroundX;
-					}
-					break;
-				case 0xFF44:
-					this.memoryHighReader[0x44] = this.memoryReader[0xFF44] = function (parentObj, address) {
-						return ((parentObj.LCDisOn) ? parentObj.memory[0xFF44] : 0);
-					}
-					break;
-				case 0xFF45:
-				case 0xFF46:
-				case 0xFF47:
-				case 0xFF48:
-				case 0xFF49:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF4A:
-					//WY
-					this.memoryHighReader[0x4A] = this.memoryReader[0xFF4A] = function (parentObj, address) {
-						return parentObj.windowY;
-					}
-					break;
-				case 0xFF4B:
-					this.memoryHighReader[0x4B] = this.memoryHighReadNormal;
-					this.memoryReader[0xFF4B] = this.memoryReadNormal;
-					break;
-				case 0xFF4C:
-					this.memoryHighReader[0x4C] = this.memoryReader[0xFF4C] = this.memoryReadBAD;
-					break;
-				case 0xFF4D:
-					this.memoryHighReader[0x4D] = this.memoryHighReadNormal;
-					this.memoryReader[0xFF4D] = this.memoryReadNormal;
-					break;
-				case 0xFF4E:
-					this.memoryHighReader[0x4E] = this.memoryReader[0xFF4E] = this.memoryReadBAD;
-					break;
-				case 0xFF4F:
-					this.memoryHighReader[0x4F] = this.memoryReader[0xFF4F] = function (parentObj, address) {
-						return parentObj.currVRAMBank;
-					}
-					break;
-				case 0xFF50:
-				case 0xFF51:
-				case 0xFF52:
-				case 0xFF53:
-				case 0xFF54:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF55:
-					if (this.cGBC) {
-						this.memoryHighReader[0x55] = this.memoryReader[0xFF55] = function (parentObj, address) {
-							if (!parentObj.LCDisOn && parentObj.hdmaRunning) {	//Undocumented behavior alert: HDMA becomes GDMA when LCD is off (Worms Armageddon Fix).
-								//DMA
-								parentObj.DMAWrite((parentObj.memory[0xFF55] & 0x7F) + 1);
-								parentObj.memory[0xFF55] = 0xFF;	//Transfer completed.
-								parentObj.hdmaRunning = false;
-							}
-							return parentObj.memory[0xFF55];
-						}
-					}
-					else {
-						this.memoryReader[0xFF55] = this.memoryReadNormal;
-						this.memoryHighReader[0x55] = this.memoryHighReadNormal;
-					}
-					break;
-				case 0xFF56:
-					if (this.cGBC) {
-						this.memoryHighReader[0x56] = this.memoryReader[0xFF56] = function (parentObj, address) {
-							//Return IR "not connected" status:
-							return 0x3C | ((parentObj.memory[0xFF56] >= 0xC0) ? (0x2 | (parentObj.memory[0xFF56] & 0xC1)) : (parentObj.memory[0xFF56] & 0xC3));
-						}
-					}
-					else {
-						this.memoryReader[0xFF56] = this.memoryReadNormal;
-						this.memoryHighReader[0x56] = this.memoryHighReadNormal;
-					}
-					break;
-				case 0xFF57:
-				case 0xFF58:
-				case 0xFF59:
-				case 0xFF5A:
-				case 0xFF5B:
-				case 0xFF5C:
-				case 0xFF5D:
-				case 0xFF5E:
-				case 0xFF5F:
-				case 0xFF60:
-				case 0xFF61:
-				case 0xFF62:
-				case 0xFF63:
-				case 0xFF64:
-				case 0xFF65:
-				case 0xFF66:
-				case 0xFF67:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFF68:
-				case 0xFF69:
-				case 0xFF6A:
-				case 0xFF6B:
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-					this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF6C:
-					if (this.cGBC) {
-						this.memoryHighReader[0x6C] = this.memoryReader[0xFF6C] = function (parentObj, address) {
-							return 0xFE | parentObj.memory[0xFF6C];
-						}
-					}
-					else {
-						this.memoryHighReader[0x6C] = this.memoryReader[0xFF6C] = this.memoryReadBAD;
-					}
-					break;
-				case 0xFF6D:
-				case 0xFF6E:
-				case 0xFF6F:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFF70:
-					if (this.cGBC) {
-						//SVBK
-						this.memoryHighReader[0x70] = this.memoryReader[0xFF70] = function (parentObj, address) {
-							return 0x40 | parentObj.memory[0xFF70];
-						}
-					}
-					else {
-						this.memoryHighReader[0x70] = this.memoryReader[0xFF70] = this.memoryReadBAD;
-					}
-					break;
-				case 0xFF71:
-					this.memoryHighReader[0x71] = this.memoryReader[0xFF71] = this.memoryReadBAD;
-					break;
-				case 0xFF72:
-				case 0xFF73:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadNormal;
-					break;
-				case 0xFF74:
-					if (this.cGBC) {
-						this.memoryHighReader[0x74] = this.memoryReader[0xFF74] = this.memoryReadNormal;
-					}
-					else {
-						this.memoryHighReader[0x74] = this.memoryReader[0xFF74] = this.memoryReadBAD;
-					}
-					break;
-				case 0xFF75:
-					this.memoryHighReader[0x75] = this.memoryReader[0xFF75] = function (parentObj, address) {
-						return 0x8F | parentObj.memory[0xFF75];
-					}
-					break;
-                case 0xFF76:
-                    //Undocumented realtime PCM amplitude readback:
-                    this.memoryHighReader[0x76] = this.memoryReader[0xFF76] = function (parentObj, address) {
-                        parentObj.audioJIT();
-                        return (parentObj.channel2envelopeVolume << 4) | parentObj.channel1envelopeVolume;
-                    }
-                    break;
-                case 0xFF77:
-                    //Undocumented realtime PCM amplitude readback:
-                    this.memoryHighReader[0x77] = this.memoryReader[0xFF77] = function (parentObj, address) {
-                        parentObj.audioJIT();
-                        return (parentObj.channel4envelopeVolume << 4) | parentObj.channel3envelopeVolume;
-                    }
-                    break;
-				case 0xFF78:
-				case 0xFF79:
-				case 0xFF7A:
-				case 0xFF7B:
-				case 0xFF7C:
-				case 0xFF7D:
-				case 0xFF7E:
-				case 0xFF7F:
-					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
-					break;
-				case 0xFFFF:
-					//IE
-					this.memoryHighReader[0xFF] = this.memoryReader[0xFFFF] = function (parentObj, address) {
-						return parentObj.interruptsEnabled;
-					}
-					break;
-				default:
-					this.memoryReader[index] = this.memoryReadNormal;
-					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
-			}
-		}
-		else {
-			this.memoryReader[index] = this.memoryReadBAD;
-		}
-	}
-}
-GameBoyCore.prototype.memoryReadNormal = function (parentObj, address) {
-	return parentObj.memory[address];
-}
-GameBoyCore.prototype.memoryHighReadNormal = function (parentObj, address) {
-	return parentObj.memory[0xFF00 | address];
-}
-GameBoyCore.prototype.memoryReadROM = function (parentObj, address) {
-	return parentObj.ROM[parentObj.currentROMBank + address];
-}
+// 					}
+// 					break;
+// 				case 0xFF05:
+// 				case 0xFF06:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF07:
+// 					this.memoryHighReader[0x07] = this.memoryReader[0xFF07] = function (parentObj, address) {
+// 						return 0xF8 | parentObj.memory[0xFF07];
+// 					}
+// 					break;
+// 				case 0xFF08:
+// 				case 0xFF09:
+// 				case 0xFF0A:
+// 				case 0xFF0B:
+// 				case 0xFF0C:
+// 				case 0xFF0D:
+// 				case 0xFF0E:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF0F:
+// 					//IF
+// 					this.memoryHighReader[0x0F] = this.memoryReader[0xFF0F] = function (parentObj, address) {
+// 						return 0xE0 | parentObj.interruptsRequested;
+// 					}
+// 					break;
+// 				case 0xFF10:
+// 					this.memoryHighReader[0x10] = this.memoryReader[0xFF10] = function (parentObj, address) {
+// 						return 0x80 | parentObj.memory[0xFF10];
+// 					}
+// 					break;
+// 				case 0xFF11:
+// 					this.memoryHighReader[0x11] = this.memoryReader[0xFF11] = function (parentObj, address) {
+// 						return 0x3F | parentObj.memory[0xFF11];
+// 					}
+// 					break;
+// 				case 0xFF12:
+// 					this.memoryHighReader[0x12] = this.memoryHighReadNormal;
+// 					this.memoryReader[0xFF12] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF13:
+// 					this.memoryHighReader[0x13] = this.memoryReader[0xFF13] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF14:
+// 					this.memoryHighReader[0x14] = this.memoryReader[0xFF14] = function (parentObj, address) {
+// 						return 0xBF | parentObj.memory[0xFF14];
+// 					}
+// 					break;
+// 				case 0xFF15:
+// 					this.memoryHighReader[0x15] = this.memoryReadBAD;
+// 					this.memoryReader[0xFF15] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF16:
+// 					this.memoryHighReader[0x16] = this.memoryReader[0xFF16] = function (parentObj, address) {
+// 						return 0x3F | parentObj.memory[0xFF16];
+// 					}
+// 					break;
+// 				case 0xFF17:
+// 					this.memoryHighReader[0x17] = this.memoryHighReadNormal;
+// 					this.memoryReader[0xFF17] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF18:
+// 					this.memoryHighReader[0x18] = this.memoryReader[0xFF18] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF19:
+// 					this.memoryHighReader[0x19] = this.memoryReader[0xFF19] = function (parentObj, address) {
+// 						return 0xBF | parentObj.memory[0xFF19];
+// 					}
+// 					break;
+// 				case 0xFF1A:
+// 					this.memoryHighReader[0x1A] = this.memoryReader[0xFF1A] = function (parentObj, address) {
+// 						return 0x7F | parentObj.memory[0xFF1A];
+// 					}
+// 					break;
+// 				case 0xFF1B:
+// 					this.memoryHighReader[0x1B] = this.memoryReader[0xFF1B] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF1C:
+// 					this.memoryHighReader[0x1C] = this.memoryReader[0xFF1C] = function (parentObj, address) {
+// 						return 0x9F | parentObj.memory[0xFF1C];
+// 					}
+// 					break;
+// 				case 0xFF1D:
+// 					this.memoryHighReader[0x1D] = this.memoryReader[0xFF1D] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF1E:
+// 					this.memoryHighReader[0x1E] = this.memoryReader[0xFF1E] = function (parentObj, address) {
+// 						return 0xBF | parentObj.memory[0xFF1E];
+// 					}
+// 					break;
+// 				case 0xFF1F:
+// 				case 0xFF20:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF21:
+// 				case 0xFF22:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF23:
+// 					this.memoryHighReader[0x23] = this.memoryReader[0xFF23] = function (parentObj, address) {
+// 						return 0xBF | parentObj.memory[0xFF23];
+// 					}
+// 					break;
+// 				case 0xFF24:
+// 				case 0xFF25:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF26:
+// 					this.memoryHighReader[0x26] = this.memoryReader[0xFF26] = function (parentObj, address) {
+// 						parentObj.audioJIT();
+// 						return 0x70 | parentObj.memory[0xFF26];
+// 					}
+// 					break;
+// 				case 0xFF27:
+// 				case 0xFF28:
+// 				case 0xFF29:
+// 				case 0xFF2A:
+// 				case 0xFF2B:
+// 				case 0xFF2C:
+// 				case 0xFF2D:
+// 				case 0xFF2E:
+// 				case 0xFF2F:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF30:
+// 				case 0xFF31:
+// 				case 0xFF32:
+// 				case 0xFF33:
+// 				case 0xFF34:
+// 				case 0xFF35:
+// 				case 0xFF36:
+// 				case 0xFF37:
+// 				case 0xFF38:
+// 				case 0xFF39:
+// 				case 0xFF3A:
+// 				case 0xFF3B:
+// 				case 0xFF3C:
+// 				case 0xFF3D:
+// 				case 0xFF3E:
+// 				case 0xFF3F:
+// 					this.memoryReader[index] = function (parentObj, address) {
+// 						return (parentObj.channel3canPlay) ? parentObj.memory[0xFF00 | (parentObj.channel3lastSampleLookup >> 1)] : parentObj.memory[address];
+// 					}
+// 					this.memoryHighReader[index & 0xFF] = function (parentObj, address) {
+// 						return (parentObj.channel3canPlay) ? parentObj.memory[0xFF00 | (parentObj.channel3lastSampleLookup >> 1)] : parentObj.memory[0xFF00 | address];
+// 					}
+// 					break;
+// 				case 0xFF40:
+// 					this.memoryHighReader[0x40] = this.memoryHighReadNormal;
+// 					this.memoryReader[0xFF40] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF41:
+// 					this.memoryHighReader[0x41] = this.memoryReader[0xFF41] = function (parentObj, address) {
+// 						return 0x80 | parentObj.memory[0xFF41] | parentObj.modeSTAT;
+// 					}
+// 					break;
+// 				case 0xFF42:
+// 					this.memoryHighReader[0x42] = this.memoryReader[0xFF42] = function (parentObj, address) {
+// 						return parentObj.backgroundY;
+// 					}
+// 					break;
+// 				case 0xFF43:
+// 					this.memoryHighReader[0x43] = this.memoryReader[0xFF43] = function (parentObj, address) {
+// 						return parentObj.backgroundX;
+// 					}
+// 					break;
+// 				case 0xFF44:
+// 					this.memoryHighReader[0x44] = this.memoryReader[0xFF44] = function (parentObj, address) {
+// 						return ((parentObj.LCDisOn) ? parentObj.memory[0xFF44] : 0);
+// 					}
+// 					break;
+// 				case 0xFF45:
+// 				case 0xFF46:
+// 				case 0xFF47:
+// 				case 0xFF48:
+// 				case 0xFF49:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF4A:
+// 					//WY
+// 					this.memoryHighReader[0x4A] = this.memoryReader[0xFF4A] = function (parentObj, address) {
+// 						return parentObj.windowY;
+// 					}
+// 					break;
+// 				case 0xFF4B:
+// 					this.memoryHighReader[0x4B] = this.memoryHighReadNormal;
+// 					this.memoryReader[0xFF4B] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF4C:
+// 					this.memoryHighReader[0x4C] = this.memoryReader[0xFF4C] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF4D:
+// 					this.memoryHighReader[0x4D] = this.memoryHighReadNormal;
+// 					this.memoryReader[0xFF4D] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF4E:
+// 					this.memoryHighReader[0x4E] = this.memoryReader[0xFF4E] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF4F:
+// 					this.memoryHighReader[0x4F] = this.memoryReader[0xFF4F] = function (parentObj, address) {
+// 						return parentObj.currVRAMBank;
+// 					}
+// 					break;
+// 				case 0xFF50:
+// 				case 0xFF51:
+// 				case 0xFF52:
+// 				case 0xFF53:
+// 				case 0xFF54:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF55:
+// 					if (this.cGBC) {
+// 						this.memoryHighReader[0x55] = this.memoryReader[0xFF55] = function (parentObj, address) {
+// 							if (!parentObj.LCDisOn && parentObj.hdmaRunning) {	//Undocumented behavior alert: HDMA becomes GDMA when LCD is off (Worms Armageddon Fix).
+// 								//DMA
+// 								parentObj.DMAWrite((parentObj.memory[0xFF55] & 0x7F) + 1);
+// 								parentObj.memory[0xFF55] = 0xFF;	//Transfer completed.
+// 								parentObj.hdmaRunning = false;
+// 							}
+// 							return parentObj.memory[0xFF55];
+// 						}
+// 					}
+// 					else {
+// 						this.memoryReader[0xFF55] = this.memoryReadNormal;
+// 						this.memoryHighReader[0x55] = this.memoryHighReadNormal;
+// 					}
+// 					break;
+// 				case 0xFF56:
+// 					if (this.cGBC) {
+// 						this.memoryHighReader[0x56] = this.memoryReader[0xFF56] = function (parentObj, address) {
+// 							//Return IR "not connected" status:
+// 							return 0x3C | ((parentObj.memory[0xFF56] >= 0xC0) ? (0x2 | (parentObj.memory[0xFF56] & 0xC1)) : (parentObj.memory[0xFF56] & 0xC3));
+// 						}
+// 					}
+// 					else {
+// 						this.memoryReader[0xFF56] = this.memoryReadNormal;
+// 						this.memoryHighReader[0x56] = this.memoryHighReadNormal;
+// 					}
+// 					break;
+// 				case 0xFF57:
+// 				case 0xFF58:
+// 				case 0xFF59:
+// 				case 0xFF5A:
+// 				case 0xFF5B:
+// 				case 0xFF5C:
+// 				case 0xFF5D:
+// 				case 0xFF5E:
+// 				case 0xFF5F:
+// 				case 0xFF60:
+// 				case 0xFF61:
+// 				case 0xFF62:
+// 				case 0xFF63:
+// 				case 0xFF64:
+// 				case 0xFF65:
+// 				case 0xFF66:
+// 				case 0xFF67:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF68:
+// 				case 0xFF69:
+// 				case 0xFF6A:
+// 				case 0xFF6B:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF6C:
+// 					if (this.cGBC) {
+// 						this.memoryHighReader[0x6C] = this.memoryReader[0xFF6C] = function (parentObj, address) {
+// 							return 0xFE | parentObj.memory[0xFF6C];
+// 						}
+// 					}
+// 					else {
+// 						this.memoryHighReader[0x6C] = this.memoryReader[0xFF6C] = this.memoryReadBAD;
+// 					}
+// 					break;
+// 				case 0xFF6D:
+// 				case 0xFF6E:
+// 				case 0xFF6F:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF70:
+// 					if (this.cGBC) {
+// 						//SVBK
+// 						this.memoryHighReader[0x70] = this.memoryReader[0xFF70] = function (parentObj, address) {
+// 							return 0x40 | parentObj.memory[0xFF70];
+// 						}
+// 					}
+// 					else {
+// 						this.memoryHighReader[0x70] = this.memoryReader[0xFF70] = this.memoryReadBAD;
+// 					}
+// 					break;
+// 				case 0xFF71:
+// 					this.memoryHighReader[0x71] = this.memoryReader[0xFF71] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFF72:
+// 				case 0xFF73:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadNormal;
+// 					break;
+// 				case 0xFF74:
+// 					if (this.cGBC) {
+// 						this.memoryHighReader[0x74] = this.memoryReader[0xFF74] = this.memoryReadNormal;
+// 					}
+// 					else {
+// 						this.memoryHighReader[0x74] = this.memoryReader[0xFF74] = this.memoryReadBAD;
+// 					}
+// 					break;
+// 				case 0xFF75:
+// 					this.memoryHighReader[0x75] = this.memoryReader[0xFF75] = function (parentObj, address) {
+// 						return 0x8F | parentObj.memory[0xFF75];
+// 					}
+// 					break;
+//                 case 0xFF76:
+//                     //Undocumented realtime PCM amplitude readback:
+//                     this.memoryHighReader[0x76] = this.memoryReader[0xFF76] = function (parentObj, address) {
+//                         parentObj.audioJIT();
+//                         return (parentObj.channel2envelopeVolume << 4) | parentObj.channel1envelopeVolume;
+//                     }
+//                     break;
+//                 case 0xFF77:
+//                     //Undocumented realtime PCM amplitude readback:
+//                     this.memoryHighReader[0x77] = this.memoryReader[0xFF77] = function (parentObj, address) {
+//                         parentObj.audioJIT();
+//                         return (parentObj.channel4envelopeVolume << 4) | parentObj.channel3envelopeVolume;
+//                     }
+//                     break;
+// 				case 0xFF78:
+// 				case 0xFF79:
+// 				case 0xFF7A:
+// 				case 0xFF7B:
+// 				case 0xFF7C:
+// 				case 0xFF7D:
+// 				case 0xFF7E:
+// 				case 0xFF7F:
+// 					this.memoryHighReader[index & 0xFF] = this.memoryReader[index] = this.memoryReadBAD;
+// 					break;
+// 				case 0xFFFF:
+// 					//IE
+// 					this.memoryHighReader[0xFF] = this.memoryReader[0xFFFF] = function (parentObj, address) {
+// 						return parentObj.interruptsEnabled;
+// 					}
+// 					break;
+// 				default:
+// 					this.memoryReader[index] = this.memoryReadNormal;
+// 					this.memoryHighReader[index & 0xFF] = this.memoryHighReadNormal;
+// 			}
+// 		}
+// 		else {
+// 			this.memoryReader[index] = this.memoryReadBAD;
+// 		}
+// 	}
+// }
+// GameBoyCore.prototype.memoryReadNormal = function (parentObj, address) {
+// 	return parentObj.memory[address];
+// }
+// GameBoyCore.prototype.memoryHighReadNormal = function (parentObj, address) {
+// 	return parentObj.memory[0xFF00 | address];
+// }
+// GameBoyCore.prototype.memoryReadROM = function (parentObj, address) {
+// 	return parentObj.ROM[parentObj.currentROMBank + address];
+// }
 // GameBoyCore.prototype.memoryReadMBC = function (parentObj, address) {
 // 	//Switchable RAM
 // 	if (parentObj.MBCRAMBanksEnabled || settings[10]) {
