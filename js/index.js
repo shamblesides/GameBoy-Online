@@ -74,10 +74,6 @@ const As8 = 2013
 const B8 = 2015
 
 window.addEventListener("DOMContentLoaded", function() {
-	const mainCanvas = document.createElement('canvas');
-	mainCanvas.style.display = 'none';
-	document.body.appendChild(mainCanvas);
-
 	console.log("windowingInitialize() called.", 0);
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "/empty-truncated.gb");
@@ -87,7 +83,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		var binaryHandle = new FileReader();
 		binaryHandle.onload = function () {
 			if (this.readyState === 2) {
-				start(mainCanvas, this.result);
+				start(null, this.result);
 			}
 		};
 		binaryHandle.readAsBinaryString(blob);
@@ -101,18 +97,16 @@ function start(canvas, ROM) {
 
 	gameboy.stopEmulator &= 1;
 	console.log("Starting the iterator.", 0);
+	const notes = Array(10).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
+	let x = 0;
 	window.requestAnimationFrame(function loop() {
 		gameboy.run();
 		window.requestAnimationFrame(loop);
+		if ((++x)%20===0 || x%20===6) tone(notes.shift())
 	});
 
-	const notes = [C5, D5, E5, D5, C5, D5, E5];
-
-	window.setInterval(() => {
-		if (notes.length > 0) tone(notes.shift())
-	}, 200)
-
 	const tone = (note) => {
+		if (note == null) return;
 		// sound on
 		gameboy.memoryHighWrite(0x26, 0b10000000)
 		// l vol (-LLL) / r vol (-RRR)
