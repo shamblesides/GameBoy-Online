@@ -80,7 +80,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
 	console.log("windowingInitialize() called.", 0);
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/infinity.gb");
+	xhr.open("GET", "/empty-truncated.gb");
 	xhr.responseType = "blob";
 	xhr.onload = function () {
 		var blob = new Blob([this.response], { type: "text/plain" });
@@ -109,8 +109,8 @@ function start(canvas, ROM) {
 	const notes = [C5, D5, E5, D5, C5, D5, E5];
 
 	window.setInterval(() => {
-		tone(notes.shift())
-	}, 1000)
+		if (notes.length > 0) tone(notes.shift())
+	}, 200)
 
 	const tone = (note) => {
 		// sound on
