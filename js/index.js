@@ -1,4 +1,4 @@
-import { GameBoyCore } from './GameBoyCore.js';
+import * as gameboy from './GameBoyCore.js';
 
 const C3 = 44
 const Cs3 = 156
@@ -73,7 +73,6 @@ const A8 = 2011
 const As8 = 2013
 const B8 = 2015
 
-const gameboy = new GameBoyCore();
 gameboy.start();
 
 console.log("Starting the iterator.", 0);
