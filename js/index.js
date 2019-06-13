@@ -73,53 +73,33 @@ const A8 = 2011
 const As8 = 2013
 const B8 = 2015
 
-window.addEventListener("DOMContentLoaded", function() {
-	console.log("windowingInitialize() called.", 0);
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/empty-truncated.gb");
-	xhr.responseType = "blob";
-	xhr.onload = function () {
-		var blob = new Blob([this.response], { type: "text/plain" });
-		var binaryHandle = new FileReader();
-		binaryHandle.onload = function () {
-			if (this.readyState === 2) {
-				start(null, this.result);
-			}
-		};
-		binaryHandle.readAsBinaryString(blob);
-	};
-	xhr.send();
+const gameboy = new GameBoyCore();
+gameboy.start();
+
+gameboy.stopEmulator &= 1;
+console.log("Starting the iterator.", 0);
+const notes = Array(10).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
+let x = 0;
+window.requestAnimationFrame(function loop() {
+	gameboy.run();
+	window.requestAnimationFrame(loop);
+	if ((++x)%20===0 || x%20===6) tone(notes.shift())
 });
 
-function start(canvas, ROM) {
-	const gameboy = new GameBoyCore(canvas, ROM);
-	gameboy.start();
-
-	gameboy.stopEmulator &= 1;
-	console.log("Starting the iterator.", 0);
-	const notes = Array(10).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
-	let x = 0;
-	window.requestAnimationFrame(function loop() {
-		gameboy.run();
-		window.requestAnimationFrame(loop);
-		if ((++x)%20===0 || x%20===6) tone(notes.shift())
-	});
-
-	const tone = (note) => {
-		if (note == null) return;
-		// sound on
-		gameboy.memoryHighWrite(0x26, 0b10000000)
-		// l vol (-LLL) / r vol (-RRR)
-		gameboy.memoryHighWrite(0x24, 0b00010001)
-		// mixer (LLLL RRRR) for (1234)
-		gameboy.memoryHighWrite(0x25, 0b11111111)
-		// duty DD, lenght? LLLLLL
-		gameboy.memoryHighWrite(0x16, 0b10111111)
-		// start volume VVVV, direction A (+/- =1/0), period PPP
-		gameboy.memoryHighWrite(0x17, 0b11110001)
-		// pitch low
-		gameboy.memoryHighWrite(0x18, note&255);
-		// trigger 1, something? 0, --- pitch high HHH
-		gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
-	}
+const tone = (note) => {
+	if (note == null) return;
+	// sound on
+	gameboy.memoryHighWrite(0x26, 0b10000000)
+	// l vol (-LLL) / r vol (-RRR)
+	gameboy.memoryHighWrite(0x24, 0b00010001)
+	// mixer (LLLL RRRR) for (1234)
+	gameboy.memoryHighWrite(0x25, 0b11111111)
+	// duty DD, lenght? LLLLLL
+	gameboy.memoryHighWrite(0x16, 0b10111111)
+	// start volume VVVV, direction A (+/- =1/0), period PPP
+	gameboy.memoryHighWrite(0x17, 0b11110001)
+	// pitch low
+	gameboy.memoryHighWrite(0x18, note&255);
+	// trigger 1, something? 0, --- pitch high HHH
+	gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
 }
