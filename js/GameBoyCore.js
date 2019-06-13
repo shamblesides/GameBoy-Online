@@ -10,23 +10,14 @@ import { XAudioServer } from './other/XAudioServer.js';
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-var settings = [						//Some settings.
-	true, 								//Turn on sound.
-	true,								//Boot with boot ROM first?
-	false,								//Give priority to GameBoy mode
-	1,									//Volume level set.
-	true,								//Colorize GB mode?
-	false,								//Disallow typed arrays?
-	8,									//Interval for the emulator loop.
-	10,									//Audio buffer minimum span amount over x interpreter iterations.
-	20,									//Audio buffer maximum span amount over x interpreter iterations.
-	false,								//Override to allow for MBC1 instead of ROM only (compatibility for broken 3rd-party cartridges).
-	false,								//Override MBC RAM disabling and always allow reading and writing to the banks.
-	false,								//Use the GameBoy boot ROM instead of the GameBoy Color boot ROM.
-	false,								//Scale the canvas in JS, or let the browser scale the canvas?
-	true,								//Use image smoothing based scaling?
-    [true, true, true, true]            //User controlled channel enables.
-];
+const settings = {
+	soundOn: true,
+	channelOn: [true, true, true, true],
+	volumeLevel: 1,
+	emulatorLoopInterval: 8,
+	audioBufferMinSpanAmount: 10,
+	audioBufferMaxSpanAmount: 20,
+}
 
 export function GameBoyCore() {
 	//Params, etc...
@@ -4489,7 +4480,7 @@ GameBoyCore.prototype.interpretCartridge = function () {
 GameBoyCore.prototype.initializeTiming = function () {
 	//Emulator Timing:
 	this.clocksPerSecond = this.emulatorSpeed * 0x400000;
-	this.baseCPUCyclesPerIteration = this.clocksPerSecond / 1000 * settings[6];
+	this.baseCPUCyclesPerIteration = this.clocksPerSecond / 1000 * settings.emulatorLoopInterval;
 	this.CPUCyclesTotalRoundoff = this.baseCPUCyclesPerIteration % 4;
 	this.CPUCyclesTotalBase = this.CPUCyclesTotal = (this.baseCPUCyclesPerIteration - this.CPUCyclesTotalRoundoff) | 0;
 	this.CPUCyclesTotalCurrent = 0;
@@ -4630,9 +4621,9 @@ GameBoyCore.prototype.setupRAM = function () {
 GameBoyCore.prototype.initSound = function () {
 	this.audioResamplerFirstPassFactor = Math.max(Math.min(Math.floor(this.clocksPerSecond / 44100), Math.floor(0xFFFF / 0x1E0)), 1);
 	this.downSampleInputDivider = 1 / (this.audioResamplerFirstPassFactor * 0xF0);
-	if (settings[0]) {
-		this.audioHandle = new XAudioServer(2, this.clocksPerSecond / this.audioResamplerFirstPassFactor, 0, Math.max(this.baseCPUCyclesPerIteration * settings[8] / this.audioResamplerFirstPassFactor, 8192) << 1, null, settings[3], function () {
-			settings[0] = false;
+	if (settings.soundOn) {
+		this.audioHandle = new XAudioServer(2, this.clocksPerSecond / this.audioResamplerFirstPassFactor, 0, Math.max(this.baseCPUCyclesPerIteration * settings.audioBufferMaxSpanAmount / this.audioResamplerFirstPassFactor, 8192) << 1, null, settings.volumeLevel, function () {
+			settings.soundOn = false;
 		});
 		this.initAudioBuffer();
 	}
@@ -4642,15 +4633,15 @@ GameBoyCore.prototype.initSound = function () {
 	}
 }
 GameBoyCore.prototype.changeVolume = function () {
-	if (settings[0] && this.audioHandle) {
-		this.audioHandle.changeVolume(settings[3]);
+	if (settings.soundOn && this.audioHandle) {
+		this.audioHandle.changeVolume(settings.volumeLevel);
 	}
 }
 GameBoyCore.prototype.initAudioBuffer = function () {
 	this.audioIndex = 0;
 	this.audioDestinationPosition = 0;
 	this.downsampleInput = 0;
-	this.bufferContainAmount = Math.max(this.baseCPUCyclesPerIteration * settings[7] / this.audioResamplerFirstPassFactor, 4096) << 1;
+	this.bufferContainAmount = Math.max(this.baseCPUCyclesPerIteration * settings.audioBufferMinSpanAmount / this.audioResamplerFirstPassFactor, 4096) << 1;
 	this.numSamplesTotal = (this.baseCPUCyclesPerIteration / this.audioResamplerFirstPassFactor) << 1;
 	this.audioBuffer = this.getTypedArray(this.numSamplesTotal, 0, "float32");
 }
@@ -4714,7 +4705,7 @@ GameBoyCore.prototype.intializeWhiteNoise = function () {
 	this.noiseSampleTable = this.LSFR15Table;
 }
 GameBoyCore.prototype.audioUnderrunAdjustment = function () {
-	if (settings[0]) {
+	if (settings.soundOn) {
 		var underrunAmount = this.audioHandle.remainingBuffer();
 		if (typeof underrunAmount == "number") {
 			underrunAmount = this.bufferContainAmount - Math.max(underrunAmount, 0);
@@ -4869,7 +4860,7 @@ GameBoyCore.prototype.generateAudioFake = function (numSamples) {
 }
 GameBoyCore.prototype.audioJIT = function () {
 	//Audio Sample Generation Timing:
-	if (settings[0]) {
+	if (settings.soundOn) {
 		this.generateAudio(this.audioTicks);
 	}
 	else {
@@ -5144,7 +5135,7 @@ GameBoyCore.prototype.channel1OutputLevelSecondaryCache = function () {
 	this.channel1OutputLevelTrimaryCache();
 }
 GameBoyCore.prototype.channel1OutputLevelTrimaryCache = function () {
-	if (this.channel1CachedDuty[this.channel1DutyTracker] && settings[14][0]) {
+	if (this.channel1CachedDuty[this.channel1DutyTracker] && settings.channelOn[0]) {
 		this.channel1currentSampleLeftTrimary = this.channel1currentSampleLeftSecondary;
 		this.channel1currentSampleRightTrimary = this.channel1currentSampleRightSecondary;
 	}
@@ -5181,7 +5172,7 @@ GameBoyCore.prototype.channel2OutputLevelSecondaryCache = function () {
 }
 GameBoyCore.prototype.channel2OutputLevelTrimaryCache = function () {
 	// duty
-	if (this.channel2CachedDuty[this.channel2DutyTracker] && settings[14][1]) {
+	if (this.channel2CachedDuty[this.channel2DutyTracker] && settings.channelOn[1]) {
 		this.channel2currentSampleLeftTrimary = this.channel2currentSampleLeftSecondary;
 		this.channel2currentSampleRightTrimary = this.channel2currentSampleRightSecondary;
 	}
@@ -5201,7 +5192,7 @@ GameBoyCore.prototype.channel3OutputLevelCache = function () {
 	this.channel3OutputLevelSecondaryCache();
 }
 GameBoyCore.prototype.channel3OutputLevelSecondaryCache = function () {
-	if (this.channel3Enabled && settings[14][2]) {
+	if (this.channel3Enabled && settings.channelOn[2]) {
 		this.channel3currentSampleLeftSecondary = this.channel3currentSampleLeft;
 		this.channel3currentSampleRightSecondary = this.channel3currentSampleRight;
 	}
@@ -5226,7 +5217,7 @@ GameBoyCore.prototype.channel4OutputLevelCache = function () {
 	this.channel4OutputLevelSecondaryCache();
 }
 GameBoyCore.prototype.channel4OutputLevelSecondaryCache = function () {
-	if (this.channel4Enabled && settings[14][3]) {
+	if (this.channel4Enabled && settings.channelOn[3]) {
 		this.channel4currentSampleLeftSecondary = this.channel4currentSampleLeft;
 		this.channel4currentSampleRightSecondary = this.channel4currentSampleRight;
 	}
@@ -9042,9 +9033,6 @@ GameBoyCore.prototype.recompileModelSpecificIOWriteHandling = function () {
 // }
 GameBoyCore.prototype.getTypedArray = function (length, defaultValue, numberType) {
 	try {
-		if (settings[5]) {
-			throw(new Error("Settings forced typed arrays to be disabled."));
-		}
 		switch (numberType) {
 			case "int8":
 				var arrayHandle = new Int8Array(length);
