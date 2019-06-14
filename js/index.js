@@ -84,7 +84,12 @@ window.requestAnimationFrame(function loop() {
 // l vol (-LLL) / r vol (-RRR)
 gameboy.memoryHighWrite(0x24, 0b00010001)
 // mixer (LLLL RRRR) for (1234)
-gameboy.memoryHighWrite(0x25, 0b11111111)
+gameboy.memoryHighWrite(0x25, 0b11111111);
+
+// wave channel
+[0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11].forEach((v, i) => {
+	gameboy.memoryHighWrite(0x30+i, v);
+});
 
 const tone = (note) => {
 	if (note == null) return;
@@ -105,6 +110,19 @@ const tone = (note) => {
 	gameboy.memoryHighWrite(0x13, (note+10)&255);
 	// trigger 1, something? 0, --- pitch high HHH
 	gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
+
+	// wav
+	// enable channel
+	gameboy.memoryHighWrite(0x1a, 0b10000000)
+	// sound length
+	gameboy.memoryHighWrite(0x1b, 0b11100000)
+	// volume -vv-----
+	gameboy.memoryHighWrite(0x1c, 0b00100000)
+
+	gameboy.memoryHighWrite(0x1d, note&255);
+	// trigger 1, something? 0, --- pitch high HHH
+	gameboy.memoryHighWrite(0x1e, 0b11000000 + (note>>8))
+
 
 	// noise
 	gameboy.memoryHighWrite(0x20, 0b00111111)
