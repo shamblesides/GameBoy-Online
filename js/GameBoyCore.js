@@ -204,21 +204,9 @@ function intializeWhiteNoise() {
 		//Normalize the last LSFR value for usage:
 		randomFactor = 1 - (LSFR & 1);	//Docs say it's the inverse.
 		//Cache the different volume level results:
-		LSFR15Table[0x08000 | index] = randomFactor;
-		LSFR15Table[0x10000 | index] = randomFactor * 0x2;
-		LSFR15Table[0x18000 | index] = randomFactor * 0x3;
-		LSFR15Table[0x20000 | index] = randomFactor * 0x4;
-		LSFR15Table[0x28000 | index] = randomFactor * 0x5;
-		LSFR15Table[0x30000 | index] = randomFactor * 0x6;
-		LSFR15Table[0x38000 | index] = randomFactor * 0x7;
-		LSFR15Table[0x40000 | index] = randomFactor * 0x8;
-		LSFR15Table[0x48000 | index] = randomFactor * 0x9;
-		LSFR15Table[0x50000 | index] = randomFactor * 0xA;
-		LSFR15Table[0x58000 | index] = randomFactor * 0xB;
-		LSFR15Table[0x60000 | index] = randomFactor * 0xC;
-		LSFR15Table[0x68000 | index] = randomFactor * 0xD;
-		LSFR15Table[0x70000 | index] = randomFactor * 0xE;
-		LSFR15Table[0x78000 | index] = randomFactor * 0xF;
+		for (let j = 0x1; j <= 0xF; ++j) {
+			LSFR15Table[j*0x8000 | index] = randomFactor * j;
+		}
 		//Recompute the LSFR algorithm:
 		LSFRShifted = LSFR >> 1;
 		LSFR = LSFRShifted | (((LSFRShifted ^ LSFR) & 0x1) << 14);
@@ -230,21 +218,9 @@ function intializeWhiteNoise() {
 		//Normalize the last LSFR value for usage:
 		randomFactor = 1 - (LSFR & 1);	//Docs say it's the inverse.
 		//Cache the different volume level results:
-		LSFR7Table[0x080 | index] = randomFactor;
-		LSFR7Table[0x100 | index] = randomFactor * 0x2;
-		LSFR7Table[0x180 | index] = randomFactor * 0x3;
-		LSFR7Table[0x200 | index] = randomFactor * 0x4;
-		LSFR7Table[0x280 | index] = randomFactor * 0x5;
-		LSFR7Table[0x300 | index] = randomFactor * 0x6;
-		LSFR7Table[0x380 | index] = randomFactor * 0x7;
-		LSFR7Table[0x400 | index] = randomFactor * 0x8;
-		LSFR7Table[0x480 | index] = randomFactor * 0x9;
-		LSFR7Table[0x500 | index] = randomFactor * 0xA;
-		LSFR7Table[0x580 | index] = randomFactor * 0xB;
-		LSFR7Table[0x600 | index] = randomFactor * 0xC;
-		LSFR7Table[0x680 | index] = randomFactor * 0xD;
-		LSFR7Table[0x700 | index] = randomFactor * 0xE;
-		LSFR7Table[0x780 | index] = randomFactor * 0xF;
+		for (let j = 0x1; j <= 0xF; ++j) {
+			LSFR7Table[j*0x80 | index] = randomFactor * j;
+		}
 		//Recompute the LSFR algorithm:
 		LSFRShifted = LSFR >> 1;
 		LSFR = LSFRShifted | (((LSFRShifted ^ LSFR) & 0x1) << 6);
@@ -1095,32 +1071,6 @@ function registerWriteJumpCompile() {
 			channel4OutputLevelCache();
 		}
 	}
-	//NR52:
-	// memoryHighWriter[0x26] = memoryWriter[0xFF26] = function (parentObj, address, data) {
-	// 	audioJIT();
-	// 	if (!soundMasterEnabled && data > 0x7F) {
-	// 		memory[0xFF26] = 0x80;
-	// 		soundMasterEnabled = true;
-	// 	}
-	// 	else if (soundMasterEnabled && data < 0x80) {
-	// 		memory[0xFF26] = 0;
-	// 		soundMasterEnabled = false;
-	// 		//GBDev wiki says the registers are written with zeros on power off:
-	// 		for (var index = 0xFF10; index < 0xFF26; index++) {
-	// 			memoryWriter[index](parentObj, index, 0);
-	// 		}
-	// 	}
-	// }
-	// //0xFF27 to 0xFF2F don't do anything...
-	// memoryHighWriter[0x27] = memoryWriter[0xFF27] = cartIgnoreWrite;
-	// memoryHighWriter[0x28] = memoryWriter[0xFF28] = cartIgnoreWrite;
-	// memoryHighWriter[0x29] = memoryWriter[0xFF29] = cartIgnoreWrite;
-	// memoryHighWriter[0x2A] = memoryWriter[0xFF2A] = cartIgnoreWrite;
-	// memoryHighWriter[0x2B] = memoryWriter[0xFF2B] = cartIgnoreWrite;
-	// memoryHighWriter[0x2C] = memoryWriter[0xFF2C] = cartIgnoreWrite;
-	// memoryHighWriter[0x2D] = memoryWriter[0xFF2D] = cartIgnoreWrite;
-	// memoryHighWriter[0x2E] = memoryWriter[0xFF2E] = cartIgnoreWrite;
-	// memoryHighWriter[0x2F] = memoryWriter[0xFF2F] = cartIgnoreWrite;
 	//WAVE PCM RAM:
 	memoryHighWriter[0x30] = memoryWriter[0xFF30] = function (parentObj, address, data) {
 		channel3WriteRAM(0, data);
