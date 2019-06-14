@@ -31,7 +31,6 @@ let CPUCyclesTotalRoundoff = 0;			//Clocking per iteration rounding catch.
 let baseCPUCyclesPerIteration = 0;		//CPU clocks per iteration at 1x speed.
 let doubleSpeedShifter = 0;				//GBC double speed clocking shifter.
 let CPUStopped = false;					//CPU STOP status.
-let memoryWriter = [];						//Array of functions mapped to write to memory
 let memoryHighWriter = [];					//Array of functions mapped to write to 0xFFXX memory
 let memory = [];							//Main Core Memory
 let cGBC = false;							//GameBoy Color detection.
@@ -722,7 +721,7 @@ export function memoryHighWrite(address, data) {
 }
 function registerWriteJumpCompile() {
 	//NR10:
-	memoryHighWriter[0x10] = memoryWriter[0xFF10] = function (parentObj, address, data) {
+	memoryHighWriter[0x10] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (channel1decreaseSweep && (data & 0x08) == 0) {
@@ -738,7 +737,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR11:
-	memoryHighWriter[0x11] = memoryWriter[0xFF11] = function (parentObj, address, data) {
+	memoryHighWriter[0x11] = function (parentObj, address, data) {
 		if (soundMasterEnabled || !cGBC) {
 			if (soundMasterEnabled) {
 				audioJIT();
@@ -753,7 +752,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR12:
-	memoryHighWriter[0x12] = memoryWriter[0xFF12] = function (parentObj, address, data) {
+	memoryHighWriter[0x12] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (channel1Enabled && channel1envelopeSweeps == 0) {
@@ -780,7 +779,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR13:
-	memoryHighWriter[0x13] = memoryWriter[0xFF13] = function (parentObj, address, data) {
+	memoryHighWriter[0x13] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			channel1frequency = (channel1frequency & 0x700) | data;
@@ -788,7 +787,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR14:
-	memoryHighWriter[0x14] = memoryWriter[0xFF14] = function (parentObj, address, data) {
+	memoryHighWriter[0x14] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			channel1consecutive = ((data & 0x40) == 0x0);
@@ -826,9 +825,9 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR20 (Unused I/O):
-	// memoryHighWriter[0x15] = memoryWriter[0xFF15] = cartIgnoreWrite;
+	// memoryHighWriter[0x15] = cartIgnoreWrite;
 	//NR21:
-	memoryHighWriter[0x16] = memoryWriter[0xFF16] = function (parentObj, address, data) {
+	memoryHighWriter[0x16] = function (parentObj, address, data) {
 		if (soundMasterEnabled || !cGBC) {
 			if (soundMasterEnabled) {
 				audioJIT();
@@ -843,7 +842,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR22:
-	memoryHighWriter[0x17] = memoryWriter[0xFF17] = function (parentObj, address, data) {
+	memoryHighWriter[0x17] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (channel2Enabled && channel2envelopeSweeps == 0) {
@@ -870,7 +869,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR23:
-	memoryHighWriter[0x18] = memoryWriter[0xFF18] = function (parentObj, address, data) {
+	memoryHighWriter[0x18] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			channel2frequency = (channel2frequency & 0x700) | data;
@@ -878,7 +877,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR24:
-	memoryHighWriter[0x19] = memoryWriter[0xFF19] = function (parentObj, address, data) {
+	memoryHighWriter[0x19] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (data > 0x7F) {
@@ -902,7 +901,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR30:
-	memoryHighWriter[0x1A] = memoryWriter[0xFF1A] = function (parentObj, address, data) {
+	memoryHighWriter[0x1A] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (!channel3canPlay && data >= 0x80) {
@@ -918,7 +917,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR31:
-	memoryHighWriter[0x1B] = memoryWriter[0xFF1B] = function (parentObj, address, data) {
+	memoryHighWriter[0x1B] = function (parentObj, address, data) {
 		if (soundMasterEnabled || !cGBC) {
 			if (soundMasterEnabled) {
 				audioJIT();
@@ -928,7 +927,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR32:
-	memoryHighWriter[0x1C] = memoryWriter[0xFF1C] = function (parentObj, address, data) {
+	memoryHighWriter[0x1C] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			data &= 0x60;
@@ -937,7 +936,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR33:
-	memoryHighWriter[0x1D] = memoryWriter[0xFF1D] = function (parentObj, address, data) {
+	memoryHighWriter[0x1D] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			channel3frequency = (channel3frequency & 0x700) | data;
@@ -945,7 +944,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR34:
-	memoryHighWriter[0x1E] = memoryWriter[0xFF1E] = function (parentObj, address, data) {
+	memoryHighWriter[0x1E] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (data > 0x7F) {
@@ -965,9 +964,9 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR40 (Unused I/O):
-	// memoryHighWriter[0x1F] = memoryWriter[0xFF1F] = cartIgnoreWrite;
+	// memoryHighWriter[0x1F] = cartIgnoreWrite;
 	//NR41:
-	memoryHighWriter[0x20] = memoryWriter[0xFF20] = function (parentObj, address, data) {
+	memoryHighWriter[0x20] = function (parentObj, address, data) {
 		if (soundMasterEnabled || !cGBC) {
 			if (soundMasterEnabled) {
 				audioJIT();
@@ -977,7 +976,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR42:
-	memoryHighWriter[0x21] = memoryWriter[0xFF21] = function (parentObj, address, data) {
+	memoryHighWriter[0x21] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			if (channel4Enabled && channel4envelopeSweeps == 0) {
@@ -1005,7 +1004,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR43:
-	memoryHighWriter[0x22] = memoryWriter[0xFF22] = function (parentObj, address, data) {
+	memoryHighWriter[0x22] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			channel4FrequencyPeriod = Math.max((data & 0x7) << 4, 8) << (data >> 4);
@@ -1022,7 +1021,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR44:
-	memoryHighWriter[0x23] = memoryWriter[0xFF23] = function (parentObj, address, data) {
+	memoryHighWriter[0x23] = function (parentObj, address, data) {
 		if (soundMasterEnabled) {
 			audioJIT();
 			memory[0xFF23] = data;
@@ -1043,7 +1042,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR50:
-	memoryHighWriter[0x24] = memoryWriter[0xFF24] = function (parentObj, address, data) {
+	memoryHighWriter[0x24] = function (parentObj, address, data) {
 		if (soundMasterEnabled && memory[0xFF24] != data) {
 			audioJIT();
 			memory[0xFF24] = data;
@@ -1053,7 +1052,7 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//NR51:
-	memoryHighWriter[0x25] = memoryWriter[0xFF25] = function (parentObj, address, data) {
+	memoryHighWriter[0x25] = function (parentObj, address, data) {
 		if (soundMasterEnabled && memory[0xFF25] != data) {
 			audioJIT();
 			memory[0xFF25] = data;
@@ -1072,52 +1071,52 @@ function registerWriteJumpCompile() {
 		}
 	}
 	//WAVE PCM RAM:
-	memoryHighWriter[0x30] = memoryWriter[0xFF30] = function (parentObj, address, data) {
+	memoryHighWriter[0x30] = function (parentObj, address, data) {
 		channel3WriteRAM(0, data);
 	}
-	memoryHighWriter[0x31] = memoryWriter[0xFF31] = function (parentObj, address, data) {
+	memoryHighWriter[0x31] = function (parentObj, address, data) {
 		channel3WriteRAM(0x1, data);
 	}
-	memoryHighWriter[0x32] = memoryWriter[0xFF32] = function (parentObj, address, data) {
+	memoryHighWriter[0x32] = function (parentObj, address, data) {
 		channel3WriteRAM(0x2, data);
 	}
-	memoryHighWriter[0x33] = memoryWriter[0xFF33] = function (parentObj, address, data) {
+	memoryHighWriter[0x33] = function (parentObj, address, data) {
 		channel3WriteRAM(0x3, data);
 	}
-	memoryHighWriter[0x34] = memoryWriter[0xFF34] = function (parentObj, address, data) {
+	memoryHighWriter[0x34] = function (parentObj, address, data) {
 		channel3WriteRAM(0x4, data);
 	}
-	memoryHighWriter[0x35] = memoryWriter[0xFF35] = function (parentObj, address, data) {
+	memoryHighWriter[0x35] = function (parentObj, address, data) {
 		channel3WriteRAM(0x5, data);
 	}
-	memoryHighWriter[0x36] = memoryWriter[0xFF36] = function (parentObj, address, data) {
+	memoryHighWriter[0x36] = function (parentObj, address, data) {
 		channel3WriteRAM(0x6, data);
 	}
-	memoryHighWriter[0x37] = memoryWriter[0xFF37] = function (parentObj, address, data) {
+	memoryHighWriter[0x37] = function (parentObj, address, data) {
 		channel3WriteRAM(0x7, data);
 	}
-	memoryHighWriter[0x38] = memoryWriter[0xFF38] = function (parentObj, address, data) {
+	memoryHighWriter[0x38] = function (parentObj, address, data) {
 		channel3WriteRAM(0x8, data);
 	}
-	memoryHighWriter[0x39] = memoryWriter[0xFF39] = function (parentObj, address, data) {
+	memoryHighWriter[0x39] = function (parentObj, address, data) {
 		channel3WriteRAM(0x9, data);
 	}
-	memoryHighWriter[0x3A] = memoryWriter[0xFF3A] = function (parentObj, address, data) {
+	memoryHighWriter[0x3A] = function (parentObj, address, data) {
 		channel3WriteRAM(0xA, data);
 	}
-	memoryHighWriter[0x3B] = memoryWriter[0xFF3B] = function (parentObj, address, data) {
+	memoryHighWriter[0x3B] = function (parentObj, address, data) {
 		channel3WriteRAM(0xB, data);
 	}
-	memoryHighWriter[0x3C] = memoryWriter[0xFF3C] = function (parentObj, address, data) {
+	memoryHighWriter[0x3C] = function (parentObj, address, data) {
 		channel3WriteRAM(0xC, data);
 	}
-	memoryHighWriter[0x3D] = memoryWriter[0xFF3D] = function (parentObj, address, data) {
+	memoryHighWriter[0x3D] = function (parentObj, address, data) {
 		channel3WriteRAM(0xD, data);
 	}
-	memoryHighWriter[0x3E] = memoryWriter[0xFF3E] = function (parentObj, address, data) {
+	memoryHighWriter[0x3E] = function (parentObj, address, data) {
 		channel3WriteRAM(0xE, data);
 	}
-	memoryHighWriter[0x3F] = memoryWriter[0xFF3F] = function (parentObj, address, data) {
+	memoryHighWriter[0x3F] = function (parentObj, address, data) {
 		channel3WriteRAM(0xF, data);
 	}
 }
