@@ -256,14 +256,16 @@ function generateAudio(numSamples) {
 			audioClocksUntilNextEventCounter -= clockUpTo;
 			sequencerClocks -= clockUpTo;
 			numSamples -= clockUpTo;
-			while (clockUpTo > 0) {
-				multiplier = Math.min(clockUpTo, audioResamplerFirstPassFactor - audioIndex);
-				clockUpTo -= multiplier;
-				audioIndex += multiplier;
-				downsampleInput += mixerOutputCache * multiplier;
-				if (audioIndex == audioResamplerFirstPassFactor) {
-					audioIndex = 0;
-					outputAudio();
+			if (settings.soundOn) {
+				while (clockUpTo > 0) {
+					multiplier = Math.min(clockUpTo, audioResamplerFirstPassFactor - audioIndex);
+					clockUpTo -= multiplier;
+					audioIndex += multiplier;
+					downsampleInput += mixerOutputCache * multiplier;
+					if (audioIndex == audioResamplerFirstPassFactor) {
+						audioIndex = 0;
+						outputAudio();
+					}
 				}
 			}
 			if (sequencerClocks == 0) {
@@ -288,32 +290,8 @@ function generateAudio(numSamples) {
 		}
 	}
 }
-//Generate audio, but don't actually output it (Used for when sound is disabled by user/browser):
-function generateAudioFake(numSamples) {
-	if (soundMasterEnabled && !CPUStopped) {
-		for (var clockUpTo = 0; numSamples > 0;) {
-			clockUpTo = Math.min(audioClocksUntilNextEventCounter, sequencerClocks, numSamples);
-			audioClocksUntilNextEventCounter -= clockUpTo;
-			sequencerClocks -= clockUpTo;
-			numSamples -= clockUpTo;
-			if (sequencerClocks == 0) {
-				audioComputeSequencer();
-				sequencerClocks = 0x2000;
-			}
-			if (audioClocksUntilNextEventCounter == 0) {
-				computeAudioChannels();
-			}
-		}
-	}
-}
 function audioJIT() {
-	//Audio Sample Generation Timing:
-	if (settings.soundOn) {
-		generateAudio(audioTicks);
-	}
-	else {
-		generateAudioFake(audioTicks);
-	}
+	generateAudio(audioTicks);
 	audioTicks = 0;
 }
 function audioComputeSequencer() {
