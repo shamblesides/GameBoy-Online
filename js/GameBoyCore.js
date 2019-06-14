@@ -14,7 +14,7 @@ const settings = {
 	soundOn: true,
 	channelOn: [true, true, true, true],
 	volumeLevel: 1,
-	emulatorLoopInterval: 8,
+	emulatorLoopInterval: 1000/60,
 	audioBufferMinSpanAmount: 10,
 	audioBufferMaxSpanAmount: 20,
 }

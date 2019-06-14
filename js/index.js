@@ -96,4 +96,19 @@ const tone = (note) => {
 	gameboy.memoryHighWrite(0x18, note&255);
 	// trigger 1, something? 0, --- pitch high HHH
 	gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
+
+	// duty DD, lenght? LLLLLL
+	gameboy.memoryHighWrite(0x11, 0b11111111)
+	// start volume VVVV, direction A (+/- =1/0), period PPP
+	gameboy.memoryHighWrite(0x12, 0b10010001)
+	// pitch low
+	gameboy.memoryHighWrite(0x13, (note+10)&255);
+	// trigger 1, something? 0, --- pitch high HHH
+	gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
+
+	// noise
+	gameboy.memoryHighWrite(0x20, 0b00111111)
+	gameboy.memoryHighWrite(0x21, 0b01110001)
+	gameboy.memoryHighWrite(0x22, 0b00111111)
+	gameboy.memoryHighWrite(0x23, 0b10000000);
 }
