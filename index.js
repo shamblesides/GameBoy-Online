@@ -11,11 +11,10 @@ const [
 
 const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
-window.requestAnimationFrame(function loop() {
+window.setInterval(() => {
 	gameboy.run();
-	window.requestAnimationFrame(loop);
-	if ((++x)%20===0 || x%20===6) tone(notes.shift())
-});
+	if ((++x)%40===0 || x%40===12) tone(notes.shift())
+}, 8);
 
 // l vol (-LLL) / r vol (-RRR)
 gameboy.memoryHighWrite(0x24, 0b00010001)
