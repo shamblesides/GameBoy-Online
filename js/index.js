@@ -1,77 +1,13 @@
 import * as gameboy from './GameBoyCore.js';
 
-const C3 = 44
-const Cs3 = 156
-const D3 = 262
-const Ds3 = 363
-const E3 = 457
-const F3 = 547
-const Fs3 = 631
-const G3 = 710
-const Gs3 = 786
-const A3 = 854
-const As3 = 923
-const B3 = 986
-const C4 = 1046
-const Cs4 = 1102
-const D4 = 1155
-const Ds4 = 1205
-const E4 = 1253
-const F4 = 1297
-const Fs4 = 1339
-const G4 = 1379
-const Gs4 = 1417
-const A4 = 1452
-const As4 = 1486
-const B4 = 1517
-const C5 = 1546
-const Cs5 = 1575
-const D5 = 1602
-const Ds5 = 1627
-const E5 = 1650
-const F5 = 1673
-const Fs5 = 1694
-const G5 = 1714
-const Gs5 = 1732
-const A5 = 1750
-const As5 = 1767
-const B5 = 1783
-const C6 = 1798
-const Cs6 = 1812
-const D6 = 1825
-const Ds6 = 1837
-const E6 = 1849
-const F6 = 1860
-const Fs6 = 1871
-const G6 = 1881
-const Gs6 = 1890
-const A6 = 1899
-const As6 = 1907
-const B6 = 1915
-const C7 = 1923
-const Cs7 = 1930
-const D7 = 1936
-const Ds7 = 1943
-const E7 = 1949
-const F7 = 1954
-const Fs7 = 1959
-const G7 = 1964
-const Gs7 = 1969
-const A7 = 1974
-const As7 = 1978
-const B7 = 1982
-const C8 = 1985
-const Cs8 = 1988
-const D8 = 1992
-const Ds8 = 1995
-const E8 = 1998
-const F8 = 2001
-const Fs8 = 2004
-const G8 = 2006
-const Gs8 = 2009
-const A8 = 2011
-const As8 = 2013
-const B8 = 2015
+const [
+	C3, Cs3, D3, Ds3, E3, F3, Fs3, G3, Gs3, A3, As3, B3,
+	C4, Cs4, D4, Ds4, E4, F4, Fs4, G4, Gs4, A4, As4, B4,
+	C5, Cs5, D5, Ds5, E5, F5, Fs5, G5, Gs5, A5, As5, B5,
+	C6, Cs6, D6, Ds6, E6, F6, Fs6, G6, Gs6, A6, As6, B6,
+	C7, Cs7, D7, Ds7, E7, F7, Fs7, G7, Gs7, A7, As7, B7,
+	C8, Cs8, D8, Ds8, E8, F8, Fs8, G8, Gs8, A8, As8, B8,
+] = Array(12*(8-3+1)).fill().map((_,i)=>Math.round(2048-2004*(.5**(i/12))));
 
 const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
