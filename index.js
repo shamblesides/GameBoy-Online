@@ -8,6 +8,8 @@ window.setInterval(() => {
 	if ((++x)%40===0 || x%40===12) tone(notes.shift())
 }, 8);
 
+gameboy.changeVolume(0.5);
+
 // l vol (-LLL) / r vol (-RRR)
 gameboy.memoryHighWrite(0x24, 0b00010001)
 // mixer (LLLL RRRR) for (1234)
