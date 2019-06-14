@@ -1,4 +1,4 @@
-import * as gameboy from './GameBoyCore.js';
+import * as gameboy from './lib/GameBoyCore.js';
 
 const [
 	C3, Cs3, D3, Ds3, E3, F3, Fs3, G3, Gs3, A3, As3, B3,
