@@ -6,7 +6,7 @@ const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.co
 let x = 0;
 window.setInterval(() => {
 	gameboy.run();
-	// if ((++x)%40===0 || x%40===12) tone(notes.shift())
+	if ((++x)%40===0 || x%40===12) tone(notes.shift())
 }, 8);
 
 gameboy.changeVolume(0.5);
@@ -23,6 +23,7 @@ gameboy.setWaveTable([
 
 const tone = (note) => {
 	if (note == null) return;
+	t_start();
 	// duty DD, lenght? LLLLLL
 	gameboy.memoryHighWrite(0x16, 0b10111111)
 	// start volume VVVV, direction A (+/- =1/0), period PPP
@@ -63,7 +64,6 @@ const tone = (note) => {
 
 const colors = ['rgb(255, 238, 0)', 'rgb(255, 138, 0)'];
 function mousedown() {
-	t_start();
 	let i = colors.indexOf(document.body.style.backgroundColor);
 	document.body.style.backgroundColor = colors[(i+1)%colors.length]
 	tone(C5);
