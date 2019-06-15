@@ -1,5 +1,5 @@
 import * as gameboy from './lib/GameBoyCore.js';
-import { C5, D5, E5, G5, B5 } from './notes.js';
+import { C5 } from './notes.js';
 import { t_start } from './lib/test.js';
 
 // const notes = Array(4).fill([C5]).reduce((arr,x)=>arr.concat(x));
@@ -64,7 +64,7 @@ const tone = (note) => {
 
 const colors = ['rgb(255, 238, 0)', 'rgb(255, 138, 0)'];
 function mousedown() {
-	let i = colors.indexOf(document.body.style.backgroundColor);
+	const i = colors.indexOf(document.body.style.backgroundColor);
 	document.body.style.backgroundColor = colors[(i+1)%colors.length]
 	tone(C5);
 }

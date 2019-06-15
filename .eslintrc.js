@@ -14,6 +14,7 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
-        "prefer-const": 2
+        "prefer-const": 2,
+        "no-console": 0,
     }
 };
