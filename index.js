@@ -1,11 +1,12 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import { C5, D5, E5, G5, B5 } from './notes.js';
+import { t_start } from './lib/test.js';
 
 const notes = Array(4).fill([C5, D5, E5, D5, C5, G5, B5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
 window.setInterval(() => {
 	gameboy.run();
-	if ((++x)%40===0 || x%40===12) tone(notes.shift())
+	// if ((++x)%40===0 || x%40===12) tone(notes.shift())
 }, 8);
 
 gameboy.changeVolume(0.5);
@@ -59,3 +60,13 @@ const tone = (note) => {
 	gameboy.memoryHighWrite(0x22, 0b00111111)
 	gameboy.memoryHighWrite(0x23, 0b10000000);
 }
+
+const colors = ['rgb(255, 238, 0)', 'rgb(255, 138, 0)'];
+function mousedown() {
+	t_start();
+	let i = colors.indexOf(document.body.style.backgroundColor);
+	document.body.style.backgroundColor = colors[(i+1)%colors.length]
+	tone(C5);
+}
+window.addEventListener('mousedown', mousedown);
+window.addEventListener('touchstart', mousedown);
