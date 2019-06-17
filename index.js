@@ -1,6 +1,5 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import { C5, D5, E5, G5, B5 } from './notes.js';
-import { t_start } from './lib/test.js';
 
 const notes = Array(2).fill([C5, E5, G5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
@@ -24,7 +23,6 @@ gameboy.setWaveTable([
 
 const tone = (note) => {
 	if (note == null) return;
-	t_start();
 	// duty DD, lenght? LLLLLL
 	gameboy.memoryHighWrite(0x16, 0b10111111)
 	// start volume VVVV, direction A (+/- =1/0), period PPP
