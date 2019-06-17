@@ -1,5 +1,5 @@
 import * as gameboy from './lib/GameBoyCore.js';
-import { C5, D5, E5, G5, B5 } from './notes.js';
+import { C5, E5, G5 } from './notes.js';
 
 // gameboy.changeVolume(0.5);
 
