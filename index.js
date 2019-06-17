@@ -1,10 +1,10 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import { C5, D5, E5, G5, B5 } from './notes.js';
 
-gameboy.changeVolume(0.5);
+// gameboy.changeVolume(0.5);
 
 // l vol (-LLL) / r vol (-RRR)
-gameboy.memoryHighWrite(0x24, 0b00010001)
+// gameboy.memoryHighWrite(0x24, 0b00010001)
 // mixer (LLLL RRRR) for (1234)
 gameboy.memoryHighWrite(0x25, 0b11111111);
 
