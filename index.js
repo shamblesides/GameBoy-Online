@@ -5,7 +5,6 @@ import { t_start } from './lib/test.js';
 const notes = Array(2).fill([C5, E5, G5]).reduce((arr,x)=>arr.concat(x));
 let x = 0;
 window.setInterval(() => {
-	gameboy.run();
 	if ((++x)%40===0 || x%40===12) tone(notes.shift())
 }, 8);
 
