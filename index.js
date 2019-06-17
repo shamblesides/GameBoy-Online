@@ -1,12 +1,12 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import { C5, D5, E5, G5, B5 } from './notes.js';
 
-// gameboy.begin();
-// const notes = Array(2).fill([C5, E5, G5]).reduce((arr,x)=>arr.concat(x));
-// let x = 0;
-// window.setInterval(() => {
-// 	if ((++x)%40===0 || x%40===12) tone(notes.shift())
-// }, 8);
+gameboy.resume();
+const notes = Array(2).fill([C5, E5, G5]).reduce((arr,x)=>arr.concat(x));
+let x = 0;
+window.setInterval(() => {
+	if ((++x)%40===0 || x%40===12) tone(notes.shift())
+}, 8);
 
 // window.setTimeout(() => tone(C5), 100);
 
@@ -64,7 +64,7 @@ function tone (note) {
 
 const colors = ['rgb(255, 238, 0)', 'rgb(255, 138, 0)'];
 function mousedown() {
-	gameboy.begin();
+	gameboy.resume();
 	const i = colors.indexOf(document.body.style.backgroundColor);
 	document.body.style.backgroundColor = colors[(i+1)%colors.length]
 	tone(C5);
