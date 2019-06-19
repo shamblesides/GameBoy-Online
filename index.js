@@ -23,9 +23,9 @@ const tone = (note) => () => {
 	// gameboy.memoryHighWrite(0x18, note&255);
 	// trigger 1, something? 0, --- pitch high HHH
 	// gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
-	gameboy.pulse2.envelope(15, 1)
-	gameboy.pulse2.duty(2)
-	gameboy.pulse2.play(note);
+	// gameboy.pulse2.envelope(15, 1)
+	// gameboy.pulse2.duty(2)
+	// gameboy.pulse2.play(note);
 
 	// duty DD, lenght? LLLLLL
 	// gameboy.memoryHighWrite(0x11, 0b11111111)
@@ -35,28 +35,29 @@ const tone = (note) => () => {
 	// gameboy.memoryHighWrite(0x13, (note+10)&255);
 	// trigger 1, something? 0, --- pitch high HHH
 	// gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
-	gameboy.pulse1.envelope(9, 1)
+	gameboy.pulse1.sweep(0b00111111)
+	gameboy.pulse1.envelope(15, 1)
 	gameboy.pulse1.duty(3)
-	gameboy.pulse1.play(note+10);
+	gameboy.pulse1.play(note);
 
-	// wav
-	// enable channel
-	gameboy.memoryHighWrite(0x1a, 0b10000000)
-	// sound length
-	gameboy.memoryHighWrite(0x1b, 0b11100000)
-	// volume -vv-----
-	gameboy.memoryHighWrite(0x1c, 0b00100000)
+	// // wav
+	// // enable channel
+	// gameboy.memoryHighWrite(0x1a, 0b10000000)
+	// // sound length
+	// gameboy.memoryHighWrite(0x1b, 0b11100000)
+	// // volume -vv-----
+	// gameboy.memoryHighWrite(0x1c, 0b00100000)
 
-	gameboy.memoryHighWrite(0x1d, note&255);
-	// trigger 1, something? 0, --- pitch high HHH
-	gameboy.memoryHighWrite(0x1e, 0b11000000 + (note>>8))
+	// gameboy.memoryHighWrite(0x1d, note&255);
+	// // trigger 1, something? 0, --- pitch high HHH
+	// gameboy.memoryHighWrite(0x1e, 0b11000000 + (note>>8))
 
 
 	// noise
-	gameboy.memoryHighWrite(0x20, 0b00111111)
-	gameboy.memoryHighWrite(0x21, 0b01110001)
-	gameboy.memoryHighWrite(0x22, 0b00111111)
-	gameboy.memoryHighWrite(0x23, 0b10000000);
+	// gameboy.memoryHighWrite(0x20, 0b00111111)
+	// gameboy.memoryHighWrite(0x21, 0b01110001)
+	// gameboy.memoryHighWrite(0x22, 0b00111111)
+	// gameboy.memoryHighWrite(0x23, 0b10000000);
 }
 
 gameboy.play([
