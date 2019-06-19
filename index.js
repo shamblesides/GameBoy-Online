@@ -1,7 +1,7 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import { C5, E5, G5 } from './notes.js';
 
-// gameboy.changeVolume(0.5);
+// gameboy.changeUserVolume(0.5);
 
 // l vol (-LLL) / r vol (-RRR)
 // gameboy.memoryHighWrite(0x24, 0b00010001)
