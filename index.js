@@ -16,22 +16,26 @@ gameboy.setWaveTable([
 const tone = (note) => () => {
 	gameboy.resume();
 	// duty DD, lenght? LLLLLL
-	gameboy.memoryHighWrite(0x16, 0b10111111)
+	// gameboy.memoryHighWrite(0x16, 0b10111111)
 	// start volume VVVV, direction A (+/- =1/0), period PPP
 	gameboy.memoryHighWrite(0x17, 0b11110001)
 	// pitch low
-	gameboy.memoryHighWrite(0x18, note&255);
+	// gameboy.memoryHighWrite(0x18, note&255);
 	// trigger 1, something? 0, --- pitch high HHH
-	gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
+	// gameboy.memoryHighWrite(0x19, 0b10000000 + (note>>8))
+	gameboy.pulse2.duty(2)
+	gameboy.pulse2.play(note);
 
 	// duty DD, lenght? LLLLLL
-	gameboy.memoryHighWrite(0x11, 0b11111111)
+	// gameboy.memoryHighWrite(0x11, 0b11111111)
 	// start volume VVVV, direction A (+/- =1/0), period PPP
 	gameboy.memoryHighWrite(0x12, 0b10010001)
 	// pitch low
-	gameboy.memoryHighWrite(0x13, (note+10)&255);
+	// gameboy.memoryHighWrite(0x13, (note+10)&255);
 	// trigger 1, something? 0, --- pitch high HHH
-	gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
+	// gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
+	gameboy.pulse1.duty(3)
+	gameboy.pulse1.play(note+10);
 
 	// wav
 	// enable channel
