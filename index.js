@@ -35,7 +35,7 @@ const tone = (note) => () => {
 	// gameboy.memoryHighWrite(0x13, (note+10)&255);
 	// trigger 1, something? 0, --- pitch high HHH
 	// gameboy.memoryHighWrite(0x14, 0b10000000 + (note+10>>8))
-	gameboy.pulse1.sweep(0b00111111)
+	gameboy.pulse1.sweep(0b11110111)
 	gameboy.pulse1.envelope(15, 1)
 	gameboy.pulse1.duty(3)
 	gameboy.pulse1.play(note);
