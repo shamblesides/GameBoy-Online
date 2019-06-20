@@ -29,7 +29,7 @@ const tone = (note) => () => {
 	gameboy.wave1.play(note, true, 32);
 
 	gameboy.noise1.envelope(7, 1)
-	gameboy.memoryHighWrite(0x22, 0b00111111)
+	gameboy.noise1.effect(true, 3, 7);
 	gameboy.noise1.play();
 }
 
