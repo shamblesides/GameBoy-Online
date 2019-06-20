@@ -6,6 +6,12 @@ Want some hardware-accurate Gameboy music and sounds in your HTML5 game or app? 
 Enter **gameboy-sound**, the easy-to-use module that gives you reasonably hardware-accurate sounds in roughly 3 kilobytes. (min + gzip)
 
 
+Demo
+-----
+
+[Try it on StackBlitz!](https://stackblitz.com/edit/js-bhrvld)
+
+
 Goals
 -----
 
