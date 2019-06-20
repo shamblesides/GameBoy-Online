@@ -3,11 +3,6 @@ import { C5, E5, G5 } from './notes.js';
 
 // gameboy.changeUserVolume(0.5);
 
-// l vol (-LLL) / r vol (-RRR)
-// gameboy.memoryHighWrite(0x24, 0b00010001)
-// mixer (LLLL RRRR) for (1234)
-gameboy.memoryHighWrite(0x25, 0b11111111);
-
 // wave channel
 gameboy.wave1.setWaveTable([
 	0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11
