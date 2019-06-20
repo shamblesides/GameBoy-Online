@@ -1,50 +1,28 @@
-JavaScript GameBoy Color Emulator
-=================================
+gameboy-sound
+=============
 
-**Copyright (C) 2010 - 2016 Grant Galitz**
+Want some hardware-accurate Gameboy music and sounds in your HTML5 game or app? Don't want to load megabytes of .mp3 files? [Overwhelmed or frustrated](https://blog.mecheye.net/2017/09/i-dont-know-who-the-web-audio-api-is-designed-for/) by the Web Audio API?
 
-A GameBoy Color emulator that utilizes HTML5 canvas and JavaScript audio APIs to provide a full emulation of the console.
+Enter **gameboy-sound**, the easy-to-use module that gives you reasonably hardware-accurate sounds in roughly 3 kilobytes. (min + gzip)
 
-**License:**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Goals
+-----
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+gameboy-sound intends to deliver a good balance between size, accuracy, and ease-of-use. Its internals are still fairly accurate to [how the real hardware works](http://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware), but it omits some of the more obscure behavior. From a user's point of view, it uses an easy-to-read function-based API, rather than retaining the old notion of writing to registers on an APU. A user should be able to make some kind of sound happen with just one `import` statement and one function call.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Known browsers to work well in:
--------------------------------
+Browser support
+---------------
 
-* Firefox 4-27 (Windows 7, Windows Vista, Mac OS X)
-* Google Chrome 18+
-* Safari 5.1.5+
+Not thoroughly tested, but Chrome, Firefox, and Safari seem good.
 
-Browsers that suck at performance or fail to run the code correctly:
---------------------------------------------------------------------
 
-* Firefox 4+ (*nix versions of Firefox have audio lockup bugs) - Retest this
-* Firefox 28+ (Web Audio API creates 500 ms or greater latency, forced by Firefox)
-* Opera (Crashes + Slow + Graphics Glitches) - Retest this
-* Safari 5.1.X (Below 5.1.5) (Slow or crashes)
-* IE 1-8 (Cannot run)
-* IE 9-10 (Slow, No native audio support (Requires flash bridge in the audio lib))
-* IE 11 (No native audio support (Requires flash bridge in the audio lib))
-* Firefox 1-3.6 (Slow)
-* ALL VERSIONS OF MOBILE SAFARI AND OPERA (Stop pestering me, iOS just **CAN'T** run this well.)
+Acknowledgments
+---------------
 
-CPU instruction set accuracy test results (Blargg's cpu_instrs.gb test ROM):
------------------------------------------------------
+This project is actually a fork of [Grant Galitz's JavaScript Gameboy emulator](https://github.com/taisel/GameBoy-Online). I wanted to play convincing retro sound effects in the browser and decided that starting from a working emulator might be the best place to start. Grant's emulator was an excellent place to start from; its audio emulation is very accurate, and it was also clearly written with performance in mind.
 
-* **GameBoy Online:**
+I stripped out all of the components except the basics required to generate sound (no CPU cycles, no opcodes, no sprites, no interrupts, no joypad, no registers, no ROM...) and refactored it to make it easier to understand (from the perspective of both a user and a contributor) as well as minify better (less duplicate code, no large function prototypes)
 
-	![GameBoy Online (This emulator)](http://i.imgur.com/ivs7F.png "Passes")
-* **Visual Boy Advance 1.7.2:**
-
-	![Visual Boy Advance 1.7.2](http://i.imgur.com/NYnYu.png "Fails")
-* **KiGB:**
-
-	![KiGB](http://i.imgur.com/eYHDH.png "Fails")
-* **Gambatte:**
-
-	![Gambatte](http://i.imgur.com/vGHFz.png "Passes")
+That emulator was provided with the permissive [MIT license](/LICENSE), so this library is too.
