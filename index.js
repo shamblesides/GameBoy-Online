@@ -1,5 +1,5 @@
-import * as gameboy from './lib/GameBoyCore.js';
-import { C5, E5, G5 } from './notes.js';
+import * as gameboy from './lib/index.js';
+import { C5, E5, G5 } from './lib/index.js';
 
 // gameboy.changeUserVolume(0.5);
 
