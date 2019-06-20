@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    main: './index.js'
+    main: './test.js'
   },
   output: {
     filename: '[name].[contentHash].bundle.js'
