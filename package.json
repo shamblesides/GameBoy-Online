@@ -21,7 +21,7 @@
     "build": "webpack",
     "lint": "eslint '**/*.js'"
   },
-  "eslintIgnore": ["webpack.config.js"],
+  "eslintIgnore": ["webpack.config.js", "dist"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shamblesides/GameBoy-Online.git"
