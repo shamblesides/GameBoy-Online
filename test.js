@@ -8,20 +8,14 @@ gameboy.wave1.setWaveTable([
 	0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11
 ]);
 
-const tone = (note) => () => {
+const tone = (freq) => () => {
 	gameboy.resume();
 
-	gameboy.pulse2.envelope(15, 1)
-	gameboy.pulse2.duty(2)
-	gameboy.pulse2.play(note);
+	gameboy.pulse2.play({ freq, duty: 2, volume: 15, fade: 1 })
 
-	// gameboy.pulse1.sweep(7, 7, false)
-	gameboy.pulse1.envelope(9, 1)
-	gameboy.pulse1.duty(3)
-	gameboy.pulse1.play(note+10);
+	gameboy.pulse1.play({ freq: freq+10, duty: 3, volume: 9, fade: 1 })
 
-	gameboy.wave1.sampleDownshift(0);
-	gameboy.wave1.play(note, true, 32);
+	gameboy.wave1.play({ freq, length: 32 });
 
 	gameboy.noise1.envelope(7, 1)
 	gameboy.noise1.effect(true, 3, 7);
