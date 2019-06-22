@@ -3,21 +3,20 @@ import { C5, E5, G5 } from './lib/index.js';
 
 // gameboy.changeUserVolume(0.5);
 
-// wave channel
-gameboy.wave1.setWaveTable([
+gameboy.setWaveTable([
 	0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11
 ]);
 
 const tone = (freq) => () => {
 	gameboy.resume();
 
-	gameboy.pulse2.play({ freq, duty: 2, volume: 15, fade: 1 })
+	gameboy.pulse2({ freq, duty: 2, volume: 15, fade: 1 })
 
-	gameboy.pulse1.play({ freq: freq+10, duty: 3, volume: 9, fade: 1 })
+	gameboy.pulse1({ freq: freq+10, duty: 3, volume: 9, fade: 1 })
 
-	gameboy.wave1.play({ freq, length: 32 });
+	gameboy.wave1({ freq, length: 32 });
 
-	gameboy.noise1.play({ volume: 7, fade: 1, buzzy: false });
+	gameboy.noise1({ volume: 7, fade: 1, buzzy: true });
 }
 
 gameboy.play([
