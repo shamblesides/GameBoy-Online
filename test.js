@@ -17,9 +17,7 @@ const tone = (freq) => () => {
 
 	gameboy.wave1.play({ freq, length: 32 });
 
-	gameboy.noise1.envelope(7, 1)
-	gameboy.noise1.effect(true, 3, 7);
-	gameboy.noise1.play();
+	gameboy.noise1.play({ volume: 7, fade: 1, buzzy: false });
 }
 
 gameboy.play([
