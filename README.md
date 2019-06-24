@@ -9,7 +9,7 @@ Enter **gameboy-sound**, the easy-to-use module that gives you reasonably hardwa
 Demo
 -----
 
-[Try it on StackBlitz!](https://stackblitz.com/edit/js-bhrvld)
+[Try it on StackBlitz!](https://stackblitz.com/edit/gameboy-sound?file=index.js)
 
 
 Goals
