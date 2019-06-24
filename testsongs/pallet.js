@@ -116,7 +116,7 @@ function track1() {
 	.map(([cmd, ...args]) => {
 		if (cmd === 'octave') return [() => octave = +args[0]+2];
 		else if (cmd === 'notetype') return [() => ([, volume, fade] = args.map(n => +n))];
-		else if (cmd === 'rest') return [0x80000*args[0]]
+		else if (cmd === 'rest') return [() => gameboy.pulse2({volume:0}), 0x80000*args[0]]
 		else return [() => gameboy.pulse2({ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }), 0x80000*args[0]]
 	})
 	.reduce((arr, x) => arr.concat(x));
@@ -273,7 +273,7 @@ function track2() {
 	.map(([cmd, ...args]) => {
 		if (cmd === 'octave') return [() => octave = +args[0]+2];
 		else if (cmd === 'notetype') return [() => ([, volume, fade] = args.map(n => +n))];
-		else if (cmd === 'rest') return [0x80000*args[0]]
+		else if (cmd === 'rest') return [() => gameboy.pulse1({volume:0}), 0x80000*args[0]]
 		else return [() => gameboy.pulse1({ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }), 0x80000*args[0]]
 	})
 	.reduce((arr, x) => arr.concat(x));
