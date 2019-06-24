@@ -343,7 +343,7 @@ function lace(...tracks) {
 	const out = [];
 	while (true) {
 		for (const track of tracks) {
-			while (typeof track[0] === 'function') out.push(track.shift());
+			while (typeof track[0] !== 'number' && track.length > 0) out.push(track.shift());
 		}
 		tracks = tracks.filter(t => t.length > 0);
 		if (tracks.length === 0) break;
@@ -361,8 +361,10 @@ export const pallet = lace(
     [() => {
         gameboy.setWaveTable([
             0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11
-        ]);
-    }],
+		]);
+	},
+	gameboy.loopStart,
+    ],
     track1(),
     track2(),
     track3()
