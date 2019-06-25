@@ -332,13 +332,14 @@ function track2() {
 
 function track3() {
 	let octave = 5;
+	const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
 	const data = str3
 	.split('\n')
 	.map(line => line.trim().split(/,? /g))
 	.map(([cmd, ...args]) => {
 		if (cmd === 'octave') return [() => octave = +args[0]+2];
 		else if (cmd === 'rest') return [0x80000*args[0]]
-		else return [() => gameboy.wave1({ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave] }), 0x80000*args[0]]
+		else return [() => gameboy.wave1({ samples, freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave] }), 0x80000*args[0]]
 	})
 	.reduce((arr, x) => arr.concat(x));
 
@@ -364,13 +365,7 @@ function lace(...tracks) {
 }
 
 export const pallet = lace(
-    [() => {
-        gameboy.setWaveTable([
-            0x02,0x46,0x8A,0xCE,0xFF,0xFE,0xED,0xDC,0xCB,0xA9,0x87,0x65,0x44,0x33,0x22,0x11
-		]);
-	},
-	gameboy.loopStart,
-    ],
+    [gameboy.loopStart],
     track1(),
     track2(),
     track3()
