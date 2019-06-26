@@ -300,16 +300,17 @@ function track1() {
 	let fade = 3;
 	const data = str1
 		.split('\n')
-	.map(line => line.trim().split(/,? /g))
-	.map(([cmd, ...args]) => {
-		if (cmd === 'octave') return [() => octave = +args[0]+2];
-		else if (cmd === 'notetype') return [() => ([, volume, fade] = args.map(n => +n))];
-		else if (cmd === 'rest') return [() => gameboy.pulse1({volume:0}), 0x80000*args[0]]
-		else return [() => gameboy.pulse1({ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }), 0x80000*args[0]]
-	})
-	.reduce((arr, x) => arr.concat(x));
+		.map(line => line.trim().split(/,? /g))
+		.map(([cmd, ...args]) => {
+			if (cmd === 'octave') { octave = +args[0]+2; return null }
+			else if (cmd === 'notetype') { ([, volume, fade] = args.map(n => +n)); return null }
+			else if (cmd === 'rest') return [{volume:0}, 0x80000*args[0]]
+			else return [{ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }, 0x80000*args[0]]
+		})
+		.filter(n => n != null)
+		.reduce((arr, x) => arr.concat(x));
 
-	return data;
+	gameboy.play(0, [gameboy.loopStart, ...data]);
 }
 
 function track2() {
@@ -320,53 +321,35 @@ function track2() {
 		.split('\n')
 		.map(line => line.trim().split(/,? /g))
 		.map(([cmd, ...args]) => {
-			if (cmd === 'octave') return [() => octave = +args[0]+2];
-			else if (cmd === 'notetype') return [() => ([, volume, fade] = args.map(n => +n))];
-			else if (cmd === 'rest') return [() => gameboy.pulse2({volume:0}), 0x80000*args[0]]
-			else return [() => gameboy.pulse2({ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }), 0x80000*args[0]]
+			if (cmd === 'octave') { octave = +args[0]+2; return null }
+			else if (cmd === 'notetype') { ([, volume, fade] = args.map(n => +n)); return null }
+			else if (cmd === 'rest') return [{volume:0}, 0x80000*args[0]]
+			else return [{ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }, 0x80000*args[0]]
 		})
+		.filter(n => n != null)
 		.reduce((arr, x) => arr.concat(x));
 
-	return data;
+	gameboy.play(1, [gameboy.loopStart, ...data]);
 }
 
 function track3() {
 	let octave = 5;
 	const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
 	const data = str3
-	.split('\n')
-	.map(line => line.trim().split(/,? /g))
-	.map(([cmd, ...args]) => {
-		if (cmd === 'octave') return [() => octave = +args[0]+2];
-		else if (cmd === 'rest') return [0x80000*args[0]]
-		else return [() => gameboy.wave1({ samples, freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave] }), 0x80000*args[0]]
-	})
-	.reduce((arr, x) => arr.concat(x));
+		.split('\n')
+		.map(line => line.trim().split(/,? /g))
+		.map(([cmd, ...args]) => {
+			if (cmd === 'octave') { octave = +args[0]+2; return null }
+			else return [{ samples, freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave] }, 0x80000*args[0]]
+		})
+		.filter(n => n != null)
+		.reduce((arr, x) => arr.concat(x));
 
-	return data;
+	gameboy.play(2, [gameboy.loopStart, ...data]);
 }
 
-function lace(...tracks) {
-	const out = [];
-	while (true) {
-		for (const track of tracks) {
-			while (typeof track[0] !== 'number' && track.length > 0) out.push(track.shift());
-		}
-		tracks = tracks.filter(t => t.length > 0);
-		if (tracks.length === 0) break;
-		const rest = tracks.map(t => t[0]).reduce((min, n) => Math.min(min, n));
-		for (const track of tracks) {
-			track[0] -= rest;
-			if (track[0] === 0) track.shift();
-		}
-		out.push(rest)
-	}
-	return out;
+export function pallet() {
+	track1();
+	track2();
+	track3();
 }
-
-export const pallet = lace(
-    [gameboy.loopStart],
-    track1(),
-    track2(),
-    track3()
-);
