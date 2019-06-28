@@ -9,7 +9,9 @@ Enter **gameboy-sound**, the easy-to-use module that gives you reasonably hardwa
 Demo
 -----
 
-[Try it on StackBlitz!](https://stackblitz.com/edit/gameboy-sound?file=index.js)
+[Try it on StackBlitz!](https://stackblitz.com/edit/gameboy-sound?file=index.js) This demonstrates most of the capabilities and commands.
+
+[Here is another demo](https://stackblitz.com/edit/gameboy-sound-ogirxm?file=index.js) which plays an actual song. [Compare to the original!](https://www.youtube.com/watch?v=junOznRmxmU)
 
 
 Goals
