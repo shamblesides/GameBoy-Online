@@ -1,6 +1,6 @@
 {
   "name": "gameboy-sound",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Easy 3 kB library for 98% accurate Gameboy audio",
   "main": "lib/index.js",
   "files": [
