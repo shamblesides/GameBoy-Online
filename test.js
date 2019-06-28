@@ -1,11 +1,11 @@
 import * as gameboy from './lib/index.js';
-import { pallet } from './testsongs/pallet.js';
+import { pkmn } from './testsongs/pkmn.js';
 import { success } from './testsongs/success.js';
 
 // gameboy.changeUserVolume(0.5);
 
 // success();
-pallet();
+pkmn();
 
 let stopHandle = null;
 function mousedown() {

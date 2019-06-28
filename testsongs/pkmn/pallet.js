@@ -1,7 +1,12 @@
-import * as gameboy from '../lib/index.js';
+export default
+`Music_PalletTown_Ch0::
+	tempo 160
+	volume 7, 7
+	duty 2
+	notetype 12, 12, 3
 
-const str1 =
-	`octave 3
+Music_PalletTown_branch_a7ce::
+	octave 3
 	B_ 4
 	octave 4
 	C_ 2
@@ -139,10 +144,16 @@ const str1 =
 	F# 2
 	D_ 2
 	C_ 2
-	D_ 2`
+	D_ 2
+	loopchannel 0, Music_PalletTown_branch_a7ce
+	endchannel
 
-const str2 =
-	`notetype 12, 13, 3
+
+Music_PalletTown_Ch1::
+	duty 2
+
+Music_PalletTown_branch_a861::
+	notetype 12, 13, 3
 	octave 5
 	D_ 2
 	notetype 12, 10, 3
@@ -247,10 +258,17 @@ const str2 =
 	G_ 4
 	B_ 4
 	B_ 8
-	A_ 8`;
+	A_ 8
+	loopchannel 0, Music_PalletTown_branch_a861
+	endchannel
 
-const str3 = 
-	`octave 4
+
+Music_PalletTown_Ch2::
+	vibrato 24, 2, 8
+	notetype 12, 1, 2
+
+Music_PalletTown_branch_a8e3::
+	octave 4
 	G_ 6
 	E_ 6
 	F# 4
@@ -292,64 +310,6 @@ const str3 =
 	F# 8
 	E_ 8
 	E_ 8
-	F# 8`
-
-function track1() {
-	let octave = 5;
-	let volume = 13;
-	let fade = 3;
-	const data = str1
-		.split('\n')
-		.map(line => line.trim().split(/,? /g))
-		.map(([cmd, ...args]) => {
-			if (cmd === 'octave') { octave = +args[0]+2; return null }
-			else if (cmd === 'notetype') { ([, volume, fade] = args.map(n => +n)); return null }
-			else if (cmd === 'rest') return [{volume:0}, 0x80000*args[0]]
-			else return [{ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }, 0x80000*args[0]]
-		})
-		.filter(n => n != null)
-		.reduce((arr, x) => arr.concat(x));
-
-	gameboy.play(0, [gameboy.loopStart, ...data]);
-}
-
-function track2() {
-	let octave = 5;
-	let volume = 13;
-	let fade = 3;
-	const data = str2
-		.split('\n')
-		.map(line => line.trim().split(/,? /g))
-		.map(([cmd, ...args]) => {
-			if (cmd === 'octave') { octave = +args[0]+2; return null }
-			else if (cmd === 'notetype') { ([, volume, fade] = args.map(n => +n)); return null }
-			else if (cmd === 'rest') return [{volume:0}, 0x80000*args[0]]
-			else return [{ freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave], volume, fade, duty: 2 }, 0x80000*args[0]]
-		})
-		.filter(n => n != null)
-		.reduce((arr, x) => arr.concat(x));
-
-	gameboy.play(1, [gameboy.loopStart, ...data]);
-}
-
-function track3() {
-	let octave = 5;
-	const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
-	const data = str3
-		.split('\n')
-		.map(line => line.trim().split(/,? /g))
-		.map(([cmd, ...args]) => {
-			if (cmd === 'octave') { octave = +args[0]+2; return null }
-			else return [{ samples, freq: gameboy[cmd.charAt(0)+({_:'','#':'s'})[cmd.charAt(1)]+octave] }, 0x80000*args[0]]
-		})
-		.filter(n => n != null)
-		.reduce((arr, x) => arr.concat(x));
-
-	gameboy.play(2, [gameboy.loopStart, ...data]);
-}
-
-export function pallet() {
-	track1();
-	track2();
-	track3();
-}
+	F# 8
+	loopchannel 0, Music_PalletTown_branch_a8e3
+	endchannel`
