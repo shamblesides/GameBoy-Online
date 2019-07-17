@@ -25,8 +25,12 @@ const ctx = new AudioContext();
 
 function pulse() {
 	const gainNode = ctx.createGain();
-	gainNode.connect(ctx.destination);
 	gainNode.gain.setValueAtTime(0, ctx.currentTime);
+
+	const panNode = ctx.createStereoPanner();
+
+	gainNode.connect(panNode);
+	panNode.connect(ctx.destination);
 
 	const waves = [1/8, 1/4, 1/2]
 		.map(duty => {
@@ -40,7 +44,11 @@ function pulse() {
 	let oscillator = null;
 	let t = ctx.currentTime;
 	return {
-		play({ freq=notes.C3, volume=15, fade=1, duty=2 }) {
+		play({ freq=notes.C3, volume=15, fade=1, duty=2, left=true, right=true }) {
+			if (!left && !right) {
+				volume = 0;
+				fade = 0;
+			}
 			// time 
 			if (t < ctx.currentTime) t = ctx.currentTime;
 			// duty
@@ -61,6 +69,8 @@ function pulse() {
 				t1 += (1/64)*fade;
 				volume -= Math.sign(fade);
 			} while (volume >= 0 && volume <= 15 && fade !== 0)
+			// pan
+			panNode.pan.setValueAtTime((left?-1:0)+(right?1:0), t);
 		},
 		wait(n) {
 			t += n;
@@ -71,15 +81,15 @@ function pulse() {
 const p1 = pulse();
 const p2 = pulse();
 
-p1.play({ freq: notes.C5, duty: 2 });
+p1.play({ freq: notes.C5, duty: 2, left: false });
 p1.wait(3/16);
 p1.play({ freq: notes.E5, duty: 2 });
 p1.wait(2/16);
-p1.play({ freq: notes.G5, duty: 2 });
+p1.play({ freq: notes.G5, duty: 2, right: false });
 p1.wait(3/16);
 p1.play({ freq: notes.C5, duty: 2 });
 p1.wait(2/16);
-p1.play({ freq: notes.E5, duty: 2 });
+p1.play({ freq: notes.E5, duty: 2, left: false });
 p1.wait(3/16);
 p1.play({ freq: notes.G5, duty: 2 });
 
