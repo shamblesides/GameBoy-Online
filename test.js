@@ -1,11 +1,11 @@
 import * as gameboy from './lib/index.js';
 // import { pkmn } from './testsongs/pkmn.js';
-// import { success } from './testsongs/success.js';
+import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
 
 // gameboy.changeUserVolume(0.5);
 
-// success();
+setTimeout(() => success(), 1500);
 // pkmn();
 
 // let stopHandle = null;
@@ -23,28 +23,34 @@ import * as notes from './lib/notes.js';
 
 const ctx = new AudioContext();
 
-function pulse(d) {
-	const oscillator = ctx.createOscillator();
+function pulse() {
 	const gainNode = ctx.createGain();
-	oscillator.connect(gainNode);
 	gainNode.connect(ctx.destination);
+	gainNode.gain.setValueAtTime(0, ctx.currentTime);
 
-	const duty = [1/8, 1/4, 1/2]
+	const waves = [1/8, 1/4, 1/2]
 		.map(duty => {
 			return ctx.createPeriodicWave(
 				Array(200).fill().map((_,n)=> n === 0 ? 0 : 1/n*Math.sin(Math.PI*n*duty)),
 				Array(200).fill(0)
 			)
-		});
-	oscillator.setPeriodicWave(duty[d]);
-	oscillator.start();
-	gainNode.gain.setValueAtTime(0, ctx.currentTime);
+		})
 
+	/** @type{OscillatorNode} */
+	let oscillator = null;
 	let t = ctx.currentTime;
 	return {
-		play({ freq=notes.C3, volume=7, fade=1 }) {
+		play({ freq=notes.C3, volume=15, fade=1, duty=2 }) {
 			// time 
 			if (t < ctx.currentTime) t = ctx.currentTime;
+			// duty
+			if (oscillator != null) {
+				oscillator.stop(t);
+			}
+			oscillator = ctx.createOscillator();
+			oscillator.connect(gainNode);
+			oscillator.setPeriodicWave(waves[duty]);
+			oscillator.start(t);
 			// freq
 			oscillator.frequency.setValueAtTime(0x20000 / (2048-freq), t);
 			// volume + envelope
@@ -62,8 +68,8 @@ function pulse(d) {
 	};
 }
 
-const p1 = pulse(1);
-const p2 = pulse(2);
+const p1 = pulse();
+const p2 = pulse();
 
 p1.play({ freq: notes.C5, duty: 2 });
 p1.wait(3/16);
