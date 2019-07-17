@@ -23,7 +23,7 @@ import * as notes from './lib/notes.js';
 
 const ctx = new AudioContext();
 
-function pulse() {
+function pulse(d) {
 	const oscillator = ctx.createOscillator();
 	const gainNode = ctx.createGain();
 	oscillator.connect(gainNode);
@@ -36,7 +36,7 @@ function pulse() {
 				Array(200).fill(0)
 			)
 		});
-	oscillator.setPeriodicWave(duty[2]);
+	oscillator.setPeriodicWave(duty[d]);
 	oscillator.start();
 	gainNode.gain.setValueAtTime(0, ctx.currentTime);
 
@@ -62,12 +62,33 @@ function pulse() {
 	};
 }
 
-const p1 = pulse();
+const p1 = pulse(1);
+const p2 = pulse(2);
 
-p1.play({ freq: notes.A4 });
-p1.wait(1);
-p1.play({ freq: notes.A5 });
+p1.play({ freq: notes.C5, duty: 2 });
+p1.wait(3/16);
+p1.play({ freq: notes.E5, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.G5, duty: 2 });
+p1.wait(3/16);
+p1.play({ freq: notes.C5, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.E5, duty: 2 });
+p1.wait(3/16);
+p1.play({ freq: notes.G5, duty: 2 });
 
-setTimeout(() => {
-	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])
-}, 200)
+p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
+
+// setTimeout(() => {
+// 	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])
+// }, 200)
