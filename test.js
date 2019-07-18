@@ -110,10 +110,11 @@ function wav() {
 	let lastSamples, cachedWave;
 	return {
 		play({ samples=defaultPCM, freq, trigger, length, left, right }) {
-			const wave = (lastSamples && samples.join() === lastSamples.join()) ?
+			const wave = (lastSamples && samples.join() === lastSamples) ?
 				cachedWave :
 				samplesToPeriodicWave(samples);
 
+			lastSamples = samples.join();
 			cachedWave = wave;
 
 			ch.play({ wave, freq, trigger, length, left, right });
