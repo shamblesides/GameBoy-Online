@@ -1,6 +1,6 @@
-import * as gameboy from './lib/index.js';
-import { pkmn } from './testsongs/pkmn.js';
-import { success } from './testsongs/success.js';
+// import * as gameboy from './lib/index.js';
+// import { pkmn } from './testsongs/pkmn.js';
+// import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
 import ft from 'fourier-transform';
 
@@ -51,7 +51,7 @@ function pulse() {
 	let oscillator = null;
 	let t = ctx.currentTime;
 	return {
-		play({ freq=notes.C3, volume=15, fade=0, duty=3, left=true, right=true }) {
+		play({ freq=notes.C3, trigger=true, length=Infinity, duty=2, volume=15, fade=1, left=true, right=true }) {
 			if (!left && !right) {
 				volume = 0;
 				fade = 0;
@@ -68,14 +68,21 @@ function pulse() {
 			oscillator.start(t);
 			// freq
 			oscillator.frequency.setValueAtTime(0x20000 / (2048-freq), t);
-			// volume + envelope
-			gainNode.gain.cancelAndHoldAtTime(t);
-			let t1 = t;
-			do {
-				gainNode.gain.setValueAtTime(volume/90, t1);
-				t1 += (1/64)*fade;
-				volume -= Math.sign(fade);
-			} while (volume >= 0 && volume <= 15 && fade !== 0)
+			// volume + envelope + length
+			if (trigger) {
+				const cutoff = t + (1/256)*length;
+				gainNode.gain.cancelAndHoldAtTime(t);
+				let t1 = t;
+				while (volume >= 0 && volume <= 15 && t1 < cutoff) {
+					gainNode.gain.setValueAtTime(volume/90, t1);
+					if (fade === 0) break;
+					t1 += (1/64)*fade;
+					volume -= Math.sign(fade);
+				} 
+				if (cutoff < Infinity) {
+					gainNode.gain.setValueAtTime(0, cutoff);
+				}
+			}
 			// pan
 			panNode.pan.setValueAtTime((left?-1:0)+(right?1:0), t);
 		},
@@ -89,40 +96,40 @@ const p1 = pulse();
 const p2 = pulse();
 
 
-p1.play({ freq: notes.G5 })
-p1.wait(6/8);
-p1.play({ freq: notes.E5 })
-p1.wait(6/8);
-p1.play({ freq: notes.Fs5 })
-p1.wait(4/8);
-p1.play({ freq: notes.G5 })
-p1.wait(6/8);
-p1.play({ freq: notes.A5 })
-p1.wait(6/8);
+// p1.play({ freq: notes.G5 })
+// p1.wait(6/8);
+// p1.play({ freq: notes.E5 })
+// p1.wait(6/8);
+// p1.play({ freq: notes.Fs5 })
+// p1.wait(4/8);
+// p1.play({ freq: notes.G5 })
+// p1.wait(6/8);
+// p1.play({ freq: notes.A5 })
+// p1.wait(6/8);
 
-// p1.play({ freq: notes.C5, duty: 3, left: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.E5, duty: 3 });
-// p1.wait(2/16);
-// p1.play({ freq: notes.G5, duty: 3, right: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.C5, duty: 3 });
-// p1.wait(2/16);
-// p1.play({ freq: notes.E5, duty: 3, left: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.G5, duty: 3 });
+p1.play({ freq: notes.C5, duty: 2, left: false });
+p1.wait(3/16);
+p1.play({ freq: notes.E5, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.G5, duty: 2, right: false });
+p1.wait(3/16);
+p1.play({ freq: notes.C5, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.E5, duty: 2, left: false });
+p1.wait(3/16);
+p1.play({ freq: notes.G5, duty: 2 });
 
-// p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
-// p2.wait(2/16);
-// p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
-// p2.wait(2/16);
-// p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
+p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.C5+10, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.E5+10, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.G5+10, duty: 1, volume: 9 });
 
 // setTimeout(() => {
 // 	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])
