@@ -2,7 +2,6 @@
 // import { pkmn } from './testsongs/pkmn.js';
 import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
-import ft from 'fourier-transform';
 
 // gameboy.changeUserVolume(0.5);
 
@@ -108,28 +107,35 @@ function pulse() {
 const defaultPCM = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
 
 function wav() {
-	function samplesToPeriodicWave(samples) {
-		const spectrum = ft(
-			samples
-				.map(n => Array(8).fill(n))
-				.reduce((arr, x)=> arr.concat(x))
-		);
-		return ctx.createPeriodicWave(spectrum, Array(spectrum.length).fill(0));
+	function samplesToBuffer(samples) {
+		const upsample = 4;
+		const buf = ctx.createBuffer(1, 32*upsample, 32*256*upsample);
+		const chan = buf.getChannelData(0);
+		for (let i = 0; i < chan.length; ++i) {
+			chan[i] = samples[(i/upsample|0)%samples.length]/15*2-1;
+		}
+		return buf;
 	}
 
-	const ch = oscillatorChannel();
+	const ch = baseChannel();
 
-	let lastSamples, cachedWave;
+	let lastSamples, cachedBuffer;
 	return {
 		play({ samples=defaultPCM, freq, trigger, length, left, right }) {
-			const wave = (lastSamples && samples.join() === lastSamples) ?
-				cachedWave :
-				samplesToPeriodicWave(samples);
+			const buf = (lastSamples && samples.join() === lastSamples) ?
+				cachedBuffer :
+				samplesToBuffer(samples);
 
 			lastSamples = samples.join();
-			cachedWave = wave;
+			cachedBuffer = buf;
 
-			ch.play({ wave, freq, trigger, length, left, right });
+			const sourceNode = ctx.createBufferSource();
+			sourceNode.buffer = buf;
+			freq = 0x20000 / (2048-freq) / 256;
+			sourceNode.playbackRate.setValueAtTime(freq, ctx.currentTime)
+			sourceNode.loop = true;
+
+			ch.play({ sourceNode, trigger, length, left, right });
 		},
 		wait: ch.wait,
 	}
@@ -138,12 +144,12 @@ function wav() {
 const noiseTables = [[],[]];
 
 for (let i = 0, lsfr=0x7FFF; i < 0x8000; ++i) {
-	noiseTables[0][i] = 1 - (lsfr & 1);
+	noiseTables[0][i] = (lsfr & 1) ? -1 : 1;
     lsfr = (lsfr>>1) | ((((lsfr>>1) ^ lsfr) & 0x1) << 14);
 }
 
 for (let i = 0, lsfr=0x7F; i < 0x80; ++i) {
-	noiseTables[1][i] = 1 - (lsfr & 1);
+	noiseTables[1][i] = (lsfr & 1) ? -1 : 1;
     lsfr = (lsfr>>1) | ((((lsfr>>1) ^ lsfr) & 0x1) << 6);
 }
 
@@ -188,29 +194,29 @@ const ns = noise();
 // p1.play({ freq: notes.A5 })
 // p1.wait(6/8);
 
-p1.play({ freq: notes.C5, fade: 1, duty: 2, left: false });
-p1.wait(3/16);
-p1.play({ freq: notes.E5, fade: 1, duty: 2 });
-p1.wait(2/16);
-p1.play({ freq: notes.G5, fade: 1, duty: 2, right: false });
-p1.wait(3/16);
-p1.play({ freq: notes.C5, fade: 1, duty: 2 });
-p1.wait(2/16);
-p1.play({ freq: notes.E5, fade: 1, duty: 2, left: false });
-p1.wait(3/16);
-p1.play({ freq: notes.G5, fade: 1, duty: 2 });
+// p1.play({ freq: notes.C5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.E5, fade: 1, duty: 2 });
+// p1.wait(2/16);
+// p1.play({ freq: notes.G5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.C5, fade: 1, duty: 2 });
+// p1.wait(2/16);
+// p1.play({ freq: notes.E5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.G5, fade: 1, duty: 2 });
 
-p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(2/16);
-p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(2/16);
-p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(2/16);
+// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(2/16);
+// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
 
 const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
 wv.play({ freq: notes.C4, length: 32, samples });
@@ -225,17 +231,17 @@ wv.play({ freq: notes.E4, length: 32, samples });
 wv.wait(3/16);
 wv.play({ freq: notes.G4, length: 32, samples });
 
-ns.play({ volume: 7, fade: 1, buzzy: true });
-ns.wait(3/16);
-ns.play({ volume: 7, fade: 1, buzzy: true });
-ns.wait(2/16);
-ns.play({ volume: 7, fade: 1, buzzy: true });
-ns.wait(3/16);
-ns.play({ volume: 7, fade: 1, buzzy: true });
-ns.wait(2/16);
-ns.play({ volume: 7, fade: 1, buzzy: true });
-ns.wait(3/16);
-ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.wait(3/16);
+// ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.wait(2/16);
+// ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.wait(3/16);
+// ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.wait(2/16);
+// ns.play({ volume: 7, fade: 1, buzzy: true });
+// ns.wait(3/16);
+// ns.play({ volume: 7, fade: 1, buzzy: true });
 
 // setTimeout(() => {
 // 	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])

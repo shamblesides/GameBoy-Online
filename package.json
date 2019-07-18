@@ -34,8 +34,5 @@
   "eslintIgnore": [
     "webpack.config.js",
     "dist"
-  ],
-  "dependencies": {
-    "fourier-transform": "^1.1.2"
-  }
+  ]
 }
