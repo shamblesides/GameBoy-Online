@@ -33,27 +33,25 @@ function baseChannel() {
 	gainNode.connect(panNode);
 	panNode.connect(ctx.destination);
 
-	/** @type{OscillatorNode} */
-	let oscillator = null;
+	/** @type{AudioScheduledSourceNode} */
+	let lastSourceNode = null;
 	let t = ctx.currentTime;
 	return {
-		play({ wave, freq=notes.C3, trigger=true, length=Infinity, volume=15, fade=0, left=true, right=true }) {
+		play({ sourceNode, trigger=true, length=Infinity, volume=15, fade=0, left=true, right=true }) {
 			if (!left && !right) {
 				volume = 0;
 				fade = 0;
 			}
 			// time 
 			if (t < ctx.currentTime) t = ctx.currentTime;
-			// duty
-			if (oscillator != null) {
-				oscillator.stop(t);
+			// disconnect old source
+			if (lastSourceNode != null) {
+				lastSourceNode.stop(t);
 			}
-			oscillator = ctx.createOscillator();
-			oscillator.connect(gainNode);
-			oscillator.setPeriodicWave(wave);
-			oscillator.start(t);
-			// freq
-			oscillator.frequency.setValueAtTime(0x20000 / (2048-freq), t);
+			// connect new source
+			sourceNode.connect(gainNode);
+			sourceNode.start(t);
+			lastSourceNode = sourceNode;
 			// volume + envelope + length
 			if (trigger) {
 				const cutoff = t + (1/256)*length;
@@ -78,12 +76,26 @@ function baseChannel() {
 	};
 }
 
+function oscillatorChannel() {
+	const ch = baseChannel();
+
+	return {
+		play({ wave, freq=notes.C3, trigger, length, volume, fade, left, right }) {
+			const sourceNode = ctx.createOscillator();
+			sourceNode.setPeriodicWave(wave);
+			sourceNode.frequency.setValueAtTime(0x20000 / (2048-freq), ctx.currentTime);
+			ch.play({ sourceNode, trigger, length, volume, fade, left, right });
+		},
+		wait: ch.wait,
+	}
+}
+
 const pulseWaves = [1/8, 1/4, 1/2]
 	.map(duty => Array(200).fill().map((_,n)=> n === 0 ? 0 : 1/n*Math.sin(Math.PI*n*duty)))
 	.map(f => ctx.createPeriodicWave(f, Array(f.length).fill(0)))
 
 function pulse() {
-	const ch = baseChannel();
+	const ch = oscillatorChannel();
 
 	return {
 		play({ duty=2, freq, trigger, length, volume, fade, left, right }) {
@@ -105,7 +117,7 @@ function wav() {
 		return ctx.createPeriodicWave(spectrum, Array(spectrum.length).fill(0));
 	}
 
-	const ch = baseChannel();
+	const ch = oscillatorChannel();
 
 	let lastSamples, cachedWave;
 	return {
@@ -123,37 +135,37 @@ function wav() {
 	}
 }
 
-const LSFR15Table = [];
-for (let i = 0, LSFR=0x7FFF; i < 0x8000; ++i) {
-	LSFR15Table[i] = 1 - (LSFR & 1);
-    LSFR = (LSFR>>1) | ((((LSFR>>1) ^ LSFR) & 0x1) << 14);
+const noiseTables = [[],[]];
+
+for (let i = 0, lsfr=0x7FFF; i < 0x8000; ++i) {
+	noiseTables[0][i] = 1 - (lsfr & 1);
+    lsfr = (lsfr>>1) | ((((lsfr>>1) ^ lsfr) & 0x1) << 14);
 }
 
-const LSFR7Table = [];
-for (let i = 0, LSFR=0x7F; i < 0x80; ++i) {
-	LSFR7Table[i] = 1 - (LSFR & 1);
-    LSFR = (LSFR>>1) | ((((LSFR>>1) ^ LSFR) & 0x1) << 6);
+for (let i = 0, lsfr=0x7F; i < 0x80; ++i) {
+	noiseTables[1][i] = 1 - (lsfr & 1);
+    lsfr = (lsfr>>1) | ((((lsfr>>1) ^ lsfr) & 0x1) << 6);
 }
 
-const noiseWaves = [LSFR7Table]
-	.map(table => table
-		.map(n => Array(4).fill(n))
-		.reduce((arr, x)=> arr.concat(x))
-	)
-	.map(table => {
-		const buffer = ctx.createBuffer(1, )
-		ctx.createBufferSource()
-	})
-	// .map(duty => Array(200).fill().map((_,n)=> n === 0 ? 0 : 1/n*Math.sin(Math.PI*n*duty)))
-	// .map(f => ctx.createPeriodicWave(f, Array(f.length).fill(0)))
+const noiseWaves = noiseTables.map(table => {
+	const buf = ctx.createBuffer(1, 0x10000, 0x10000);
+	const chan = buf.getChannelData(0);
+	for (let i = 0; i < chan.length; ++i) {
+		chan[i] = table[(i/2|0)%table.length]
+	}
+	return buf;
+});
 
 function noise() {
 	const ch = baseChannel();
 
 	return {
-		play({ buzzy=false, freq=7<<9, trigger, length, volume, fade, left, right }) {
-			// TODO when we use actual hertz for freq, change freq field here
-			ch.play({ wave: noiseWaves[0], freq, trigger, length, volume, fade, left, right })
+		play({ buzzy=false, trigger, length, volume, fade, left, right }) {
+			const buf = noiseWaves[+buzzy];
+			const sourceNode = ctx.createBufferSource();
+			sourceNode.buffer = buf;
+			sourceNode.playbackRate.setValueAtTime(.3333, ctx.currentTime)
+			ch.play({ sourceNode, trigger, length, volume, fade, left, right })
 		},
 		wait: ch.wait,
 	}
@@ -176,42 +188,42 @@ const ns = noise();
 // p1.play({ freq: notes.A5 })
 // p1.wait(6/8);
 
-// p1.play({ freq: notes.C5, fade: 1, duty: 2, left: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.E5, fade: 1, duty: 2 });
-// p1.wait(2/16);
-// p1.play({ freq: notes.G5, fade: 1, duty: 2, right: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.C5, fade: 1, duty: 2 });
-// p1.wait(2/16);
-// p1.play({ freq: notes.E5, fade: 1, duty: 2, left: false });
-// p1.wait(3/16);
-// p1.play({ freq: notes.G5, fade: 1, duty: 2 });
+p1.play({ freq: notes.C5, fade: 1, duty: 2, left: false });
+p1.wait(3/16);
+p1.play({ freq: notes.E5, fade: 1, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.G5, fade: 1, duty: 2, right: false });
+p1.wait(3/16);
+p1.play({ freq: notes.C5, fade: 1, duty: 2 });
+p1.wait(2/16);
+p1.play({ freq: notes.E5, fade: 1, duty: 2, left: false });
+p1.wait(3/16);
+p1.play({ freq: notes.G5, fade: 1, duty: 2 });
 
-// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-// p2.wait(2/16);
-// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-// p2.wait(2/16);
-// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-// p2.wait(3/16);
-// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+p2.wait(2/16);
+p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+p2.wait(3/16);
+p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
 
-// const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
-// wv.play({ freq: notes.C4, length: 32, samples });
-// wv.wait(3/16);
-// wv.play({ freq: notes.E4, length: 32, samples });
-// wv.wait(2/16);
-// wv.play({ freq: notes.G4, length: 32, samples });
-// wv.wait(3/16);
-// wv.play({ freq: notes.C4, length: 32, samples });
-// wv.wait(2/16);
-// wv.play({ freq: notes.E4, length: 32, samples });
-// wv.wait(3/16);
-// wv.play({ freq: notes.G4, length: 32, samples });
+const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
+wv.play({ freq: notes.C4, length: 32, samples });
+wv.wait(3/16);
+wv.play({ freq: notes.E4, length: 32, samples });
+wv.wait(2/16);
+wv.play({ freq: notes.G4, length: 32, samples });
+wv.wait(3/16);
+wv.play({ freq: notes.C4, length: 32, samples });
+wv.wait(2/16);
+wv.play({ freq: notes.E4, length: 32, samples });
+wv.wait(3/16);
+wv.play({ freq: notes.G4, length: 32, samples });
 
 ns.play({ volume: 7, fade: 1, buzzy: true });
 ns.wait(3/16);
