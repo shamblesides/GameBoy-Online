@@ -1,4 +1,4 @@
-// import * as gameboy from './lib/index.js';
+import * as gameboy from './lib/index.js';
 // import { pkmn } from './testsongs/pkmn.js';
 // import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
@@ -29,17 +29,18 @@ const p2 = pulse();
 const wv = wave();
 const ns = noise();
 
-// const freqs = [3,5,8].map(o => notes['C'+o]);
-// const instr4 = { volume: 7, fade: 2, length: 64 };
-// for (const freq of freqs) {
-//     wv.play({ freq, ...instr4 });
-//     wv.wait(16/16);
-// }
+const chords = [-3, -6, 3, 6, 0].map(n => ({ sweepFactor: n }));
+const instr4 = { freq: notes.C5, volume: 7, fade: 3, length: 64, sweepPeriod: 3, duty: 1 };
+let time = now();
+for (const chord of chords) {
+    p1({ ...chord, ...instr4, time });
+    time += 1
+}
 
-// gameboy.play(2, [
-//     0x200000,
-//     ...freqs.map(freq => [{ freq, ...instr4 }, 0x400000]).reduce((arr,x)=>arr.concat(x))
-// ]);
+gameboy.play(0, [
+    0x280000,
+    ...chords.map(chord => [{ ...chord, ...instr4 }, 0x400000]).reduce((arr,x)=>arr.concat(x))
+]);
 
 
 // p1.play({ freq: notes.G5 })
@@ -103,17 +104,17 @@ const ns = noise();
 // ns.wait(3/16);
 // ns.play({ ...instr4 });
 
-const t0 = now();
-;[p1, p2, wv].forEach((ch, n) => {
-    let t = t0;
-    for (const x of tracks[n]) {
-        if (typeof x === 'number') {
-            t += x/0x3C8000;
-        } else {
-            ch({ ...x, time:t });
-        }
-    }
-});
+// const t0 = now();
+// ;[p1, p2, wv].forEach((ch, n) => {
+//     let t = t0;
+//     for (const x of tracks[n]) {
+//         if (typeof x === 'number') {
+//             t += x/0x3C8000;
+//         } else {
+//             ch({ ...x, time:t });
+//         }
+//     }
+// });
 
 // setTimeout(() => {
 // 	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])
