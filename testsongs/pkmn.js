@@ -37,7 +37,7 @@ for (const line of lines) {
 		const note = cmd.charAt(0);
 		const sharp = ({'_':'','#':'s'})[cmd.charAt(1)];
 		const freq = notes[note + sharp + octave];
-		track.push({ freq, volume, fade, duty, samples });
+		track.push({ freq, volume, fade, duty, samples, length: 320 });
 		track.push((0x80000*tempo/160|0)*args[0])
 	} else if (cmd === 'rest') {
 		track.push({ volume: 0, length: 0 });
