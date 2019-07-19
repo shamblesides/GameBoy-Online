@@ -2,7 +2,7 @@
 // import { pkmn } from './testsongs/pkmn.js';
 // import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
-import { pulse, wave, noise } from './lib/channels.js';
+import { pulse, wave, noise, now } from './lib/channels.js';
 import { tracks } from './testsongs/pkmn.js';
 
 // gameboy.changeUserVolume(0.5);
@@ -102,13 +102,14 @@ const ns = noise();
 // ns.wait(3/16);
 // ns.play({ ...instr4 });
 
+const t0 = now();
 ;[p1, p2, wv].forEach((ch, n) => {
+    let t = t0;
     for (const x of tracks[n]) {
-        // console.log(x);
         if (typeof x === 'number') {
-            ch.wait(x/0x3C0000);
+            t += x/0x3C8000;
         } else {
-            ch.play(x);
+            ch({ ...x, time:t });
         }
     }
 });
