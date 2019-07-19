@@ -3,6 +3,7 @@
 // import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
 import { pulse, wave, noise } from './lib/channels.js';
+import { tracks } from './testsongs/pkmn.js';
 
 // gameboy.changeUserVolume(0.5);
 
@@ -51,55 +52,66 @@ const ns = noise();
 // p1.play({ freq: notes.A5 })
 // p1.wait(6/8);
 
-p1.play({ freq: notes.C5, fade: 1, duty: 2 });
-p1.wait(3/16);
-p1.play({ freq: notes.E5, fade: 1, duty: 2 });
-p1.wait(2/16);
-p1.play({ freq: notes.G5, fade: 1, duty: 2 });
-p1.wait(3/16);
-p1.play({ freq: notes.C5, fade: 1, duty: 2 });
-p1.wait(2/16);
-p1.play({ freq: notes.E5, fade: 1, duty: 2 });
-p1.wait(3/16);
-p1.play({ freq: notes.G5, fade: 1, duty: 2 });
+// p1.play({ freq: notes.C5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.E5, fade: 1, duty: 2 });
+// p1.wait(2/16);
+// p1.play({ freq: notes.G5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.C5, fade: 1, duty: 2 });
+// p1.wait(2/16);
+// p1.play({ freq: notes.E5, fade: 1, duty: 2 });
+// p1.wait(3/16);
+// p1.play({ freq: notes.G5, fade: 1, duty: 2 });
 
-p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(2/16);
-p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(2/16);
-p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
-p2.wait(3/16);
-p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(2/16);
+// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.C5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(2/16);
+// p2.play({ freq: notes.E5+10, fade: 1, duty: 1, volume: 9 });
+// p2.wait(3/16);
+// p2.play({ freq: notes.G5+10, fade: 1, duty: 1, volume: 9 });
 
-const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
-wv.play({ freq: notes.C5, length: 32, samples });
-wv.wait(3/16);
-wv.play({ freq: notes.E5, length: 32, samples });
-wv.wait(2/16);
-wv.play({ freq: notes.G5, length: 32, samples });
-wv.wait(3/16);
-wv.play({ freq: notes.C5, length: 32, samples });
-wv.wait(2/16);
-wv.play({ freq: notes.E5, length: 32, samples });
-wv.wait(3/16);
-wv.play({ freq: notes.G5, length: 32, samples });
+// const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
+// wv.play({ freq: notes.C5, length: 32, samples });
+// wv.wait(3/16);
+// wv.play({ freq: notes.E5, length: 32, samples });
+// wv.wait(2/16);
+// wv.play({ freq: notes.G5, length: 32, samples });
+// wv.wait(3/16);
+// wv.play({ freq: notes.C5, length: 32, samples });
+// wv.wait(2/16);
+// wv.play({ freq: notes.E5, length: 32, samples });
+// wv.wait(3/16);
+// wv.play({ freq: notes.G5, length: 32, samples });
 
-const instr4 = { volume: 7, fade: 1, buzzy: true };
-ns.play({ ...instr4 });
-ns.wait(3/16);
-ns.play({ ...instr4 });
-ns.wait(2/16);
-ns.play({ ...instr4 });
-ns.wait(3/16);
-ns.play({ ...instr4 });
-ns.wait(2/16);
-ns.play({ ...instr4 });
-ns.wait(3/16);
-ns.play({ ...instr4 });
+// const instr4 = { volume: 7, fade: 1, buzzy: true };
+// ns.play({ ...instr4 });
+// ns.wait(3/16);
+// ns.play({ ...instr4 });
+// ns.wait(2/16);
+// ns.play({ ...instr4 });
+// ns.wait(3/16);
+// ns.play({ ...instr4 });
+// ns.wait(2/16);
+// ns.play({ ...instr4 });
+// ns.wait(3/16);
+// ns.play({ ...instr4 });
+
+;[p1, p2, wv].forEach((ch, n) => {
+    for (const x of tracks[n]) {
+        // console.log(x);
+        if (typeof x === 'number') {
+            ch.wait(x/0x3C0000);
+        } else {
+            ch.play(x);
+        }
+    }
+});
 
 // setTimeout(() => {
 // 	gameboy.play(0, [{ freq: notes.A4, volume: 7, fade: 1, duty: 2 }, 0x400000, { freq: notes.A5, volume: 7, fade: 1, duty: 2 }])

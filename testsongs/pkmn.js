@@ -1,9 +1,9 @@
-import * as gb from '../lib/index.js';
+import * as notes from '../lib/notes';
 import data from './pkmn/pallet.js';
 
 const lines = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 let track = [];
-const tracks = [track];
+export const tracks = [track];
 const labels = {};
 
 const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
@@ -25,7 +25,7 @@ for (const line of lines) {
 
 	if (cmd === 'endchannel') {
 	} else if (cmd === 'loopchannel') {
-		track.splice(labels[argStr[1]], 0, gb.loopStart)
+		// track.splice(labels[argStr[1]], 0, gb.loopStart)
 		track = [];
 		tracks.push(track);
 	} else if (cmd === 'octave') {
@@ -36,7 +36,7 @@ for (const line of lines) {
 	} else if (cmd.match(/^[A-G][_#]$/)) {
 		const note = cmd.charAt(0);
 		const sharp = ({'_':'','#':'s'})[cmd.charAt(1)];
-		const freq = gb[note + sharp + octave];
+		const freq = notes[note + sharp + octave];
 		track.push({ freq, volume, fade, duty, samples });
 		track.push((0x80000*tempo/160|0)*args[0])
 	} else if (cmd === 'rest') {
@@ -57,6 +57,6 @@ for (const line of lines) {
 	}
 }
 
-export function pkmn() {
-	tracks.slice(0,-1).forEach((track, n) => gb.play(n, track));
-}
+// export function pkmn() {
+// 	tracks.slice(0,-1).forEach((track, n) => gb.play(n, track));
+// }
