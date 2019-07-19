@@ -1,4 +1,4 @@
-import * as gameboy from './lib/index.js';
+// import * as gameboy from './lib/index.js';
 // import { pkmn } from './testsongs/pkmn.js';
 // import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
@@ -37,10 +37,10 @@ for (const chord of chords) {
     time += 1
 }
 
-gameboy.play(0, [
-    0x280000,
-    ...chords.map(chord => [{ ...chord, ...instr4 }, 0x400000]).reduce((arr,x)=>arr.concat(x))
-]);
+// gameboy.play(0, [
+//     0x280000,
+//     ...chords.map(chord => [{ ...chord, ...instr4 }, 0x400000]).reduce((arr,x)=>arr.concat(x))
+// ]);
 
 
 // p1.play({ freq: notes.G5 })
