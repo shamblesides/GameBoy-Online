@@ -2,7 +2,7 @@
 // import { pkmn } from './testsongs/pkmn.js';
 // import { success } from './testsongs/success.js';
 import * as notes from './lib/notes.js';
-import { pulse, wave, noise, now } from './lib/channels.js';
+import { pulse, wave, noise, now, allow } from './lib/channels.js';
 import { tracks } from './testsongs/pkmn.js';
 
 // gameboy.changeUserVolume(0.5);
@@ -20,8 +20,9 @@ import { tracks } from './testsongs/pkmn.js';
 // 		stopHandle = gameboy.play(0, [gameboy.loopStart, { freq: gameboy.C4, sweepFactor: -2, fade: 1, duty: 2 }, 0x140000])
 // 	}
 // }
-// window.addEventListener('mousedown', mousedown);
-// window.addEventListener('touchstart', mousedown);
+
+window.addEventListener('mousedown', allow);
+window.addEventListener('touchstart', allow);
 
 const p1 = pulse();
 const p2 = pulse();
