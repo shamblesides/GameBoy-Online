@@ -32,13 +32,23 @@ const ns = noise();
 // }
 
 const t0 = now();
-;[p1, p2, wv, ns].forEach((ch, n) => {
+void [p1, p2, wv, ns].forEach((ch, n) => play(ch, tracks[n], t0));
+
+function play(ch, track, t0) {
     let t = t0;
-    for (const x of tracks[n]) {
-        if (typeof x === 'number') {
+    let loopTrack = null;
+    for (const x of track) {
+        if (x === 'LOOPSTART') {
+            loopTrack = track.slice(track.indexOf('LOOPSTART'));
+        } else if (typeof x === 'number') {
             t += x/0x3C8000;
         } else {
             ch({ ...x, time:t });
         }
     }
-});
+    if (loopTrack) {
+        const wait = (t - now()) * 1000 * 0.95;
+        if (ch === p1) console.log(wait);
+        setTimeout(() => play(ch, loopTrack, t), wait);
+    }
+}

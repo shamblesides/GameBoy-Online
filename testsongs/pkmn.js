@@ -25,7 +25,7 @@ for (const line of lines) {
 
 	if (cmd === 'endchannel') {
 	} else if (cmd === 'loopchannel') {
-		// track.splice(labels[argStr[1]], 0, gb.loopStart)
+		track.splice(labels[argStr[1]], 0, 'LOOPSTART')
 		track = [];
 		tracks.push(track);
 	} else if (cmd === 'octave') {
