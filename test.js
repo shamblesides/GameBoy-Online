@@ -1,21 +1,24 @@
-import * as gameboy from './lib/index.js';
-import { pkmn } from './testsongs/pkmn.js';
-import { success } from './testsongs/success.js';
+// import { tracks } from './testsongs/success.js';
+import { tracks } from './testsongs/pkmn.js';
+import { play, playAll, allow, changeUserVolume } from './lib/index.js';
+import { C4 } from './lib/notes.js';
 
-// gameboy.changeUserVolume(0.5);
+changeUserVolume(1);
 
-// success();
-pkmn();
+playAll(tracks);
 
+const bumpTrack = [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5];
 let stopHandle = null;
 function mousedown() {
-	gameboy.resume();
+	allow();
 	if (stopHandle) {
-		stopHandle();
+		clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-		stopHandle = gameboy.play(0, [gameboy.loopStart, { freq: gameboy.C4, sweepFactor: -2, fade: 1, duty: 2 }, 0x140000])
+		play(0, bumpTrack)
+		stopHandle = setInterval(() => play(0, bumpTrack), 350);
 	}
 }
+
 window.addEventListener('mousedown', mousedown);
 window.addEventListener('touchstart', mousedown);
