@@ -12,10 +12,11 @@ let stopHandle = null;
 function mousedown() {
 	allow();
 	if (stopHandle) {
-        clearInterval(stopHandle);
+		clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-        stopHandle = setInterval(() => play(0, bumpTrack), 350);
+		play(0, bumpTrack)
+		stopHandle = setInterval(() => play(0, bumpTrack), 350);
 	}
 }
 
