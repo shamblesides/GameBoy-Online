@@ -23,14 +23,19 @@ gameboy-sound intends to deliver a good balance between size, accuracy, and ease
 Browser support
 ---------------
 
-Not thoroughly tested, but Chrome, Firefox, and Safari seem good.
+Not thoroughly tested, but Chrome and Firefox seem good. Safari seems to run, but does not always playback correctly.
 
 
 Acknowledgments
 ---------------
 
-This project is actually a fork of [Grant Galitz's JavaScript Gameboy emulator](https://github.com/taisel/GameBoy-Online). I wanted to play convincing retro sound effects in the browser and decided that starting from a working emulator might be the best place to start. Grant's emulator was an excellent place to start from; its audio emulation is very accurate, and it was also clearly written with performance in mind.
+This project started as a fork of [Grant Galitz's JavaScript Gameboy emulator](https://github.com/taisel/GameBoy-Online). I wanted to play convincing retro sound effects in the browser and decided that starting from a working emulator might be the best place to start. Grant's emulator was an excellent place to start from; its audio emulation is very accurate, and it was also clearly written with performance in mind.
 
 I stripped out all of the components except the basics required to generate sound (no CPU cycles, no opcodes, no sprites, no interrupts, no joypad, no registers, no ROM...) and refactored it to make it easier to understand (from the perspective of both a user and a contributor) as well as minify better (less duplicate code, no large function prototypes)
 
-That emulator was provided with the permissive [MIT license](/LICENSE), so this library is too.
+Eventually, I rewrote the entire project from scratch. Instead of using the deprecated [ScriptProcessorNode](https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode), the project now creates various [AudioBufferSourceNodes](https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode) for the different samples, and renders playback to [OfflineAudioContexts](https://developer.mozilla.org/en-US/docs/Web/API/OfflineAudioContext) to loop music playback. Only a dozen or so lines of code from the original project remain. 
+
+
+License
+-------
+[MIT](/LICENSE)
