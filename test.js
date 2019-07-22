@@ -1,6 +1,6 @@
 // import { tracks } from './testsongs/success.js';
 import { tracks } from './testsongs/pkmn.js';
-import { play, playAll, allow, changeUserVolume } from './lib/channels.js';
+import { play, playAll, allow, changeUserVolume } from './lib/index.js';
 import { C4 } from './lib/notes.js';
 
 changeUserVolume(1);
