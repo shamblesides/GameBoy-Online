@@ -7,7 +7,7 @@ changeUserVolume(1);
 
 playAll(tracks);
 
-const bumpTrack = [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0x200000];
+const bumpTrack = [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5];
 let stopHandle = null;
 function mousedown() {
 	allow();
@@ -15,7 +15,7 @@ function mousedown() {
         clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-        stopHandle = setInterval(() => play(0, bumpTrack), 333);
+        stopHandle = setInterval(() => play(0, bumpTrack), 350);
 	}
 }
 
