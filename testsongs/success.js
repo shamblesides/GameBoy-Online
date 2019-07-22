@@ -8,7 +8,7 @@ export const tracks = [
 	{ length: 32, samples },
 	{ volume: 7, fade: 1, buzzy: true }
 ].map((instr, ch) => {
-	const track = [[C5, 0xC0000], [E5, 0x80000], [G5, 0xC0000], [C5, 0x80000], [E5, 0xC0000], [G5, 0x80000]]
+	const track = [[C5, 3/16], [E5, 2/16], [G5, 3/16], [C5, 2/16], [E5, 3/16], [G5, 1]]
 		.map(([freq, delay]) => [{ ...instr, freq: [freq+10,freq,freq,undefined][ch] }, delay])
 		.reduce((arr, x) => arr.concat(x));
 
