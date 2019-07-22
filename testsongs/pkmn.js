@@ -38,10 +38,10 @@ for (const line of lines) {
 		const sharp = ({'_':'','#':'s'})[cmd.charAt(1)];
 		const freq = notes[note + sharp + octave];
 		track.push({ freq, volume, fade, duty, samples, length: 320 });
-		track.push(0.13223*tempo/160*args[0]);
+		track.push(867*tempo/0x100000*args[0]);
 	} else if (cmd === 'rest') {
 		track.push({ volume: 0, length: 0 });
-		track.push(0.13223*tempo/160*args[0]);
+		track.push(867*tempo/0x100000*args[0]);
 	} else if (cmd === 'tempo') {
 		tempo = args[0];
 	} else if (cmd === 'vibrato') {
