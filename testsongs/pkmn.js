@@ -1,5 +1,5 @@
 import * as notes from '../lib/notes';
-import data from './pkmn/routes3.js';
+import data from './pkmn/gymleaderbattle';
 
 const lines = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 let track = [];
@@ -34,7 +34,7 @@ for (const line of lines) {
 	} else if (cmd === 'notetype') {
 		notespeed = args[0];
 		volume = args[1];
-		fade = args[2];
+		fade = args[2] > 8 ? (args[2] - 20) : args[2];
 	} else if (cmd === 'dspeed') {
 		notespeed = args[0];
 	} else if (cmd === 'note') {
@@ -55,6 +55,10 @@ for (const line of lines) {
 	} else if (cmd.startsWith('mutedsnare')) {
 		// TODO find actual mutedsnare sfx
 		track.push({ freq: 1<<8, volume: 6, fade: 1 });
+		track.push(867*tempo/0x100000*args[0]*notespeed/12);
+	} else if (cmd.startsWith('snare')) {
+		// TODO find actual snare sfx
+		track.push({ freq: 1<<9, volume: 9, fade: 1 });
 		track.push(867*tempo/0x100000*args[0]*notespeed/12);
 	} else if (cmd === 'tempo') {
 		tempo = args[0];
