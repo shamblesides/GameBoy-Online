@@ -1,5 +1,6 @@
 // import { tracks } from './testsongs/success.js';
-import { tracks } from './testsongs/pkmn.js';
+// import { tracks } from './testsongs/pkmn.js';
+import { tracks } from './testsongs/trill.js';
 import { play, playAll, allow, changeUserVolume } from './lib/index.js';
 import { C4 } from './lib/notes.js';
 
@@ -11,13 +12,13 @@ const bumpTrack = [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5];
 let stopHandle = null;
 function mousedown() {
 	allow();
-	if (stopHandle) {
-		clearInterval(stopHandle);
-		stopHandle = null;
-	} else {
-		play(0, bumpTrack)
-		stopHandle = setInterval(() => play(0, bumpTrack), 350);
-	}
+	// if (stopHandle) {
+	// 	clearInterval(stopHandle);
+	// 	stopHandle = null;
+	// } else {
+	// 	play(0, bumpTrack)
+	// 	stopHandle = setInterval(() => play(0, bumpTrack), 350);
+	// }
 }
 
 window.addEventListener('mousedown', mousedown);
