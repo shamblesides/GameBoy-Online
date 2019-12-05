@@ -9,7 +9,7 @@ window.addEventListener('touchstart', gbs.allow);
 
 gbs.changeUserVolume(1);
 
-gbs.playAll(pkmn.routes2);
+// gbs.playAll(pkmn.cities2);
 
 function addButton(name, fn) {
 	const button = document.createElement('button');

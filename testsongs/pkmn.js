@@ -1,8 +1,10 @@
 import * as notes from '../lib/notes';
 
+export const cities1 = tracks(require('./pkmn/cities1').default);
 export const cities2 = tracks(require('./pkmn/cities2').default);
 export const gymleaderbattle = tracks(require('./pkmn/gymleaderbattle').default);
 export const meeteviltrainer = tracks(require('./pkmn/meeteviltrainer').default);
+export const meetfemaletrainer = tracks(require('./pkmn/meetfemaletrainer').default);
 export const meetmaletrainer = tracks(require('./pkmn/meetmaletrainer').default);
 export const pallet = tracks(require('./pkmn/pallet').default);
 export const printer = tracks(require('./pkmn/printer').default);
@@ -14,8 +16,9 @@ export const trainerbattle = tracks(require('./pkmn/trainerbattle').default);
 
 function tracks(data) {
 	const lines = data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-	let track = [];
-	const tracks = [track];
+	let track = null;
+	const tracks = [];
+	const myTracks = [];
 	const labels = {};
 
 	const samples = '02468ACEFFFEEDDCCBA9876544332211'.split('').map(d => parseInt(d, 16));
@@ -28,6 +31,14 @@ function tracks(data) {
 
 	for (const line of lines) {
 		if (line.endsWith(':')) {
+			if (track == null) {
+				track = [];
+				tracks.push(track);
+				if (line.match(/Ch\d::$/)) {
+					console.log(tracks.length, line);
+					myTracks.push(track);
+				}
+			}
 			const [, label] = line.match(/(.*?):+$/);
 			labels[label] = track.length;
 			continue;
@@ -37,10 +48,16 @@ function tracks(data) {
 		const args = argStr.map(n => +n);
 
 		if (cmd === 'endchannel') {
+			track = null;
 		} else if (cmd === 'loopchannel') {
-			track.splice(labels[argStr[1]], 0, 'LOOPSTART')
-			track = [];
-			tracks.push(track);
+			if (args[0] > 0) {
+
+			} else {
+				track.splice(labels[argStr[1]], 0, 'LOOPSTART')
+				track = null;
+			}
+		} else if (cmd === 'callchannel') {
+			// track.push({ callchannel: argStr[0] })
 		} else if (cmd === 'octave') {
 			octave = args[0]+2;
 		} else if (cmd === 'notetype') {
@@ -72,6 +89,10 @@ function tracks(data) {
 			// TODO find actual snare sfx
 			track.push({ freq: 1<<9, volume: 9, fade: 1 });
 			track.push(867*tempo/0x100000*args[0]*notespeed/12);
+		} else if (cmd.startsWith('triangle')) {
+			// TODO find actual tri sfx
+			track.push({ freq: 1<<9, volume: 9, fade: 1 });
+			track.push(867*tempo/0x100000*args[0]*notespeed/12);
 		} else if (cmd === 'tempo') {
 			tempo = args[0];
 		} else if (cmd === 'vibrato') {
@@ -87,5 +108,5 @@ function tracks(data) {
 		}
 	}
 
-	return tracks;
+	return myTracks;
 }
