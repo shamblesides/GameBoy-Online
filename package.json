@@ -1,5 +1,5 @@
 {
-  "name": "gameboy-sound",
+  "name": "apu",
   "version": "0.1.2",
   "description": "Easy 3 kB library for 98% accurate Gameboy audio",
   "main": "lib/index.js",
@@ -8,14 +8,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shamblesides/gameboy-sound.git"
+    "url": "git+https://github.com/shamblesides/apu.git"
   },
   "author": "Nigel Nelson, Grant Galitz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/shamblesides/gameboy-sound/issues"
+    "url": "https://github.com/shamblesides/apu/issues"
   },
-  "homepage": "https://github.com/shamblesides/gameboy-sound",
+  "homepage": "https://github.com/shamblesides/apu",
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",

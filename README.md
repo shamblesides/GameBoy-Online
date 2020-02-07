@@ -1,9 +1,9 @@
-gameboy-sound
-=============
+APU
+===
 
 Want some hardware-accurate Gameboy music and sounds in your HTML5 game or app? Don't want to load megabytes of .mp3 files? [Overwhelmed or frustrated](https://blog.mecheye.net/2017/09/i-dont-know-who-the-web-audio-api-is-designed-for/) by the Web Audio API?
 
-Enter **gameboy-sound**, the easy-to-use module that gives you reasonably hardware-accurate sounds in roughly 3 kilobytes. (min + gzip)
+Enter **apu**! This easy-to-use module is a reasonably accurate emulation of the GameBoy's Audio Processing Unit. (APU!) It weighs in at roughly 3 kilobytes. (min + gzip)
 
 
 Demo
@@ -17,7 +17,7 @@ Demo
 Goals
 -----
 
-gameboy-sound intends to deliver a good balance between size, accuracy, and ease-of-use. Its internals are still fairly accurate to [how the real hardware works](http://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware), but it omits some of the more obscure behavior. From a user's point of view, it uses an easy-to-read function-based API, rather than retaining the old notion of writing to registers on an APU. A user should be able to make some kind of sound happen with just one `import` statement and one function call.
+apu intends to deliver a good balance between size, accuracy, and ease-of-use. Its internals are still fairly accurate to [how the real hardware works](http://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware), but it omits some of the more obscure behavior. From a user's point of view, it uses an easy-to-read function-based API, rather than retaining the old notion of writing to registers on an APU. A user should be able to make some kind of sound happen with just one `import` statement and one function call.
 
 
 Browser support
