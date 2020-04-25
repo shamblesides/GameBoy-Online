@@ -1,6 +1,7 @@
 // import { tracks } from './testsongs/success.js';
-import * as pkmn from './testsongs/pkmn.js';
+// import * as pkmn from './testsongs/pkmn.js';
 // import { tracks } from './testsongs/trill.js';
+import { songLoaded } from './testsongs/vgm.js';
 import * as gbs from './lib/index.js';
 import { C4 } from './lib/notes.js';
 
@@ -9,7 +10,9 @@ window.addEventListener('touchstart', gbs.allow);
 
 gbs.changeUserVolume(1);
 
-gbs.playAll(pkmn.routes2);
+songLoaded.then(trax => {
+	gbs.playAll(trax);
+})
 
 function addButton(name, fn) {
 	const button = document.createElement('button');
@@ -32,6 +35,6 @@ addButton('Bump', () => {
 	}
 });
 
-for (const [k, v] of Object.entries(pkmn)) {
-	addButton(k, () => gbs.playAll(v));
-}
+// for (const [k, v] of Object.entries(pkmn)) {
+// 	addButton(k, () => gbs.playAll(v));
+// }
