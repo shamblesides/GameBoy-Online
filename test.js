@@ -1,7 +1,7 @@
-// import { tracks } from './testsongs/success.js';
+import { tracks } from './testsongs/success.js';
 // import * as pkmn from './testsongs/pkmn.js';
 // import { tracks } from './testsongs/trill.js';
-import { songLoaded } from './testsongs/vgm.js';
+// import { songLoaded } from './testsongs/vgm.js';
 import * as gbs from './lib/index.js';
 import { C4 } from './lib/notes.js';
 
@@ -10,9 +10,10 @@ window.addEventListener('touchstart', gbs.allow);
 
 gbs.changeUserVolume(1);
 
-songLoaded.then(trax => {
-	gbs.playAll(trax);
-})
+gbs.renderAll(tracks).play();
+// songLoaded.then(trax => {
+// 	gbs.playAll(trax);
+// })
 
 function addButton(name, fn) {
 	const button = document.createElement('button');
