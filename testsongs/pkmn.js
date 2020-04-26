@@ -87,5 +87,6 @@ function tracks(data) {
 		}
 	}
 
+	tracks.pop();
 	return tracks;
 }

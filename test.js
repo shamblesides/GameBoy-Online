@@ -1,23 +1,45 @@
-import * as gameboy from './lib/index.js';
-// import { pkmn } from './testsongs/pkmn.js';
-import { success } from './testsongs/success.js';
+import { tracks } from './testsongs/success.js';
+import * as pkmn from './testsongs/pkmn.js';
+// import { tracks } from './testsongs/trill.js';
+// import { songLoaded } from './testsongs/vgm.js';
+import * as gbs from './lib/index.js';
+import { C4 } from './lib/notes.js';
 
-document.body.style.backgroundColor = 'black'
+window.addEventListener('mousedown', gbs.allow);
+window.addEventListener('touchstart', gbs.allow);
 
-// gameboy.changeUserVolume(0.5);
+gbs.changeUserVolume(1);
 
-success();
-// pkmn();
+gbs.renderAll(tracks).play();
+// songLoaded.then(trax => {
+// 	gbs.playAll(trax);
+// })
 
-// let stopHandle = null;
-// function mousedown() {
-// 	gameboy.resume();
-// 	if (stopHandle) {
-// 		stopHandle();
-// 		stopHandle = null;
-// 	} else {
-// 		stopHandle = gameboy.play(0, [gameboy.loopStart, { freq: gameboy.C4, sweepFactor: -2, fade: 1, duty: 2 }, 0x140000])
-// 	}
-// }
-// window.addEventListener('mousedown', mousedown);
-// window.addEventListener('touchstart', mousedown);
+function addButton(name, fn) {
+	const button = document.createElement('button');
+	button.innerText = name;
+	button.style.cssText = `display: block; width: 200px; margin: 10px auto; padding: 20px 0;`
+	button.addEventListener('click', fn);
+
+	document.body.appendChild(button);
+}
+
+const bumpTrack = gbs.render(0, [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5]);
+let stopHandle = null;
+addButton('Bump', () => {
+	if (stopHandle) {
+		clearInterval(stopHandle);
+		stopHandle = null;
+	} else {
+		bumpTrack.play();
+		stopHandle = setInterval(() => bumpTrack.play(), 350);
+	}
+});
+
+for (const [k, v] of Object.entries(pkmn)) {
+	let x;
+	addButton(k, () => {
+		if (!x) x = gbs.renderAll(v);
+		x.play();
+	});
+}
