@@ -23,15 +23,15 @@ function addButton(name, fn) {
 	document.body.appendChild(button);
 }
 
-const bumpTrack = [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5];
+const bumpTrack = gbs.render(0, [{ freq: C4, sweepFactor: -2, fade: 1, duty: 2 }, 0.5]);
 let stopHandle = null;
 addButton('Bump', () => {
 	if (stopHandle) {
 		clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-		gbs.play(0, bumpTrack)
-		stopHandle = setInterval(() => gbs.play(0, bumpTrack), 350);
+		bumpTrack.then(play => play());
+		stopHandle = setInterval(() => bumpTrack.then(play => play()), 350);
 	}
 });
 
