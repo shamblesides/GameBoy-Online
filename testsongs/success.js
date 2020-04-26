@@ -10,10 +10,11 @@ export function success() {
 		{ length: 32, samples },
 		{ volume: 7, fade: 1, buzzy: true }
 	].map((instr, ch) => {
-		const track = [[C5, 0xC0000], [E5, 0x80000], [G5, 0xC0000], [C5, 0x80000], [E5, 0xC0000], [G5, 0x80000]]
+		return [[C5, 0xC0000], [E5, 0x80000], [G5, 0xC0000], [C5, 0x80000], [E5, 0xC0000], [G5, 0x100000]]
 			.map(([freq, delay]) => [{ ...instr, freq: [freq+10,freq,freq,undefined][ch] }, delay])
 			.reduce((arr, x) => arr.concat(x));
+	}).map((track, ch) => {
+		return gameboy.render(ch, track);
+	}).forEach(fn => fn());
 
-		gameboy.play(ch, track);
-	})
 }
