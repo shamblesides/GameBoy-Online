@@ -26,6 +26,7 @@ export const songLoaded = fetch(vgmURL)
       length: 64-(val&0x3F),
     })],
     0xff12: [0, (val) => ({
+      _disabled: !(val&0xF8),
       volume: val>>>4,
       fade: (val&7) * ((val&8)?-1:1)
     })],
@@ -39,6 +40,7 @@ export const songLoaded = fetch(vgmURL)
     //PULSE2
     0xff15: null,
     0xff16: [1, (val) => ({
+      _disabled: !(val&0xF8),
       duty: val>>>6,
       length: 64-(val&0x3F),
     })],
@@ -55,7 +57,7 @@ export const songLoaded = fetch(vgmURL)
 
     //WAV
     0xff1a: [2, (val) => ({
-      _disabled: !!(val&0x80),
+      _disabled: !(val&0x80),
     })],
     0xff1b: [2, (val) => ({
       length:256-val
@@ -94,12 +96,12 @@ export const songLoaded = fetch(vgmURL)
       length: 64-(val&0b00111111),
     })],
     0xff21: [3, (val) => ({
-      // z: console.log(val.toString(16)),
+      ___: console.log(`NR32: ${val.toString(16).padStart(2,0)} ${val.toString(2).padStart(8,0)} ${val.toString(10)}`),
+      _disabled: !(val&0xF8),
       volume: (val>>>4),
       fade: (val&7) * ((val&8)?-1:1)
     })],
     0xff22: [3, (val) => ({
-      // z: console.log(val.toString(2).padStart(8,0)),
       buzzy: !!(val&8),
       freq: (val&7)<<(val>>>4),
     })],
