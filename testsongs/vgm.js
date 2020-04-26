@@ -61,9 +61,11 @@ export const songLoaded = fetch(vgmURL)
       length:256-val
     })],
     0xff1c: [2, (val) => ({
-      // z:console.log(val),
-      dampen:[4,0,1,2][(val>>5)&3]})],
-    0xff1d: [2, (val, {freq=0}) => ({freq:(freq&0x0700)|val})],
+      downshift:[4,0,1,2][(val>>5)&3],
+    })],
+    0xff1d: [2, (val, {freq=0}) => ({
+      freq:(freq&0x0700)|val
+    })],
     0xff1e: [2, (val, {freq=0}) => ({
       freq:(freq&0x00FF)|((val&7)<<8),
       trigger:!!(val&0x80),
