@@ -107,13 +107,19 @@ export const songLoaded = fetch(vgmURL)
     })],
 
     //MISC
-    // 0xff25: [5, (val) => [
-    //   {left:!!(val&0x80),right:!!(val&0x08)},
-    //   {left:!!(val&0x40),right:!!(val&0x04)},
-    //   {left:!!(val&0x20),right:!!(val&0x02)},
-    //   {left:!!(val&0x10),right:!!(val&0x01)},
-    // ]],
+    0xff25: [-1, (val) => LR = [
+      {left:!!(val&0x10),right:!!(val&0x01)},
+      {left:!!(val&0x20),right:!!(val&0x02)},
+      {left:!!(val&0x40),right:!!(val&0x04)},
+      {left:!!(val&0x80),right:!!(val&0x08)},
+    ]],
   }
+  var LR = [
+    {left:true,right:true},
+    {left:true,right:true},
+    {left:true,right:true},
+    {left:true,right:true},
+  ];
 
   const data = new Uint8Array(buf, data0);
   const trax = [
@@ -133,21 +139,25 @@ export const songLoaded = fetch(vgmURL)
         continue;
       }
       const [chan, fn] = doReg[reg];
-      const track = trax[chan];
+      if (chan >= 0) { 
+        const track = trax[chan];
 
-      if (track[track.length-1][1] > 0) {
-        const cmd = track[track.length-1][0];
-        if (Object.keys(cmd).length === 0) {
-          cmd.length = 0;
+        if (track[track.length-1][1] > 0) {
+          const cmd = track[track.length-1][0];
+          if (Object.keys(cmd).length === 0) {
+            cmd.length = 0;
+          }
+          track.push([Object.assign({}, cmd, {trigger:true}, LR[chan]), 0]);
+
+          if (!cmd._enlen) delete cmd.length;
+          if (cmd._disabled) cmd.length=0;
         }
-        track.push([Object.assign({}, cmd, {trigger:true}), 0]);
 
-        if (!cmd._enlen) delete cmd.length;
-        if (cmd._disabled) cmd.length=0;
+        const cmd = track[track.length-1][0];
+        Object.assign(cmd, fn(val, cmd));
+      } else {
+        fn(val);
       }
-
-      const cmd = track[track.length-1][0];
-      Object.assign(cmd, fn(val, cmd));
     } else if (op === 0x61) {
       const t = (1/44100) * ((data[i++]) + (data[i++] << 8));
       trax.forEach(track => {
