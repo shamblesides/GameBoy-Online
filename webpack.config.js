@@ -20,6 +20,14 @@ module.exports = {
           }
         }
       },
+      {
+        test: /\.vgm$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      },
     ]
   },
   plugins: [
