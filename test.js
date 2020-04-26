@@ -30,8 +30,8 @@ addButton('Bump', () => {
 		clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-		bumpTrack.then(play => play());
-		stopHandle = setInterval(() => bumpTrack.then(play => play()), 350);
+		bumpTrack.play();
+		stopHandle = setInterval(() => bumpTrack.play(), 350);
 	}
 });
 
