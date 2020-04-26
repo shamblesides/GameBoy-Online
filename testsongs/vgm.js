@@ -97,7 +97,7 @@ export const songLoaded = fetch(vgmURL)
       fade: (val&7) * ((val&8)?-1:1)
     })],
     0xff22: [3, (val) => ({
-      z: console.log(val.toString(2).padStart(8,0)),
+      // z: console.log(val.toString(2).padStart(8,0)),
       buzzy: !!(val&8),
       freq: (val&7)<<(val>>>4),
     })],
