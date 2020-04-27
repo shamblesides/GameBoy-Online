@@ -1,4 +1,4 @@
-import vgmURL from './vgm/friendly_battle.vgm'
+import vgmURL from './vgm/duel.vgm'
 
 function checkHeader(buf) {
   const header = new Uint8Array(buf, 0, 4);
@@ -73,22 +73,20 @@ export const songLoaded = fetch(vgmURL)
       trigger:!!(val&0x80),
       _enlen:!!(val&0x40),
     })],
-    0xff30: [2, (val,{samples}) => ({samples:Object.assign([],samples,{0:val&0x0F,1:(val&0xF0)>>4})})],
-    0xff31: [2, (val,{samples}) => ({samples:Object.assign([],samples,{2:val&0x0F,3:(val&0xF0)>>4})})],
-    0xff32: [2, (val,{samples}) => ({samples:Object.assign([],samples,{4:val&0x0F,5:(val&0xF0)>>4})})],
-    0xff33: [2, (val,{samples}) => ({samples:Object.assign([],samples,{6:val&0x0F,7:(val&0xF0)>>4})})],
-    0xff34: [2, (val,{samples}) => ({samples:Object.assign([],samples,{8:val&0x0F,9:(val&0xF0)>>4})})],
-    0xff35: [2, (val,{samples}) => ({samples:Object.assign([],samples,{10:val&0x0F,11:(val&0xF0)>>4})})],
-    0xff36: [2, (val,{samples}) => ({samples:Object.assign([],samples,{12:val&0x0F,13:(val&0xF0)>>4})})],
-    0xff37: [2, (val,{samples}) => ({samples:Object.assign([],samples,{14:val&0x0F,15:(val&0xF0)>>4})})],
-    0xff38: [2, (val,{samples}) => ({samples:Object.assign([],samples,{16:val&0x0F,17:(val&0xF0)>>4})})],
-    0xff39: [2, (val,{samples}) => ({samples:Object.assign([],samples,{18:val&0x0F,19:(val&0xF0)>>4})})],
-    0xff3a: [2, (val,{samples}) => ({samples:Object.assign([],samples,{20:val&0x0F,21:(val&0xF0)>>4})})],
-    0xff3b: [2, (val,{samples}) => ({samples:Object.assign([],samples,{22:val&0x0F,23:(val&0xF0)>>4})})],
-    0xff3c: [2, (val,{samples}) => ({samples:Object.assign([],samples,{24:val&0x0F,25:(val&0xF0)>>4})})],
-    0xff3d: [2, (val,{samples}) => ({samples:Object.assign([],samples,{26:val&0x0F,27:(val&0xF0)>>4})})],
-    0xff3e: [2, (val,{samples}) => ({samples:Object.assign([],samples,{28:val&0x0F,29:(val&0xF0)>>4})})],
-    0xff3f: [2, (val,{samples}) => ({samples:Object.assign([],samples,{30:val&0x0F,31:(val&0xF0)>>4})})],
+
+    ...(
+      Array(16).fill().map((_,i)=>0xff30|i)
+      .map((addr,i) => [addr, [2, (val,{samples:oldSamples}) => {
+        const samples = Array(32).fill(0);
+        Object.assign(samples, oldSamples)
+        samples[i*2]=val&0x0F
+        samples[i*2+1]=(val&0xF0)>>4
+        return { samples };
+      }]])
+      .reduce((hash, [addr, val]) => (
+        Object.assign(hash,{[addr]:val}), {})
+      )
+    ),
 
     //NOISE
     0xff1f: null,
