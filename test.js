@@ -10,10 +10,10 @@ window.addEventListener('touchstart', gbs.allow);
 
 gbs.changeUserVolume(1);
 
-gbs.renderAll(tracks).play();
-// songLoaded.then(trax => {
-// 	gbs.renderAll(trax).play();
-// })
+// gbs.renderAll(tracks).play();
+songLoaded.then(trax => {
+	gbs.renderAll(trax).play();
+})
 
 function addButton(name, fn) {
 	const button = document.createElement('button');
@@ -36,7 +36,7 @@ addButton('Bump', () => {
 	}
 });
 
-for (const [k, v] of Object.entries(pkmn)) {
-	const x = gbs.renderAll(v);
-	addButton(k, () => x.play());
-}
+// for (const [k, v] of Object.entries(pkmn)) {
+// 	const x = gbs.renderAll(v);
+// 	addButton(k, () => x.play());
+// }

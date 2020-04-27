@@ -35,5 +35,8 @@
   "eslintIgnore": [
     "webpack.config.js",
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "big.js": "^5.2.2"
+  }
 }
