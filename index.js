@@ -1,12 +1,12 @@
 import * as gameboy from './lib/GameBoyCore.js';
+import vgmURL from './vgmtest/friendly_battle.vgm'
 import { C5, E5, G5 } from './notes.js';
-import { songLoaded } from './testsongs/vgm.js';
 
 // gameboy.changeUserVolume(0.5);
 
-songLoaded.then(song => {
-	gameboy.play(song);
-});
+fetch(vgmURL)
+.then(res => res.arrayBuffer())
+.then(gameboy.playFile);
 
 /*
 // l vol (-LLL) / r vol (-RRR)
