@@ -1,7 +1,14 @@
 import * as gameboy from './lib/GameBoyCore.js';
 import vgmURL1 from './vgmtest/friendly_battle.vgm'
 import vgmURL2 from './vgmtest/title.vgm'
-import { C5, E5, G5, C6 } from './notes.js';
+import { C4, C5, E5, G5, C6 } from './notes.js';
+
+gameboy.allow();
+
+document.body.addEventListener('mousedown', gameboy.allow);
+document.body.addEventListener('touchstart', gameboy.allow);
+
+gameboy.changeUserVolume(0.5);
 
 function hit(note) {
 	return new Uint8Array([
@@ -45,8 +52,7 @@ function hit(note) {
 
 const successTrack = new Uint8Array([
 	// l vol (-LLL) / r vol (-RRR)
-	// gameboy.memoryHighWrite(0x24, 0b00010001)
-	0xB3, 0x24-0x10, 0b01110111,
+	// 0xB3, 0x24-0x10, 0b01110111,
 	// mixer (LLLL RRRR) for (1234)
 	0xB3, 0x25-0x10, 0b11111111,
 
@@ -68,6 +74,8 @@ const successTrack = new Uint8Array([
 	}).reduce((arr,x) => [].concat.apply(arr, x), []),
 ]);
 
+gameboy.play(successTrack);
+
 function addButton(name, fn) {
 	const button = document.createElement('button');
 	button.innerText = name;
@@ -77,16 +85,38 @@ function addButton(name, fn) {
 	document.body.appendChild(button);
 }
 
-gameboy.allow();
+addButton('boop', () => gameboy.play(hit(C6)))
 
-gameboy.changeUserVolume(0.5);
-
-gameboy.play(successTrack);
+const bumpBytes = new Uint8Array([
+	// enable channels
+	0xB3, 0x25-0x10, 0b11111111,
+	// sweep
+	0xB3, 0x10-0x10, 0b01111010,
+	// duty, length
+	0xB3, 0x11-0x10, 0b10111111,
+	// start volume VVVV, direction A (+/- =1/0), period PPP
+	0xB3, 0x12-0x10, 0b11110001,
+	// pitch low
+	0xB3, 0x13-0x10, C4&0xFF,
+	// trigger 1, something? 0, --- pitch high HHH
+	0xB3, 0x14-0x10, 0b10000000 + (C4>>8),
+	// track duration
+	0x61, (44100/2)&0xFF, (4100/2)>>8,
+]);
+let stopHandle = null;
+addButton('*BUMP BUMP BUMP*', (evt) => {
+	if (stopHandle) {
+		clearInterval(stopHandle);
+		stopHandle = null;
+	} else {
+		gameboy.play(bumpBytes);
+		stopHandle = setInterval(() => gameboy.play(bumpBytes), 350);
+	}
+	evt.target.innerText = (stopHandle) ? '*stop bumps*' :'*BUMP BUMP BUMP*'
+});
 
 const tracks = [vgmURL1, vgmURL2]
 .map(url => fetch(url).then(res => res.arrayBuffer()))
-
-addButton('boop', () => gameboy.play(hit(C6)))
 
 Promise.all(tracks).then(loadedFiles => {
 	const trackNames = ['Friendly Battle', 'Title']
@@ -97,6 +127,3 @@ Promise.all(tracks).then(loadedFiles => {
 		});
 	})
 })
-
-document.body.addEventListener('mousedown', gameboy.allow);
-document.body.addEventListener('touchstart', gameboy.allow);
