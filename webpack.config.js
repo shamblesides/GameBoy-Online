@@ -12,6 +12,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.worklet.js$/,
+        use: {
+          loader: 'raw-loader',
+        }
+      },
+      {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',

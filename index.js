@@ -1,4 +1,4 @@
-import * as gameboy from './lib/GameBoyCore.js';
+import * as gameboy from './lib/APU.js';
 import vgmURL1 from './vgmtest/friendly_battle.vgm'
 import vgmURL2 from './vgmtest/title.vgm'
 import { C4, C5, E5, G5, C6 } from './notes.js';
