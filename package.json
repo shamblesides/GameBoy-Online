@@ -2,10 +2,16 @@
   "name": "apu",
   "version": "0.1.4",
   "description": "Easy 3 kB library for 98% accurate Gameboy audio",
-  "main": "lib/index.js",
+  "main": "dist/apu.js",
   "files": [
-    "lib/*.js"
+    "dist/*.js"
   ],
+  "scripts": {
+    "start": "webpack-dev-server --entry=./index.js",
+    "build": "webpack",
+    "lint": "eslint '**/*.js'",
+    "prepublishOnly": "npm run build"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shamblesides/apu.git"
@@ -29,11 +35,6 @@
     "webpack": "^4.33.0",
     "webpack-cli": "^3.3.4",
     "webpack-dev-server": "^3.7.1"
-  },
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack",
-    "lint": "eslint '**/*.js'"
   },
   "eslintIgnore": [
     "webpack.config.js",

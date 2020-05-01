@@ -1,13 +1,16 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
+const { name, version } = require('./package.json');
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: {
-    main: './index.js'
+    main: './lib/APU.js'
   },
   output: {
-    filename: '[name].[contentHash].bundle.js'
+    filename: `apu.js`,
+    library: 'APU',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
@@ -36,7 +39,7 @@ module.exports = {
       },
     ]
   },
-  plugins: [
+  plugins: (env === 'dev') ? [
     new webpack.ProgressPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -45,5 +48,8 @@ module.exports = {
         viewport: "width=device-width, user-scalable=no",
       }
     }),
+  ] : [
+    new webpack.ProgressPlugin(),
+    new CleanWebpackPlugin(),
   ],
-};
+});
