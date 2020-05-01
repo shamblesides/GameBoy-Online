@@ -10,7 +10,7 @@ document.body.addEventListener('touchstart', gameboy.allow);
 
 gameboy.changeUserVolume(0.5);
 
-function hit(note) {
+function hit(note, beats) {
 	return new Uint8Array([
 		// duty DD, lenght? LLLLLL
 		0xB3, 0x16-0x10, 0b10111111,
@@ -47,6 +47,9 @@ function hit(note) {
 		0xB3, 0x21-0x10, 0b01110001,
 		0xB3, 0x22-0x10, 0b00111111,
 		0xB3, 0x23-0x10, 0b10000000,
+
+		// wait
+		0x61, (beats*2756)&0xFF, (beats*2756)>>8,
 	]);
 }
 
@@ -63,18 +66,14 @@ const successTrack = new Uint8Array([
 	.reduce((arr, x) => arr.concat(x)),
 
 	// song
-	... new Array(12).fill().map((_,i) => {
-		if (i % 2) {
-			const n = ((i-1)%4) ? (2756*2) : (2756*3);
-			return [0x61, n & 0xFF, n >> 8];
-		} else {
-			const note = [C5, , E5, , G5][i%6];
-			return hit(note);
-		}
+	... new Array(6).fill().map((_,i) => {
+		const note = [C5, E5, G5][i%3];
+		const beats = [3,2][i%2];
+		return hit(note, beats);
 	}).reduce((arr,x) => [].concat.apply(arr, x), []),
 ]);
 
-gameboy.track(successTrack.buffer).play();
+gameboy.sfx(successTrack.buffer).play();
 
 function addButton(name, fn) {
 	const button = document.createElement('button');
@@ -85,7 +84,7 @@ function addButton(name, fn) {
 	document.body.appendChild(button);
 }
 
-addButton('boop', gameboy.track(hit(C6)).play);
+addButton('boop', gameboy.sfx(hit(C6,5)).play);
 
 const bumpBytes = new Uint8Array([
 	// enable channels
@@ -101,9 +100,9 @@ const bumpBytes = new Uint8Array([
 	// trigger 1, something? 0, --- pitch high HHH
 	0xB3, 0x14-0x10, 0b10000000 + (C4>>8),
 	// track duration
-	0x61, (44100/2)&0xFF, (4100/2)>>8,
+	0x61, (44100/2)&0xFF, (44100/2)>>8,
 ]);
-const bumpSFX = gameboy.track(bumpBytes, -1, [1,0,0,0])
+const bumpSFX = gameboy.sfx(bumpBytes, [1,0,0,0])
 
 let stopHandle = null;
 addButton('*BUMP BUMP BUMP*', (evt) => {
