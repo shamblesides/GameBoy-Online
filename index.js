@@ -74,7 +74,7 @@ const successTrack = new Uint8Array([
 	}).reduce((arr,x) => [].concat.apply(arr, x), []),
 ]);
 
-gameboy.play(successTrack);
+gameboy.track(successTrack.buffer).play();
 
 function addButton(name, fn) {
 	const button = document.createElement('button');
@@ -85,7 +85,7 @@ function addButton(name, fn) {
 	document.body.appendChild(button);
 }
 
-addButton('boop', () => gameboy.play(hit(C6)))
+addButton('boop', gameboy.track(hit(C6)).play);
 
 const bumpBytes = new Uint8Array([
 	// enable channels
@@ -103,27 +103,29 @@ const bumpBytes = new Uint8Array([
 	// track duration
 	0x61, (44100/2)&0xFF, (4100/2)>>8,
 ]);
+const bumpSFX = gameboy.track(bumpBytes, -1, [1,0,0,0])
+
 let stopHandle = null;
 addButton('*BUMP BUMP BUMP*', (evt) => {
 	if (stopHandle) {
 		clearInterval(stopHandle);
 		stopHandle = null;
 	} else {
-		gameboy.play(bumpBytes);
-		stopHandle = setInterval(() => gameboy.play(bumpBytes), 350);
+		bumpSFX.play();
+		stopHandle = setInterval(bumpSFX.play, 350);
 	}
 	evt.target.innerText = (stopHandle) ? '*stop bumps*' :'*BUMP BUMP BUMP*'
 });
 
 const tracks = [vgmURL1, vgmURL2]
-.map(url => fetch(url).then(res => res.arrayBuffer()))
+.map(url => fetch(url).then(res => res.arrayBuffer()).then(gameboy.fromFile))
 
 Promise.all(tracks).then(loadedFiles => {
 	const trackNames = ['Friendly Battle', 'Title']
 
-	loadedFiles.forEach((arrayBuffer, i) => {
+	loadedFiles.forEach((track, i) => {
 		addButton(trackNames[i], () => {
-			gameboy.playFile(arrayBuffer);
+			track.play();
 		});
 	})
 })
