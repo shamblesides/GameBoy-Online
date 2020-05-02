@@ -7,7 +7,7 @@
     "dist/*.js"
   ],
   "scripts": {
-    "start": "webpack-dev-server --entry=./index.js",
+    "start": "webpack-dev-server --entry=./index.js --mode=development",
     "build": "webpack",
     "lint": "eslint '**/*.js'",
     "prepublishOnly": "npm run build"

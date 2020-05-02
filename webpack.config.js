@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const { name, version } = require('./package.json');
 
-module.exports = (env, argv) => ({
+module.exports = (env, argv) => console.log(env, argv) || ({
   entry: {
     main: './lib/APU.js'
   },
@@ -39,7 +39,7 @@ module.exports = (env, argv) => ({
       },
     ]
   },
-  plugins: (env === 'dev') ? [
+  plugins: (argv.mode === 'development') ? [
     new webpack.ProgressPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
