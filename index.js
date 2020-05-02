@@ -116,8 +116,76 @@ addButton('*BUMP BUMP BUMP*', (evt) => {
 	evt.target.innerText = (stopHandle) ? '*stop bumps*' :'*BUMP BUMP BUMP*'
 });
 
+function transformKeffieFile(/** @type{ArrayBuffer} */arrayBuffer) {
+	const slowFactor = (0x400000 / 0x3a0000);
+  // get where vgm data starts. this is 
+  // (address of where vgm offset is stored, always 0x34)
+  // + (value of vgm offset.)
+  const data0 = 0x34 + new Uint32Array(arrayBuffer, 0x34, 1)[0];
+  // the loop point works similarly
+	const oldLoop = 0x1c + new Uint32Array(arrayBuffer, 0x1c, 1)[0] - data0;
+	// finally, the rest of the file is the data
+
+  const data = arrayBuffer.slice(data0);
+	const inp = new Uint8Array(data);
+	const out = [];
+	let freqs = [0,0,0];
+	let newLoop = -1;
+	for (let i = 0; i < inp.length; ++i) {
+		if (i === oldLoop) {
+			newLoop = out.length;
+		}
+		const op = inp[i];
+		if (op === 0xB3) {
+			const addr = inp[++i];
+			let chan;
+			if (((chan = [0x3, 0x8, 0xD].indexOf(addr))) >= 0) {
+				const val = inp[++i];
+				freqs[chan] = (freqs[chan] & 0xF00) + val;
+			} else if (((chan = [0x4, 0x9, 0xE].indexOf(addr))) >= 0) {
+				const val = inp[++i];
+				freqs[chan] = (freqs[chan] & 0xFF) + ((val&0x7)<<8);
+				const modFreq = Math.round(2048 - (2048 - freqs[chan]) * slowFactor)
+				out.push(0xB3, addr-1, modFreq & 0xFF)
+				out.push(0xB3, addr, (val&0xF0) + ((modFreq >>8)& 0xF))
+			} else {
+				out.push(0xB3, addr, inp[++i]);
+			}
+		} else if (op === 0x61) {
+			const t = (inp[++i]) + (inp[++i] << 8); 
+			let t1 = t * slowFactor;
+			while (t1 > 0xFFFF) {
+				out.push(0x61, 0xFF, 0xFF);
+				t1 -= 0xFFFF;
+			}
+			out.push(0x61, t1&0xFF, t1>>8);
+		} else if (op === 0x62) {
+			const t = 735; // exactly 44100/60
+			const t1 = t * slowFactor;
+			out.push(0x61, t1&0xFF, t1>>8);
+		} else if ((op&0xF0) === 0x70) {
+			out.push(op);
+		} else if (op === 0x66) {
+			out.push(op);
+			break;
+		} else {
+			throw new Error('what is this');
+		}
+	}
+	const outarr = new Uint8Array(data0 + out.length);
+	outarr.set(new Uint8Array(arrayBuffer).slice(0, data0));
+	outarr.set(out, data0);
+	console.log(outarr);
+	return outarr.buffer;
+}
+
 const tracks = [vgmURL1, vgmURL2]
-.map(url => fetch(url).then(res => res.arrayBuffer()).then(gameboy.fromFile))
+.map(url => {
+	return fetch(url)
+	.then(res => res.arrayBuffer())
+	.then(transformKeffieFile)
+	.then(gameboy.fromFile)
+})
 
 Promise.all(tracks).then(loadedFiles => {
 	const trackNames = ['Friendly Battle', 'Title']
