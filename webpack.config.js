@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
-const { name, version } = require('./package.json');
 
 module.exports = (env, argv) => console.log(env, argv) || ({
   entry: {
@@ -9,8 +8,7 @@ module.exports = (env, argv) => console.log(env, argv) || ({
   },
   output: {
     filename: `apu.js`,
-    library: 'APU',
-    libraryTarget: 'umd',
+    libraryTarget: 'commonjs2',
   },
   module: {
     rules: [
