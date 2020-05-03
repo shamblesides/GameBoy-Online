@@ -1,7 +1,6 @@
 import * as gameboy from './lib/APU.js';
 import vgmURL1 from './vgmtest/friendly_battle.vgm'
 import vgmURL2 from './vgmtest/title.vgm'
-import { C4, C5, E5, G5, C6 } from './notes.js';
 
 gameboy.allow();
 
@@ -67,7 +66,7 @@ const successTrack = new Uint8Array([
 
 	// song
 	... new Array(6).fill().map((_,i) => {
-		const note = [C5, E5, G5][i%3];
+		const note = [gameboy.C5, gameboy.E5, gameboy.G5][i%3];
 		const beats = [3,2][i%2];
 		return hit(note, beats);
 	}).reduce((arr,x) => [].concat.apply(arr, x), []),
@@ -84,7 +83,7 @@ function addButton(name, fn) {
 	document.body.appendChild(button);
 }
 
-addButton('boop', gameboy.sfx(hit(C6,5)).play);
+addButton('boop', gameboy.sfx(hit(gameboy.C6,5)).play);
 
 const bumpBytes = new Uint8Array([
 	// enable channels
@@ -96,9 +95,9 @@ const bumpBytes = new Uint8Array([
 	// start volume VVVV, direction A (+/- =1/0), period PPP
 	0xB3, 0x12-0x10, 0b11110001,
 	// pitch low
-	0xB3, 0x13-0x10, C4&0xFF,
+	0xB3, 0x13-0x10, gameboy.C4&0xFF,
 	// trigger 1, something? 0, --- pitch high HHH
-	0xB3, 0x14-0x10, 0b10000000 + (C4>>8),
+	0xB3, 0x14-0x10, 0b10000000 + (gameboy.C4>>8),
 	// track duration
 	0x61, (44100/2)&0xFF, (44100/2)>>8,
 ]);
