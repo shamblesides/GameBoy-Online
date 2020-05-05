@@ -8,7 +8,7 @@ module.exports = (env, argv) => console.log(env, argv) || ({
   },
   output: {
     filename: `apu.js`,
-    libraryTarget: 'commonjs2',
+    ...(argv.mode === 'development' ? {} : {libraryTarget: 'commonjs2'}),
   },
   module: {
     rules: [
