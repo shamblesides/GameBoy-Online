@@ -195,3 +195,9 @@ Promise.all(tracks).then(loadedFiles => {
 		});
 	})
 })
+
+const wavbytes = new Uint8Array([0xB3, 0x15, 0xFF, 0xB3, 0x20, 0xFF, 0xB3, 0x21, 0x00, 0x61, 0xff, 0xff])
+const wavsound = gameboy.sfx(wavbytes, [0,0,1,0])
+addButton('0x3x', () => {
+	wavsound.play();
+})
