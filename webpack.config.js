@@ -19,6 +19,17 @@ module.exports = (env, argv) => console.log(env, argv) || ({
         }
       },
       {
+        test: /\.wat$/,
+        use: [
+          {
+            loader: "raw-loader",
+          },
+          {
+            loader: "wast-loader",
+          },
+        ],
+      },
+      {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',
