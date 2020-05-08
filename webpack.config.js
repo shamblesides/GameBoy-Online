@@ -1,3 +1,4 @@
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
@@ -22,10 +23,10 @@ module.exports = (env, argv) => console.log(env, argv) || ({
         test: /\.wat$/,
         use: [
           {
-            loader: "raw-loader",
+            loader: "url-loader",
           },
           {
-            loader: "wast-loader",
+            loader: path.resolve('./tools/wabt-loader.js'),
           },
         ],
       },
