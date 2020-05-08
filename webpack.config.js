@@ -23,7 +23,7 @@ module.exports = (env, argv) => console.log(env, argv) || ({
         test: /\.wat$/,
         use: [
           {
-            loader: "url-loader",
+            loader: "raw-loader",
           },
           {
             loader: path.resolve('./tools/wabt-loader.js'),
