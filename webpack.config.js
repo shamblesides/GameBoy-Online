@@ -23,12 +23,29 @@ module.exports = (env, argv) => console.log(env, argv) || ({
         test: /\.wat$/,
         use: [
           {
-            loader: "raw-loader",
+            loader: 'url-loader',
+            options: {
+              mimetype: 'application/wasm',
+            },
           },
           {
             loader: path.resolve('./tools/wabt-loader.js'),
           },
         ],
+      },
+      {
+        test: /\.c$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              mimetype: 'application/wasm',
+            },
+          },
+          {
+            loader: path.resolve('./tools/clang-loader.js'),
+          },
+        ]
       },
       {
         test: /\.js$/,
