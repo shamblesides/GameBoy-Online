@@ -115,7 +115,7 @@ addButton('*BUMP BUMP BUMP*', (evt) => {
 	evt.target.innerText = (stopHandle) ? '*stop bumps*' :'*BUMP BUMP BUMP*'
 });
 
-function transformKeffieFile(/** @type{ArrayBuffer} */arrayBuffer) {
+export function transformKeffieFile(/** @type{ArrayBuffer} */arrayBuffer) {
 	const slowFactor = (0x400000 / 0x3a0000);
   // get where vgm data starts. this is 
   // (address of where vgm offset is stored, always 0x34)
@@ -173,8 +173,10 @@ function transformKeffieFile(/** @type{ArrayBuffer} */arrayBuffer) {
 	}
 	const outarr = new Uint8Array(data0 + out.length);
 	outarr.set(new Uint8Array(arrayBuffer).slice(0, data0));
-	outarr.set(out, data0);
-	console.log(outarr);
+  outarr.set(out, data0);
+  if (newLoop !== -1) {
+    new Uint32Array(outarr.buffer, 0x1c, 4)[0] = (data0 - 0x1c) + newLoop;
+  }
 	return outarr.buffer;
 }
 
