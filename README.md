@@ -1,50 +1,36 @@
-JavaScript GameBoy Color Emulator
-=================================
+APU
+===
 
-**Copyright (C) 2010 - 2016 Grant Galitz**
+Want some hardware-accurate Gameboy music and sounds in your HTML5 game or app? Don't want to load megabytes of .mp3 files? [Overwhelmed or frustrated](https://blog.mecheye.net/2017/09/i-dont-know-who-the-web-audio-api-is-designed-for/) by the Web Audio API? Welcome to **apu**!
 
-A GameBoy Color emulator that utilizes HTML5 canvas and JavaScript audio APIs to provide a full emulation of the console.
 
-**License:**
+Features
+--------
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* Tiny; single .js file, about 9 kB (gzip)
+* Supports playing .vgm files (which are typically a few kB after gzip)
+* Mute BGM channels while playing SFX
+* Highly performant
+* * Fast sample generation in WebAssembly
+* * When possible, uses AudioWorklet to run completely outside the main thread (works in latest Chrome and FireFox)
+* UMD module; works as script tag, AMD module, in webpack, etc
+* TypeScript bindings
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Browser support
+---------------
 
-Known browsers to work well in:
--------------------------------
+Latest Chrome, Safari, Firefox
 
-* Firefox 4-27 (Windows 7, Windows Vista, Mac OS X)
-* Google Chrome 18+
-* Safari 5.1.5+
 
-Browsers that suck at performance or fail to run the code correctly:
---------------------------------------------------------------------
+Acknowledgments
+---------------
 
-* Firefox 4+ (*nix versions of Firefox have audio lockup bugs) - Retest this
-* Firefox 28+ (Web Audio API creates 500 ms or greater latency, forced by Firefox)
-* Opera (Crashes + Slow + Graphics Glitches) - Retest this
-* Safari 5.1.X (Below 5.1.5) (Slow or crashes)
-* IE 1-8 (Cannot run)
-* IE 9-10 (Slow, No native audio support (Requires flash bridge in the audio lib))
-* IE 11 (No native audio support (Requires flash bridge in the audio lib))
-* Firefox 1-3.6 (Slow)
-* ALL VERSIONS OF MOBILE SAFARI AND OPERA (Stop pestering me, iOS just **CAN'T** run this well.)
+The high-performance WebAssembly bundle for emulating the GameBoy's APU is compiled from C code that was adapted from
+an old version of VGMPlay, which was written by Anthony Kruize in 2002. Without that code, this module would not be
+nearly as performant nor as accurate as it is today.
 
-CPU instruction set accuracy test results (Blargg's cpu_instrs.gb test ROM):
------------------------------------------------------
 
-* **GameBoy Online:**
-
-	![GameBoy Online (This emulator)](http://i.imgur.com/ivs7F.png "Passes")
-* **Visual Boy Advance 1.7.2:**
-
-	![Visual Boy Advance 1.7.2](http://i.imgur.com/NYnYu.png "Fails")
-* **KiGB:**
-
-	![KiGB](http://i.imgur.com/eYHDH.png "Fails")
-* **Gambatte:**
-
-	![Gambatte](http://i.imgur.com/vGHFz.png "Passes")
+License
+-------
+[BSD 3-Clause](/LICENSE)
