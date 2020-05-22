@@ -19,8 +19,8 @@
     "type": "git",
     "url": "git+https://github.com/shamblesides/apu.git"
   },
-  "author": "Nigel Nelson, Grant Galitz",
-  "license": "MIT",
+  "author": "Nigel Nelson",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/shamblesides/apu/issues"
   },
